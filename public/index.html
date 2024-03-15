@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitura de QR Code</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Leitura de QR Code</h1>
+    <button id="open-camera-btn">Abrir Câmera</button>
+    <div id="video-container">
+        <video id="camera-feed" autoplay playsinline></video>
+        <p class="loading-message">Carregando...</p>
+        <p class="error-message">Erro ao acessar a câmera.</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const openCameraBtn = document.getElementById('open-camera-btn');
+            const videoContainer = document.getElementById('video-container');
+            const cameraFeed = document.getElementById('camera-feed');
+            const loadingMessage = document.querySelector('.loading-message');
+            const errorMessage = document.querySelector('.error-message');
+
+            openCameraBtn.addEventListener('click', function() {
+                openCamera();
+            });
+
+            function openCamera() {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                        .then(function(stream) {
+                            videoContainer.style.display = 'block';
+                            loadingMessage.style.display = 'block';
+
+                            cameraFeed.srcObject = stream;
+                            cameraFeed.play();
+
+                            setInterval(function() {
+                                captureQRCode();
+                            }, 1000);
+                        })
+                        .catch(function(error) {
+                            console.error('Erro ao acessar a câmera:', error);
+                            errorMessage.style.display = 'block';
+                        })
+                        .finally(() => {
+                            loadingMessage.style.display = 'none';
+                        });
+                } else {
+                    alert('Seu dispositivo não suporta acesso à câmera.');
+                }
+            }
+
+            function captureQRCode() {
+                const canvasElement = document.createElement('canvas');
+                const canvas = canvasElement.getContext('2d');
+
+                canvasElement.width = cameraFeed.videoWidth;
+                canvasElement.height = cameraFeed.videoHeight;
+                canvas.drawImage(cameraFeed, 0, 0, cameraFeed.videoWidth, cameraFeed.videoHeight);
+                const imageData = canvas.getImageData(0, 0, cameraFeed.videoWidth, cameraFeed.videoHeight);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                if (code) {
+                    // Armazenar o código QR no local storage
+                    localStorage.setItem('codigoQR', code.data);
+                    // Redirecionar para a página de cadastro
+                    window.location.href = 'aplicacao.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

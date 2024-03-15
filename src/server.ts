@@ -1,32 +1,42 @@
-import { PrismaClient } from "@prisma/client"
-import fastify from "fastify"
-import { z } from 'zod'
+import { PrismaClient } from '@prisma/client';
+import fastify from 'fastify';
+import { z } from 'zod';
 
-const app = fastify()
+const prisma = new PrismaClient();
+const app = fastify();
 
-const prisma = new PrismaClient()
+app.post('/cadastrar', async (request, reply) => {
+    const createClientSchema = z.object({
+        id: z.string(),
+        nome: z.string(),
+        cpf: z.string(),
+        empresa: z.string(),
+        createdAt: z.date(),
+    });
 
-app.post ('/Clients', async (request, reply) => {
-    const createClientSchema = z.object ({
-        name: z.string(),
-        email: z.string().email(),
-    })
+    try {
+        const { id, nome, cpf, empresa, createdAt } = createClientSchema.parse(request.body);
 
-    const {name, email} = createClientSchema.parse(request.body)
+        await prisma.clients.create({
+            data: {
+                id,
+                nome,
+                cpf,
+                empresa,
+                createdAt
+            }
+        });
 
-    await prisma.clients.create({
-        data: {
-            name,
-            email,
-        }
-    })
-
-    return reply.status(201).send()
-})
+        reply.status(201).send({ message: 'Dados cadastrados com sucesso' });
+    } catch (error: any) {
+        // Aqui utilizei ': any' para definir o tipo do erro explicitamente.
+        reply.status(400).send({ error: error.errors });
+    }
+});
 
 app.listen({
-    host:'0.0.0.0',
+    host: '0.0.0.0',
     port: process.env.PORT ? Number(process.env.PORT) : 3333
 }).then(() => {
-    console.log('Http server running')
-})
+    console.log('Http server running');
+});

@@ -14,9 +14,10 @@ datasource db {
 }
 
 model Clients {
-  id String @id @default(cuid())
-  name String
-  email String
+  id String @unique
+  nome String
+  cpf String
+  empresa String
   createdAt DateTime @default(now())
 }
 
