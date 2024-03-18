@@ -64,8 +64,8 @@
                 const imageData = canvas.getImageData(0, 0, cameraFeed.videoWidth, cameraFeed.videoHeight);
                 const code = jsQR(imageData.data, imageData.width, imageData.height);
                 if (code) {
-                    // Armazenar o código QR no local storage
-                    localStorage.setItem('codigoQR', code.data);
+                    // Armazenar o código QR na sessão de armazenamento
+                    sessionStorage.setItem('id', code.data);
                     // Redirecionar para a página de cadastro
                     window.location.href = 'aplicacao.html';
                 }
