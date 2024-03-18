@@ -17,9 +17,7 @@ app.addHook('onRequest', (request, reply, done) => {
     }
 });
 
-app.register(require('fastify-cors'), {
-  // configurar opções adicionais, se necessário
-});
+app.register(require('@fastify/cors')); // Registrar o pacote @fastify/cors
 
 app.get('/cadastro', async () => {
     const cadastro = await prisma.clients.findMany()
