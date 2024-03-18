@@ -4,7 +4,6 @@ import { z } from 'zod';
 
 const prisma = new PrismaClient();
 const app = fastify();
-const url = "https://qrepo.onrender.com"
 
 app.get('/cadastro', async () => {
     const cadastro = await prisma.clients.findMany()
@@ -12,8 +11,6 @@ app.get('/cadastro', async () => {
     return{cadastro}
 
 })
-
-
 
 app.post('/cadastrar', async (request, reply) => {
     const createClientSchema = z.object({
