@@ -15,7 +15,7 @@ app.get('/cadastro', async () => {
 
 
 
-app.post(url + '/cadastrar', async (request, reply) => {
+app.post('/cadastrar', async (request, reply) => {
     const createClientSchema = z.object({
         id: z.string(),
         nome: z.string(),
