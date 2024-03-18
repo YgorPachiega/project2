@@ -5,17 +5,18 @@ import { z } from 'zod';
 const prisma = new PrismaClient();
 const app = fastify();
 
+// Middleware para lidar com as opções de CORS
 app.addHook('onRequest', (request, reply, done) => {
+    reply.header('Access-Control-Allow-Origin', '*');
+    reply.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    reply.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     if (request.method === 'OPTIONS') {
-        reply.header('Access-Control-Allow-Credentials', 'true');
-        reply.header('Access-Control-Allow-Origin', '*');
-        reply.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        reply.status(200).send();
+        reply.send('');
     } else {
         done();
     }
-});     
+});
+
 app.get('/cadastro', async () => {
     const cadastro = await prisma.clients.findMany()
     return { cadastro };
