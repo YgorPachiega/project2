@@ -64,10 +64,22 @@
                 const imageData = canvas.getImageData(0, 0, cameraFeed.videoWidth, cameraFeed.videoHeight);
                 const code = jsQR(imageData.data, imageData.width, imageData.height);
                 if (code) {
-                    // Armazenar o código QR na sessão de armazenamento
-                    sessionStorage.setItem('id', code.data);
-                    // Redirecionar para a página de cadastro
-                    window.location.href = 'aplicacao.html';
+                    // Verificar se o ID já foi utilizado
+                    const id = code.data;
+                    fetch(`https://qrepo.onrender.com/cadastro?id=${id}`)
+                        .then(response => {
+                            if (response.ok) {
+                                // Se o ID não existe, redirecione para a página de cadastro
+                                window.location.href = `aplicacao.html?id=${id}`;
+                            } else {
+                                // Se o ID já foi utilizado, exiba uma mensagem de erro
+                                alert('ID já utilizado. Por favor, tente novamente.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro ao verificar ID:', error);
+                            alert('Erro ao verificar ID. Por favor, tente novamente.');
+                        });
                 }
             }
         });

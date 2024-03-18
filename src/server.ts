@@ -17,6 +17,8 @@ app.addHook('onRequest', (request, reply, done) => {
     }
 });
 
+
+
 app.get('/cadastro', async () => {
     const cadastro = await prisma.clients.findMany()
     return { cadastro };
@@ -38,6 +40,24 @@ app.post('/cadastrar', async (request, reply) => {
         reply.status(201).send({ message: 'Dados cadastrados com sucesso' });
     } catch (error: any) {
         reply.status(400).send({ error: error.errors });
+    }
+});
+
+app.get('/verificar', async (request, reply) => {
+    const { id } = request.query;
+
+    if (typeof id === 'string' || id instanceof String) { // Verifica se id é uma string ou um objeto String
+        const existingClient = await prisma.clients.findUnique({
+            where: { id: String(id) }, // Garante que o id seja uma string
+        });
+
+        if (existingClient) {
+            reply.status(400).send({ error: 'ID já utilizado' });
+        } else {
+            reply.status(200).send({ message: 'ID disponível' });
+        }
+    } else {
+        reply.status(400).send({ error: 'ID inválido' });
     }
 });
 
