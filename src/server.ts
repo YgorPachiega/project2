@@ -44,7 +44,7 @@ app.post('/cadastrar', async (request, reply) => {
 });
 
 app.get('/verificar', async (request, reply) => {
-    const { id } = request.query;
+    const { id}  = request.query;
 
     if (typeof id === 'string' || id instanceof String) { // Verifica se id é uma string ou um objeto String
         const existingClient = await prisma.clients.findUnique({

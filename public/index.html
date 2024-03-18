@@ -66,7 +66,7 @@
                 if (code) {
                     // Verificar se o ID já foi utilizado
                     const id = code.data;
-                    fetch(`https://qrepo.onrender.com/cadastro?id=${id}`)
+                    fetch(`https://qrepo.onrender.com/verificar?id=${id}`)
                         .then(response => {
                             if (response.ok) {
                                 // Se o ID não existe, redirecione para a página de cadastro
