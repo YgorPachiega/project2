@@ -19,20 +19,18 @@ app.post('/cadastrar', async (request, reply) => {
         id: z.string(),
         nome: z.string(),
         cpf: z.string(),
-        empresa: z.string(),
-        createdAt: z.date(),
+        empresa: z.string()
     });
 
     try {
-        const { id, nome, cpf, empresa, createdAt } = createClientSchema.parse(request.body);
+        const { id, nome, cpf, empresa } = createClientSchema.parse(request.body);
 
         await prisma.clients.create({
             data: {
                 id,
                 nome,
                 cpf,
-                empresa,
-                createdAt
+                empresa
             }
         });
 
