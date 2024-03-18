@@ -12,7 +12,7 @@
     <div id="video-container">
         <video id="camera-feed" autoplay playsinline></video>
         <p class="loading-message">Carregando...</p>
-        <p class="error-message">Erro ao acessar a câmera.</p>
+        <p class="error-message" style="display: none;">Erro ao acessar a câmera.</p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
@@ -23,6 +23,8 @@
             const cameraFeed = document.getElementById('camera-feed');
             const loadingMessage = document.querySelector('.loading-message');
             const errorMessage = document.querySelector('.error-message');
+
+            let intervalId;
 
             openCameraBtn.addEventListener('click', function() {
                 openCamera();
@@ -38,13 +40,14 @@
                             cameraFeed.srcObject = stream;
                             cameraFeed.play();
 
-                            setInterval(function() {
+                            intervalId = setInterval(function() {
                                 captureQRCode();
                             }, 1000);
                         })
                         .catch(function(error) {
                             console.error('Erro ao acessar a câmera:', error);
                             errorMessage.style.display = 'block';
+                            clearInterval(intervalId); // Pare de ler o QRCode quando houver erro
                         })
                         .finally(() => {
                             loadingMessage.style.display = 'none';
@@ -67,18 +70,21 @@
                     // Verificar se o ID já foi utilizado
                     const id = code.data;
                     fetch(`https://qrepo.onrender.com/verificar?id=${id}`)
-                        .then(response => {
-                            if (response.ok) {
-                                // Se o ID não existe, exiba uma mensagem de erro
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                // Se o ID já existe, exiba uma mensagem de erro
                                 alert('ID já utilizado. Por favor, tente novamente.');
+                                clearInterval(intervalId); // Pare de ler o QRCode após exibir a mensagem de erro
                             } else {
-                                // Se o ID já foi utilizado, exiba uma mensagem de erro
-                                alert('Erro ao verificar ID. Por favor, tente novamente.');
+                                // Se o ID não existe, redirecione para a página de cadastro
+                                window.location.href = `aplicacao.html?id=${id}`;
                             }
                         })
                         .catch(error => {
                             console.error('Erro ao verificar ID:', error);
                             alert('Erro ao verificar ID. Por favor, tente novamente.');
+                            clearInterval(intervalId); // Pare de ler o QRCode quando houver erro
                         });
                 }
             }
