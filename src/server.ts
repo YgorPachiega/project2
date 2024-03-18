@@ -5,6 +5,15 @@ import { z } from 'zod';
 const prisma = new PrismaClient();
 const app = fastify();
 
+app.get('/cadastro', async () => {
+    const cadastro = await prisma.clients.findMany()
+
+    return{cadastro}
+
+})
+
+
+
 app.post('/cadastrar', async (request, reply) => {
     const createClientSchema = z.object({
         id: z.string(),
