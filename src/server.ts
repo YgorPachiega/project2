@@ -6,26 +6,25 @@ const prisma = new PrismaClient();
 const app = fastify();
 
 app.addHook('onRequest', (request, reply, done) => {
-    if(request.method === 'OPTIONS'){
-    reply.header('Access-Control-Allow-Credentials', 'true');
-    reply.header('Access-Control-Allow-Origin', '*'); // Permite que qualquer origem acesse a API
-    reply.header('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'); // Define os cabeçalhos permitidos
-    reply.header('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT'); // Define os métodos HTTP permitidos
-    reply.status(200).send();
-    
-}else{
-
-    done();
-}
+    if (request.method === 'OPTIONS') {
+        reply.header('Access-Control-Allow-Credentials', 'true');
+        reply.header('Access-Control-Allow-Origin', '*');
+        reply.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+        reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        reply.status(200).send();
+    } else {
+        done();
+    }
 });
 
+app.register(require('fastify-cors'), {
+  // configurar opções adicionais, se necessário
+});
 
 app.get('/cadastro', async () => {
     const cadastro = await prisma.clients.findMany()
-
-    return{cadastro}
-
-})
+    return { cadastro };
+});
 
 app.post('/cadastrar', async (request, reply) => {
     const createClientSchema = z.object({
@@ -37,19 +36,11 @@ app.post('/cadastrar', async (request, reply) => {
 
     try {
         const { id, nome, cpf, empresa } = createClientSchema.parse(request.body);
-
         await prisma.clients.create({
-            data: {
-                id,
-                nome,
-                cpf,
-                empresa
-            }
+            data: { id, nome, cpf, empresa }
         });
-
         reply.status(201).send({ message: 'Dados cadastrados com sucesso' });
     } catch (error: any) {
-        // Aqui utilizei ': any' para definir o tipo do erro explicitamente.
         reply.status(400).send({ error: error.errors });
     }
 });
