@@ -1,11 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import fastify from 'fastify';
-import fastifyCors from '@fastify/cors';
 import { z } from 'zod';
 
 const prisma = new PrismaClient();
 const app = fastify();
-app.register(fastifyCors);
 
 app.addHook('onRequest', (request, reply, done) => {
     if (request.method === 'OPTIONS') {
@@ -17,7 +15,7 @@ app.addHook('onRequest', (request, reply, done) => {
     } else {
         done();
     }
-});
+});     
 app.get('/cadastro', async () => {
     const cadastro = await prisma.clients.findMany()
     return { cadastro };
