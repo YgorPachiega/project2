@@ -6,11 +6,17 @@ const prisma = new PrismaClient();
 const app = fastify();
 
 app.addHook('onRequest', (request, reply, done) => {
+    if(request.method === 'OPTIONS'){
     reply.header('Access-Control-Allow-Credentials', 'true');
     reply.header('Access-Control-Allow-Origin', '*'); // Permite que qualquer origem acesse a API
     reply.header('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'); // Define os cabeçalhos permitidos
     reply.header('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT'); // Define os métodos HTTP permitidos
+    reply.status(200).send();
+    
+}else{
+
     done();
+}
 });
 
 
