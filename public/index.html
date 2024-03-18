@@ -69,11 +69,11 @@
                     fetch(`https://qrepo.onrender.com/verificar?id=${id}`)
                         .then(response => {
                             if (response.ok) {
-                                // Se o ID não existe, redirecione para a página de cadastro
-                                window.location.href = `aplicacao.html?id=${id}`;
+                                // Se o ID não existe, exiba uma mensagem de erro
+                                alert('ID já utilizado. Por favor, tente novamente.');
                             } else {
                                 // Se o ID já foi utilizado, exiba uma mensagem de erro
-                                alert('ID já utilizado. Por favor, tente novamente.');
+                                alert('Erro ao verificar ID. Por favor, tente novamente.');
                             }
                         })
                         .catch(error => {
