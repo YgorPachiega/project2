@@ -1,11 +1,17 @@
 import { PrismaClient } from '@prisma/client';
 import fastify from 'fastify';
 import { z } from 'zod';
-import fastifyCors from '@fastify/cors';
 
 const prisma = new PrismaClient();
 const app = fastify();
-app.register(fastifyCors);
+
+app.addHook('onRequest', (request, reply, done) => {
+    reply.header('Access-Control-Allow-Origin', '*'); // Permite que qualquer origem acesse a API
+    reply.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept'); // Define os cabeçalhos permitidos
+    reply.header('Access-Control-Allow-Methods', 'GET, POST'); // Define os métodos HTTP permitidos
+    done();
+});
+
 
 app.get('/cadastro', async () => {
     const cadastro = await prisma.clients.findMany()
