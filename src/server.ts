@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import fastify from 'fastify';
 import { z } from 'zod';
+import fastifyCors from 'fastify-cors';
 
 const prisma = new PrismaClient();
 const app = fastify();
+app.register(fastifyCors);
 
 app.get('/cadastro', async () => {
     const cadastro = await prisma.clients.findMany()
