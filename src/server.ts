@@ -23,6 +23,19 @@ app.get('/cadastro', async () => {
     return { cadastro };
 });
 
+app.get('/exportar-csv', async (request, reply) => {
+    try {
+        const clients = await prisma.clients.findMany();
+        const csv = parse(clients, { fields: ['id', 'nome', 'cpf', 'empresa'] });
+
+        reply.header('Content-Disposition', 'attachment; filename="clientes.csv"');
+        reply.header('Content-Type', 'text/csv');
+        return csv;
+    } catch (error: any) {
+        reply.status(500).send({ error: 'Erro ao exportar os dados como CSV' });
+    }
+});
+
 app.post('/cadastrar', async (request, reply) => {
     const createClientSchema = z.object({
         id: z.string(),
@@ -60,15 +73,7 @@ app.get('/verificar', async (request, reply) => {
     }
 });
 
-app.get('/gerar-csv', async (request, reply) => {
-    const cadastros = await prisma.clients.findMany();
-    const csv = parse(cadastros);
-    
-    reply
-        .header('Content-Type', 'text/csv')
-        .header('Content-Disposition', 'attachment; filename=cadastros.csv')
-        .send(csv);
-});
+
 
 app.listen({
     host: '0.0.0.0',
