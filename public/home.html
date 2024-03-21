@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <h1>Home</h1>
+    <ul>
+        <li><a href="/logout">Deslogar</a></li>
+        <li><a href="/index.html">Acessar página de cadastro</a></li>
+        <li><button onclick="gerarRelatorio()">Gerar Relatório em Excel</button></li>
+    </ul>
+
+    <script>
+        function gerarRelatorio() {
+            // Fazendo uma solicitação ao servidor para gerar o arquivo CSV
+            fetch('/gerar-csv')
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob(); // Convertendo a resposta em um objeto Blob
+                    }
+                    throw new Error('Erro ao gerar relatório');
+                })
+                .then(blob => {
+                    // Criando um link temporário para download do arquivo
+                    const url = window.URL.createObjectURL(new Blob([blob]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'relatorio.csv');
+                    document.body.appendChild(link);
+                    link.click(); // Simulando o clique no link para iniciar o download
+                    link.parentNode.removeChild(link); // Removendo o link após o download
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Erro ao gerar relatório');
+                });
+        }
+    </script>
+</body>
+</html>

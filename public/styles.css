@@ -1,13 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-#video-container {
-    display: none;
+/* Estilos para dispositivos com largura de tela menor que 768px */
+@media (max-width: 768px) {
+    #camera-feed {
+        width: 100%; /* Ocupar toda a largura disponível */
+        border-radius: 0; /* Remover borda arredondada */
+    }
 }
 
-#camera-feed {
-    width: 50%;
-    padding: auto;
-    border-radius: 10px;
+/* Estilos para dispositivos com largura de tela maior que 768px */
+@media (min-width: 769px) {
+    #camera-feed {
+        width: 50%; /* Manter largura de 50% */
+        margin: 0 auto; /* Centralizar horizontalmente */
+    }
+}
+
+#video-container {
+    display: none;
 }
 
 .loading-message, .error-message {
@@ -63,9 +73,9 @@ select {
 
 button {
     display: block;
-    width: 200px;
+    width: 100%; /* Ocupar toda a largura do formulário */
     padding: 12px;
-    margin: 0 auto;
+    margin-top: 20px; /* Espaçamento superior */
     background-color: #007bff;
     color: #fff;
     border: none;

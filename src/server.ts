@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import fastify from 'fastify';
 import { z } from 'zod';
+import { parse } from 'json2csv';
 
 const prisma = new PrismaClient();
 const app = fastify();
@@ -17,10 +18,8 @@ app.addHook('onRequest', (request, reply, done) => {
     }
 });
 
-
-
 app.get('/cadastro', async () => {
-    const cadastro = await prisma.clients.findMany()
+    const cadastro = await prisma.clients.findMany();
     return { cadastro };
 });
 
@@ -59,6 +58,16 @@ app.get('/verificar', async (request, reply) => {
     } else {
         reply.status(400).send({ error: 'ID inválido' });
     }
+});
+
+app.get('/gerar-csv', async (request, reply) => {
+    const cadastros = await prisma.clients.findMany();
+    const csv = parse(cadastros);
+    
+    reply
+        .header('Content-Type', 'text/csv')
+        .header('Content-Disposition', 'attachment; filename=cadastros.csv')
+        .send(csv);
 });
 
 app.listen({

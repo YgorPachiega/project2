@@ -21,3 +21,9 @@ model Clients {
   createdAt DateTime @default(now())
 }
 
+model Users {
+  id String @unique
+  nome String
+  usuario String
+  key String
+}
