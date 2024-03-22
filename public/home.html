@@ -15,7 +15,7 @@
 
             exportarBtn.addEventListener('click', function() {
                 // Envie uma solicitação ao servidor para obter o arquivo CSV
-                fetch('https://qrepo.onrender.com/gerar-csv', {
+                fetch('https://qrepo.onrender.com/exportar-csv', {
                     method: 'GET',
                 })
                 .then(response => response.blob())
