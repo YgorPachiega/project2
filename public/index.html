@@ -12,7 +12,7 @@
     <div id="video-container">
         <video id="camera-feed" autoplay playsinline></video>
         <p class="loading-message">Carregando...</p>
-        <p class="error-message" style="display: none;">Erro ao acessar a câmera.</p>
+        <p class="error-message" style="display: none;">Erro ao acessar a câmera.<br>Clique aqui para tentar novamente.</p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
@@ -30,12 +30,19 @@
                 openCamera();
             });
 
+            errorMessage.addEventListener('click', function() {
+                sessionStorage.removeItem('id');
+                errorMessage.style.display = 'none';
+                openCamera();
+            });
+
             function openCamera() {
                 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
                         .then(function(stream) {
                             videoContainer.style.display = 'block';
                             loadingMessage.style.display = 'block';
+                            errorMessage.style.display = 'none';
 
                             cameraFeed.srcObject = stream;
                             cameraFeed.play();
