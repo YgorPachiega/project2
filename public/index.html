@@ -76,7 +76,7 @@
                     const id = code.data;
 
                     // Verificar o QRCode no servidor antes de redirecionar
-                    fetch(`/verificar?id=${id}`)
+                    fetch(`https://qrepo.onrender.com/verificar?id=${id}`)
                         .then(response => response.json())
                         .then(data => {
                             if (data.message === 'ID disponível') {
