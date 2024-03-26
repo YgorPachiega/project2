@@ -75,28 +75,20 @@
                 if (code) {
                     const id = code.data;
 
-                    // Verificar se o ID já foi utilizado no banco de dados
-                    fetch('/verificar' + id)
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Erro ao verificar o ID.');
-                            }
-                            return response.json();
-                        })
+                    // Verificar o QRCode no servidor antes de redirecionar
+                    fetch(`/verificar?id=${id}`)
+                        .then(response => response.json())
                         .then(data => {
-                            if (data.used) {
-                                alert('O ID já foi utilizado. Por favor, tente outro.');
-                            } else {
-                                // Armazenar o ID no sessionStorage
-                                sessionStorage.setItem('id', id);
-                                // Redirecionar para a página de cadastro
+                            if (data.message === 'ID disponível') {
+                                // Salva o ID no sessionStorage e redireciona
+                                sessionStorage.setItem('qrCodeID', id);
                                 window.location.href = 'aplicacao.html';
+                            } else {
+                                alert('QRCode inválido');
                             }
                         })
                         .catch(error => {
-                            console.error('Erro ao verificar o ID:', error);
-                            // Tratar erro de verificação
-                            alert('Erro ao verificar o ID.');
+                            console.error('Erro ao verificar o QRCode:', error);
                         });
                 }
             }
