@@ -76,7 +76,7 @@
                     const id = code.data;
 
                     // Verificar se o ID já foi utilizado no banco de dados
-                    fetch('URL_DA_SUA_API?id=' + id)
+                    fetch('/verificar' + id)
                         .then(response => {
                             if (!response.ok) {
                                 throw new Error('Erro ao verificar o ID.');
