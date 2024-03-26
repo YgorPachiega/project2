@@ -51,6 +51,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             const exportBtns = document.querySelectorAll('.export-btn');
 
+<<<<<<< HEAD
             exportBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     // Envie uma solicitação ao servidor para obter o arquivo CSV
@@ -61,6 +62,17 @@
                     .then(blob => {
                         // Crie um URL temporário para o arquivo CSV
                         const url = window.URL.createObjectURL(blob);
+=======
+            exportarBtn.addEventListener('click', function() {
+                // Envie uma solicitação ao servidor para obter o arquivo CSV
+                fetch('https://qrepo.onrender.com/exportar-csv', {
+                    method: 'GET',
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    // Crie um URL temporário para o arquivo CSV
+                    const url = window.URL.createObjectURL(blob);
+>>>>>>> 21109766f8defa9fed0f0115f6edd4cb61e5106c
 
                         // Crie um link de download para o arquivo CSV
                         const a = document.createElement('a');
