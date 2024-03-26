@@ -67,13 +67,27 @@
                 const imageData = canvas.getImageData(0, 0, cameraFeed.videoWidth, cameraFeed.videoHeight);
                 const code = jsQR(imageData.data, imageData.width, imageData.height);
                 if (code) {
-                    // Verificar se o ID já foi utilizado
                     const id = code.data;
                     if (!sessionStorage.getItem('id')) {
-                        // Define o ID no sessionStorage apenas se não estiver definido
                         sessionStorage.setItem('id', id);
                     }
-                    window.location.href = 'aplicacao.html'; // Redireciona para a página de aplicação
+
+                    // Verifique se o QRCode já foi utilizado anteriormente
+                    fetch(`https://qrepo.onrender.com/verificar?id=${id}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                alert('QRCode já utilizado. Por favor, tente novamente.');
+                                clearInterval(intervalId);
+                            } else {
+                                window.location.href = 'aplicacao.html';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro ao verificar QRCode:', error);
+                            alert('Erro ao verificar QRCode. Por favor, tente novamente.');
+                            clearInterval(intervalId);
+                        });
                 }
             }
         });
