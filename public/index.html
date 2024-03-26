@@ -31,7 +31,7 @@
             });
 
             errorMessage.addEventListener('click', function() {
-                sessionStorage.removeItem('id');
+                sessionStorage.clear();
                 errorMessage.style.display = 'none';
                 openCamera();
             });
@@ -80,8 +80,6 @@
                     if (sessionStorage.getItem('id') === id) {
                         alert('Este QRCode já foi utilizado nesta sessão.');
                     } else {
-                        sessionStorage.setItem('id', id);
-
                         // Verifique se o QRCode já foi utilizado anteriormente
                         fetch(`https://qrepo.onrender.com/verificar?id=${id}`)
                             .then(response => response.json())
@@ -89,6 +87,7 @@
                                 if (data.error) {
                                     alert('QRCode já utilizado. Por favor, tente novamente.');
                                     clearInterval(intervalId);
+                                    errorMessage.style.display = 'block';
                                 } else {
                                     window.location.href = 'aplicacao.html';
                                 }
