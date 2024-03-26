@@ -81,7 +81,7 @@
                         .then(data => {
                             if (data.message === 'ID disponível') {
                                 // Salva o ID no sessionStorage e redireciona
-                                sessionStorage.setItem('qrCodeID', id);
+                                sessionStorage.setItem('id', id);
                                 window.location.href = 'aplicacao.html';
                             } else {
                                 alert('QRCode inválido');
