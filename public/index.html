@@ -69,9 +69,9 @@
                 if (code) {
                     // Verificar se o ID já foi utilizado
                     const id = code.data;
-                    if (!localStorage.getItem('id')) {
-                        // Define o ID no localStorage apenas se não estiver definido
-                        localStorage.setItem('id', id);
+                    if (!sessionStorage.getItem('id')) {
+                        // Define o ID no sessionStorage apenas se não estiver definido
+                        sessionStorage.setItem('id', id);
                     }
                     window.location.href = 'aplicacao.html'; // Redireciona para a página de aplicação
                 }
