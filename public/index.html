@@ -75,26 +75,30 @@
                 const code = jsQR(imageData.data, imageData.width, imageData.height);
                 if (code) {
                     const id = code.data;
-                    if (!sessionStorage.getItem('id')) {
-                        sessionStorage.setItem('id', id);
-                    }
 
-                    // Verifique se o QRCode já foi utilizado anteriormente
-                    fetch(`https://qrepo.onrender.com/verificar?id=${id}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.error) {
-                                alert('QRCode já utilizado. Por favor, tente novamente.');
+                    // Verifique se o QRCode já foi utilizado nesta sessão
+                    if (sessionStorage.getItem('id') === id) {
+                        alert('Este QRCode já foi utilizado nesta sessão.');
+                    } else {
+                        sessionStorage.setItem('id', id);
+
+                        // Verifique se o QRCode já foi utilizado anteriormente
+                        fetch(`https://qrepo.onrender.com/verificar?id=${id}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.error) {
+                                    alert('QRCode já utilizado. Por favor, tente novamente.');
+                                    clearInterval(intervalId);
+                                } else {
+                                    window.location.href = 'aplicacao.html';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erro ao verificar QRCode:', error);
+                                alert('Erro ao verificar QRCode. Por favor, tente novamente.');
                                 clearInterval(intervalId);
-                            } else {
-                                window.location.href = 'aplicacao.html';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Erro ao verificar QRCode:', error);
-                            alert('Erro ao verificar QRCode. Por favor, tente novamente.');
-                            clearInterval(intervalId);
-                        });
+                            });
+                    }
                 }
             }
         });
