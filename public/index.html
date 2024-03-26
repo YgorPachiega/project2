@@ -69,23 +69,11 @@
                 if (code) {
                     // Verificar se o ID já foi utilizado
                     const id = code.data;
-                    fetch(`https://qrepo.onrender.com/verificar?id=${id}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.error) {
-                                // Se o ID já existe, exiba uma mensagem de erro
-                                alert('ID já utilizado. Por favor, tente novamente.');
-                                clearInterval(intervalId); // Pare de ler o QRCode após exibir a mensagem de erro
-                            } else {
-                                // Se o ID não existe, redirecione para a página de cadastro
-                                window.location.href = `aplicacao.html?id=${id}`;
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Erro ao verificar ID:', error);
-                            alert('Erro ao verificar ID. Por favor, tente novamente.');
-                            clearInterval(intervalId); // Pare de ler o QRCode quando houver erro
-                        });
+                    if (!localStorage.getItem('id')) {
+                        // Define o ID no localStorage apenas se não estiver definido
+                        localStorage.setItem('id', id);
+                    }
+                    window.location.href = 'aplicacao.html'; // Redireciona para a página de aplicação
                 }
             }
         });
