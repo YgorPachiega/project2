@@ -3,41 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exportar para CSV</title>
+    <title>Menu</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px auto;
+            width: 200px;
+            display: inline-block;
+        }
+        .card h2 {
+            margin-top: 0;
+        }
+        .card button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <h1>Exportar para CSV</h1>
-    <button id="exportar-btn">Exportar para CSV</button>
+    <h1>Menu</h1>
+    <div class="options">
+        <div class="card">
+            <h2>Cadastrar</h2>
+            <button class="export-btn">Cadastrar</button>
+        </div>
+        <div class="card">
+            <h2>Descadastrar</h2>
+            <button class="export-btn">Descadastrar</button>
+        </div>
+        <div class="card">
+            <h2>Emitir Documento</h2>
+            <button class="export-btn">Exportar</button>
+        </div>
+    </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const exportarBtn = document.getElementById('exportar-btn');
+            const exportBtns = document.querySelectorAll('.export-btn');
 
-            exportarBtn.addEventListener('click', function() {
-                // Envie uma solicitação ao servidor para obter o arquivo CSV
-                fetch('https://qrepo.onrender.com/gerar-csv', {
-                    method: 'GET',
-                })
-                .then(response => response.blob())
-                .then(blob => {
-                    // Crie um URL temporário para o arquivo CSV
-                    const url = window.URL.createObjectURL(blob);
+            exportBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Envie uma solicitação ao servidor para obter o arquivo CSV
+                    fetch('https://qrepo.onrender.com/exportar-csv', {
+                        method: 'GET',
+                    })
+                    .then(response => response.blob())
+                    .then(blob => {
+                        // Crie um URL temporário para o arquivo CSV
+                        const url = window.URL.createObjectURL(blob);
 
-                    // Crie um link de download para o arquivo CSV
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'dados.csv';
+                        // Crie um link de download para o arquivo CSV
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'dados.csv';
 
-                    // Adicione o link ao documento e clique nele para iniciar o download
-                    document.body.appendChild(a);
-                    a.click();
+                        // Adicione o link ao documento e clique nele para iniciar o download
+                        document.body.appendChild(a);
+                        a.click();
 
-                    // Limpe o URL temporário
-                    window.URL.revokeObjectURL(url);
-                })
-                .catch(error => {
-                    console.error('Erro ao exportar para CSV:', error);
-                    alert('Erro ao exportar para CSV. Por favor, tente novamente.');
+                        // Limpe o URL temporário
+                        window.URL.revokeObjectURL(url);
+                    })
+                    .catch(error => {
+                        console.error('Erro ao exportar para CSV:', error);
+                        alert('Erro ao exportar para CSV. Por favor, tente novamente.');
+                    });
                 });
             });
         });
