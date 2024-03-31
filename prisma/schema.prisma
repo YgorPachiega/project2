@@ -14,16 +14,15 @@ datasource db {
 }
 
 model Clients {
-  id String @unique
-  nome String
-  cpf String
-  empresa String
+  id        String @unique
+  nome      String
+  cpf       String
+  empresa   String
   createdAt DateTime @default(now())
 }
 
 model Users {
-  id String @unique
-  nome String
-  usuario String
-  key String
+  id        Int      @id @default(autoincrement())
+  usuario  String   @unique
+  senha  String
 }

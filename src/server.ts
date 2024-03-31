@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import fastify from 'fastify';
 import { z } from 'zod';
 import { parse } from 'json2csv';
+const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 const app = fastify();
@@ -72,6 +73,42 @@ app.get('/verificar', async (request, reply) => {
         reply.status(400).send({ error: 'ID inválido' });
     }
 });
+
+
+interface Users {
+    id: number;
+    usuario: string;
+    senha: string;}
+
+// Rota para o login de usuários
+app.post('/login', (req, res) => {
+    const { usuario, senha } = req.body;
+
+    // Procura o usuário no "banco de dados"
+    Users.findOne<Users>({
+        where: {
+            usuario: usuario
+        }
+    }).then((user) => {
+        if (!user) {
+            return res.status(404).send('Usuário não encontrado');
+        }
+
+        // Compara a senha criptografada
+        bcrypt.compare(senha, user.senha, (err, result) => {
+            if (result) {
+                res.status(200).send('Login bem-sucedido');
+            } else {
+                res.status(401).send('Senha incorreta');
+            }
+        });
+    }).catch(err => {
+        console.error('Erro ao procurar usuário:', err);
+        res.status(500).send('Erro ao procurar usuário');
+    });
+});
+
+
 
 
 
