@@ -17,7 +17,7 @@ CREATE TABLE "Users" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "clients_id_key" ON "clients"("id");
+CREATE UNIQUE INDEX "Clients_id_key" ON "clients"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Users_usuario_key" ON "Users"("usuario");
