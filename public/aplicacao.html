@@ -36,6 +36,9 @@
     </form>
 
     <script>
+
+        const url = 'https://newprojetct.onrender.com'
+
         document.addEventListener("DOMContentLoaded", function() {
             // Recuperar o ID do QRCode da sessão de armazenamento
             const id = sessionStorage.getItem('id');
@@ -59,7 +62,7 @@
                 });
 
                 // Envie os dados para o servidor
-                fetch('https://qrepo.onrender.com/cadastrar', {
+                fetch(url + '/cadastrar', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
