@@ -1,11 +1,5 @@
--- CreateSchema
-CREATE SCHEMA IF NOT EXISTS "Clients";
-
--- CreateSchema
-CREATE SCHEMA IF NOT EXISTS "Users";
-
 -- CreateTable
-CREATE TABLE "Users"."Users" (
+CREATE TABLE "Users" (
     "id" SERIAL NOT NULL,
     "usuario" TEXT NOT NULL,
     "senha" TEXT NOT NULL,
@@ -14,7 +8,7 @@ CREATE TABLE "Users"."Users" (
 );
 
 -- CreateTable
-CREATE TABLE "Clients"."Clients" (
+CREATE TABLE "Clients" (
     "id" TEXT NOT NULL,
     "nome" TEXT NOT NULL,
     "cpf" TEXT NOT NULL,
@@ -23,7 +17,7 @@ CREATE TABLE "Clients"."Clients" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Users_usuario_key" ON "Users"."Users"("usuario");
+CREATE UNIQUE INDEX "Users_usuario_key" ON "Users"("usuario");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Clients_id_key" ON "Clients"."Clients"("id");
+CREATE UNIQUE INDEX "Clients_id_key" ON "Clients"("id");
