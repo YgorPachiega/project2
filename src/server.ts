@@ -80,6 +80,11 @@ const createUserSchema = z.object({
     senha: z.string(),
 });
 
+app.get('/cadastro_login', async () => {
+    const cadastro = await prisma.clients.findMany();
+    return { cadastro };
+});
+
 app.post('/cadastro_login', async (request, reply) => {
     try {
         const { usuario, senha } = createUserSchema.parse(request.body);

@@ -21,11 +21,12 @@
         document.getElementById('signup-form').addEventListener('submit', async function(event) {
             event.preventDefault();
 
-            const username = document.getElementById('username').value;
+            
             const password = document.getElementById('password').value;
+            const username = document.getElementById('username').value;
 
             try {
-                const response = await fetch('/cadastro_login', {
+                const response = await fetch(url + '/cadastro_login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
