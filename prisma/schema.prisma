@@ -25,5 +25,6 @@ model Clients {
   nome      String
   cpf       String
   empresa   String
+  solicitante String
   createdAt DateTime @default(now())
 }

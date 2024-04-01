@@ -13,6 +13,7 @@ CREATE TABLE "Clients" (
     "nome" TEXT NOT NULL,
     "cpf" TEXT NOT NULL,
     "empresa" TEXT NOT NULL,
+    "solicitante" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { parse } from 'json2csv';
 const bcrypt = require('bcryptjs');
 
+
 const prisma = new PrismaClient();
 const app = fastify();
 
@@ -81,7 +82,7 @@ const createUserSchema = z.object({
 });
 
 app.get('/cadastro_login', async () => {
-    const cadastro = await prisma.clients.findMany();
+    const cadastro = await prisma.users.findMany();
     return { cadastro };
 });
 
@@ -148,8 +149,6 @@ app.post('/login', async (request: any, reply: any) => {
         reply.status(500).send({ error: 'Erro ao fazer login' });
     }
 });
-
-
 
 
 app.listen({
