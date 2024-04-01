@@ -1,18 +1,19 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas = ["Users", "Clients"]
+  schemas  = ["Clients", "Users"]
 }
 
 model Users {
   id      Int    @id @default(autoincrement())
   usuario String @unique
   senha   String
+
   @@schema("Users")
 }
 
@@ -22,5 +23,6 @@ model Clients {
   cpf       String
   empresa   String
   createdAt DateTime @default(now())
+
   @@schema("Clients")
 }
