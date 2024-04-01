@@ -7,43 +7,47 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form id="login-form">
-            <div class="form-group">
-                <label for="username">Usuário:</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Senha:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Entrar</button>
-        </form>
-    </div>
+    <h2>Cadastro de Usuário</h2>
+    <form id="signup-form">
+        <input type="text" id="username" placeholder="Usuário" required>
+        <input type="password" id="password" placeholder="Senha" required>
+        <button type="submit">Cadastrar</button>
+    </form>
+    <div id="message" class="message"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.js"></script>
     <script>
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevent form submission
+        document.getElementById('signup-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
 
-            // Obter os valores do formulário
-            var usuario = document.getElementById('usuario').value;
-            var senha = document.getElementById('senha').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
-            // Criptografar a senha usando bcrypt
-            var salt = bcrypt.genSaltSync(10);
-            var hashedPassword = bcrypt.hashSync(password, salt);
+            try {
+                const response = await fetch('/cadastro_login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ usuario: username, senha: password })
+                });
 
-            // Limpar a senha do campo (opcional)
-            document.getElementById('senha').value = '';
+                const data = await response.json();
 
-            // Agora você pode enviar o nome de usuário e senha criptografada para o servidor
-            // Aqui você pode enviar a solicitação AJAX ou redirecionar para a página home.html
-
-            // Este é apenas um exemplo de redirecionamento
-            window.location.href = 'home.html';
+                if (response.ok) {
+                    showMessage(data.message, 'success');
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Erro ao cadastrar usuário', 'error');
+            }
         });
+
+        function showMessage(message, type) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = message;
+            messageElement.className = 'message ' + type;
+        }
     </script>
 </body>
 </html>
