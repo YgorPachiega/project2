@@ -43,13 +43,14 @@ app.post('/cadastrar', async (request, reply) => {
         id: z.string(),
         nome: z.string(),
         cpf: z.string(),
-        empresa: z.string()
+        empresa: z.string(),
+        solicitante: z.string()
     });
 
     try {
-        const { id, nome, cpf, empresa } = createClientSchema.parse(request.body);
+        const { id, nome, cpf, empresa, solicitante } = createClientSchema.parse(request.body);
         await prisma.clients.create({
-            data: { id, nome, cpf, empresa }
+            data: { id, nome, cpf, empresa, solicitante }
         });
         reply.status(201).send({ message: 'Dados cadastrados com sucesso' });
     } catch (error: any) {
