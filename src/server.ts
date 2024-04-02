@@ -15,11 +15,9 @@ app.register(clientsRoutes);
 // Registrar rotas de usuários
 app.register(usersRoutes);
 
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3333;
-app.listen(PORT, (err) => {
-    if (err) {
-        console.error('Erro ao iniciar o servidor:', err);
-        process.exit(1);
-    }
-    console.log(`Servidor rodando na porta ${PORT}`);
+app.listen({
+    host: '0.0.0.0',
+    port: process.env.PORT ? Number(process.env.PORT) : 3333
+}).then(() => {
+    console.log('Http server running');
 });
