@@ -48,6 +48,7 @@ export const fazerLogin = async (request: FastifyRequest, reply: FastifyReply) =
         if (!passwordMatch) {
             return reply.status(401).send({ error: 'Senha incorreta' });
         }
+
         return reply.status(200).send({ message: 'Login bem-sucedido' });
     } catch (error) {
         console.error('Erro ao fazer login:', error);

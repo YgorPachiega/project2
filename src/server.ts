@@ -1,6 +1,6 @@
 // src/server.ts
 import fastify from 'fastify';
-import { corsMiddleware } from './middleware/corsMiddleware';
+import { corsMiddleware } from './middleware/corsMiddleware';;
 import clientsRoutes from './routes/clientsRoutes';
 import usersRoutes from './routes/usersRoutes';
 
