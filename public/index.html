@@ -17,6 +17,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
     <script>
+        const url = 'https://newproject-0hev.onrender.com'
         document.addEventListener("DOMContentLoaded", function() {
             const openCameraBtn = document.getElementById('open-camera-btn');
             const videoContainer = document.getElementById('video-container');
@@ -76,7 +77,7 @@
                     const id = code.data;
 
                     // Verificar o QRCode no servidor antes de redirecionar
-                    fetch(`https://newprojetct.onrender.com/verificar?id=${id}`)
+                    fetch(url + '/verificar?id=${id}')
                         .then(response => response.json())
                         .then(data => {
                             if (data.message === 'ID disponível') {
