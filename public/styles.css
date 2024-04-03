@@ -16,6 +16,51 @@
     }
 }
 
+body {
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+return-home-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999; /* Para garantir que o botão esteja na parte superior */
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px auto;
+    width: 200px;
+    display: inline-block;
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+.card button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 #video-container {
     display: none;
 }
@@ -29,13 +74,6 @@
 
 .error-message {
     color: red;
-}
-
-body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0;
 }
 
 h1 {
@@ -63,14 +101,24 @@ label {
 
 input[type="text"],
 select {
-    width: calc(100% - 20px);
+    width: calc(100% - 24px); /* Largura menos o espaço de 12px em cada lado */
     padding: 12px;
+    margin-bottom: 12px; /* Adicione um espaçamento entre os campos */
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-family: 'Roboto', sans-serif;
 }
-
+input[type="password"],
+select {
+    width: calc(100% - 24px); /* Largura menos o espaço de 12px em cada lado */
+    padding: 12px;
+    margin-bottom: 12px; /* Adicione um espaçamento entre os campos */
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+}
 button {
     display: block;
     width: 100%; /* Ocupar toda a largura do formulário */

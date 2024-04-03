@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitura de QR Code</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Leitura de QR Code</h1>
+    <button id="open-camera-btn">Abrir Câmera</button>
+    <div id="video-container">
+        <video id="camera-feed" autoplay playsinline></video>
+        <p class="loading-message">Carregando...</p>
+        <p class="error-message" style="display: none;">Erro ao acessar a câmera.<br>Clique aqui para tentar novamente.</p>
+    </div>
+    <button id="return-home-btn">Voltar para Home</button> <!-- Botão de retorno -->
+    <script>
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+    <script>
+        const url = 'https://newproject-0hev.onrender.com'
+        document.addEventListener("DOMContentLoaded", function() {
+            const openCameraBtn = document.getElementById('open-camera-btn');
+            const returnHomeBtn = document.getElementById('return-home-btn'); // Referência ao botão de retorno
+            const videoContainer = document.getElementById('video-container');
+            const cameraFeed = document.getElementById('camera-feed');
+            const loadingMessage = document.querySelector('.loading-message');
+            const errorMessage = document.querySelector('.error-message');
+
+            let intervalId;
+
+            openCameraBtn.addEventListener('click', function() {
+                openCamera();
+            });
+
+            returnHomeBtn.addEventListener('click', function() { // Evento de clique para retornar para home
+                window.location.href = 'index.html';
+            });
+
+            errorMessage.addEventListener('click', function() {
+                errorMessage.style.display = 'none';
+                openCamera();
+            });
+
+            function openCamera() {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                        .then(function(stream) {
+                            videoContainer.style.display = 'block';
+                            loadingMessage.style.display = 'block';
+                            errorMessage.style.display = 'none';
+
+                            cameraFeed.srcObject = stream;
+                            cameraFeed.play();
+
+                            intervalId = setInterval(function() {
+                                captureQRCode();
+                            }, 1000);
+                        })
+                        .catch(function(error) {
+                            console.error('Erro ao acessar a câmera:', error);
+                            errorMessage.style.display = 'block';
+                            clearInterval(intervalId); // Pare de ler o QRCode quando houver erro
+                        })
+                        .finally(() => {
+                            loadingMessage.style.display = 'none';
+                        });
+                } else {
+                    alert('Seu dispositivo não suporta acesso à câmera.');
+                }
+            }
+
+            function captureQRCode() {
+                const canvasElement = document.createElement('canvas');
+                const canvas = canvasElement.getContext('2d');
+
+                canvasElement.width = cameraFeed.videoWidth;
+                canvasElement.height = cameraFeed.videoHeight;
+                canvas.drawImage(cameraFeed, 0, 0, cameraFeed.videoWidth, cameraFeed.videoHeight);
+                const imageData = canvas.getImageData(0, 0, cameraFeed.videoWidth, cameraFeed.videoHeight);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                if (code) {
+                    const id = code.data;
+
+                    // Verificar o QRCode no servidor antes de redirecionar
+                    fetch(url + '/verificar?id=${id}')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message === 'ID disponível') {
+                                // Salva o ID no sessionStorage e redireciona
+                                sessionStorage.setItem('id', id);
+                                window.location.href = 'aplicacao.html';
+                            } else {
+                                alert('QRCode inválido');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro ao verificar o QRCode:', error);
+                        });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
