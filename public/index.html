@@ -14,7 +14,12 @@
         <p class="loading-message">Carregando...</p>
         <p class="error-message" style="display: none;">Erro ao acessar a câmera.<br>Clique aqui para tentar novamente.</p>
     </div>
-
+    <script>
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
     <script>
         const url = 'https://newproject-0hev.onrender.com'

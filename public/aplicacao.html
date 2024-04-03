@@ -10,6 +10,13 @@
     <title>Cadastro de Funcionários</title>
 </head>
 <body>
+    <script>
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    
     <h1>Cadastro de Funcionários</h1>
     <form id="cadastroForm" action="#" method="POST" aria-label="Formulário de Cadastro">
         <div class="form-group">

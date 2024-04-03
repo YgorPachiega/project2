@@ -17,8 +17,10 @@
 
     <script>
 
-        const url = 'https://newproject-0hev.onrender.com'
-        document.getElementById('login-form').addEventListener('submit', async function(event) {
+        const url = 'https://newproject-0hev.onrender.com';
+        const loginForm = document.getElementById('login-form');
+
+        loginForm.addEventListener('submit', async function(event) {
             event.preventDefault();
 
             const username = document.getElementById('username').value;
@@ -36,6 +38,9 @@
                 const data = await response.json();
 
                 if (response.ok) {
+                    const token = data.token; // Recebe o token JWT do servidor
+                    sessionStorage.setItem('token', token); // Armazena o token no localStorage
+
                     showMessage(data.message, 'success');
                     // Redirecionar para a página de dashboard, por exemplo
                     window.location.href = 'home.html';
