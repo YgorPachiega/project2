@@ -52,9 +52,19 @@ export const fazerLogin = async (request: FastifyRequest, reply: FastifyReply) =
         
         const token = gerarToken(usuario);
         return reply.status(200).send({ message: 'Login bem-sucedido', token });
-    } catch (error) {
+    } catch (error:any) {
         console.error('Erro ao fazer login:', error);
         reply.status(500).send({ error: 'Erro ao fazer login' });
     }
 };
 
+export const puxar = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+        const dados = await prisma.users.findMany(); // Ajuste aqui para 'user' caso a tabela se chame 'Users'
+
+        reply.status(200).send({ dados });
+    } catch (error) {
+        console.error('Erro ao obter todos os dados:', error);
+        reply.status(500).send({ error: 'Erro ao obter todos os dados' });
+    }
+};
