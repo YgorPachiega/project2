@@ -1,4 +1,4 @@
-// src/models/clientModel.ts
+// No arquivo clientModel.ts
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -20,7 +20,7 @@ export const clientModel = {
         return prisma.clients.findUnique({ where: { id } });
     },
 
-    async create(clientData: Omit<Client, 'id'>): Promise<Client> {
+    async create(clientData: Omit<Client, 'id'> & { solicitante: string }): Promise<Client> {
         const id = Math.random().toString(36).substring(7); // Gerar um ID único
         return prisma.clients.create({ data: { ...clientData, id } });
     },

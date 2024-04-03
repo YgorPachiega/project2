@@ -12,6 +12,24 @@ interface Client {
     solicitante: string;
 }
 
+export const verificarID = async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    const { id } = request.params; // Obtém o ID do parâmetro da solicitação
+    try {
+        // Verifica se o ID está presente no banco de dados
+        const cliente = await prisma.clients.findUnique({ where: { id } });
+        if (cliente) {
+            // Se o cliente for encontrado, responde com mensagem de ID disponível
+            reply.send({ message: 'ID disponível' });
+        } else {
+            // Se o cliente não for encontrado, responde com mensagem de ID inválido
+            reply.send({ message: 'ID inválido' });
+        }
+    } catch (error: any) {
+        // Em caso de erro, responde com erro interno do servidor
+        reply.status(500).send({ error: 'Erro ao verificar o ID' });
+    }
+};
+
 export const getCadastro = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const cadastro: Client[] = await prisma.clients.findMany();
@@ -20,6 +38,8 @@ export const getCadastro = async (request: FastifyRequest, reply: FastifyReply) 
         reply.status(500).send({ error: 'Erro ao buscar o cadastro de clientes' });
     }
 };
+
+
 
 export const cadastrarCliente = async (request: FastifyRequest, reply: FastifyReply) => {
     const { id, nome, cpf, empresa, solicitante }: Client = request.body as Client;

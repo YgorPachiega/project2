@@ -88,7 +88,7 @@
                     const id = code.data;
 
                     // Verificar o QRCode no servidor antes de redirecionar
-                    fetch(url + '/verificar?id=${id}')
+                    fetch(`${url}/verificar?id=${id}`)
                         .then(response => response.json())
                         .then(data => {
                             if (data.message === 'ID disponível') {
