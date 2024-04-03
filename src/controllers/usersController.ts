@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { FastifyRequest, FastifyReply } from 'fastify';
 const bcrypt = require('bcryptjs');
+import { gerarToken, verificarToken } from '../utils/jwtUtils';
 
 const prisma = new PrismaClient();
 
@@ -48,8 +49,9 @@ export const fazerLogin = async (request: FastifyRequest, reply: FastifyReply) =
         if (!passwordMatch) {
             return reply.status(401).send({ error: 'Senha incorreta' });
         }
-
-        return reply.status(200).send({ message: 'Login bem-sucedido' });
+        
+        const token = gerarToken(usuario);
+        return reply.status(200).send({ message: 'Login bem-sucedido', token });
     } catch (error) {
         console.error('Erro ao fazer login:', error);
         reply.status(500).send({ error: 'Erro ao fazer login' });
