@@ -58,7 +58,7 @@ export const fazerLogin = async (request: FastifyRequest, reply: FastifyReply) =
     }
 };
 
-export const puxar = async (request: FastifyRequest, reply: FastifyReply) => {
+/*export const puxar = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const dados = await prisma.users.findMany(); // Ajuste aqui para 'user' caso a tabela se chame 'Users'
 
@@ -67,4 +67,4 @@ export const puxar = async (request: FastifyRequest, reply: FastifyReply) => {
         console.error('Erro ao obter todos os dados:', error);
         reply.status(500).send({ error: 'Erro ao obter todos os dados' });
     }
-};
+};*/

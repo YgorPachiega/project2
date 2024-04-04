@@ -47,7 +47,9 @@
         document.addEventListener("DOMContentLoaded", function() {
             // Recuperar o ID do QRCode da sessão de armazenamento
             const id = sessionStorage.getItem('id');
+            const solicitante = sessionStorage.getItem('solicitante');
             document.getElementById('id').value = id;
+            documento.getElementById('solicitante').value = solicitante;
 
             document.getElementById('cadastroForm').addEventListener('submit', function(event) {
                 event.preventDefault(); // Impede o envio padrão do formulário
