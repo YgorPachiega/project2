@@ -12,24 +12,6 @@ interface Client {
     solicitante: string;
 }
 
-export const verificarID = async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id } = request.query as { id: string };
-
-    if (typeof id === 'string') { // Verifica se id é uma string
-        const existingClient = await prisma.clients.findUnique({
-            where: { id: String(id) }, // Garante que o id seja uma string
-        });
-
-        if (existingClient) {
-            reply.status(400).send({ error: 'ID já utilizado' });
-        } else {
-            reply.status(200).send({ message: 'ID disponível' });
-        }
-    } else {
-        reply.status(400).send({ error: 'ID inválido' });
-    }
-};  
-
 export const getCadastro = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const cadastro: Client[] = await prisma.clients.findMany();
