@@ -40,7 +40,7 @@
                 if (response.ok) {
                     const token = data.token; // Recebe o token JWT do servidor
                     localStorage.setItem('token', token); // Armazena o token no localStorage
-                    localStorage.setItem('solicitante', username);
+                    sessionStorage.setItem('solicitante', username);
 
                     showMessage(data.message, 'success');
                     // Redirecionar para a página de dashboard, por exemplo
