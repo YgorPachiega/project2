@@ -16,6 +16,15 @@
     </div>
     <button id="return-home-btn">Voltar para Home</button> <!-- Botão de retorno -->
 
+    <script>
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+    </script>
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
     <script>
         const url = 'https://newproject-0hev.onrender.com'
