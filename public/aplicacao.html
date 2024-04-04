@@ -33,6 +33,7 @@
             </select>
         </div>
         <input type="hidden" id="id" name="id" value=""> <!-- Campo oculto para o ID do QRCode -->
+        <input type="hidden" solicitante="solicitante" name="solicitante" value="">
         <button type="submit" aria-label="Salvar Funcionário">
             <span>Salvar</span>
             <span class="loading">Carregando...</span>
@@ -80,7 +81,7 @@
                     if (response.ok) {
                         alert('Funcionário cadastrado com sucesso!');
                         // Redirecione para outra página após o cadastro, se necessário
-                        window.location.href = 'cadastro.html';
+                        window.location.href = 'index.html';
                     } else {
                         throw new Error('Erro ao cadastrar funcionário.');
                     }
