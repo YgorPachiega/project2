@@ -29,7 +29,3 @@ export const authMiddleware = async (request: AuthenticatedRequest, reply: Fasti
     }
 };
 
-// Função para criar um novo cliente usando o usuário autenticado como solicitante
-export const createClientWithAuth = async (clientData: Omit<Client, 'id'>, usuario: string): Promise<Client> => {
-    return clientModel.create({ ...clientData, solicitante: usuario });
-};
