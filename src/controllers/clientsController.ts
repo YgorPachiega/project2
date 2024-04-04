@@ -12,23 +12,23 @@ interface Client {
     solicitante: string;
 }
 
-export const verificarID = async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
-    const { id } = request.params; // Obtém o ID do parâmetro da solicitação
-    try {
-        // Verifica se o ID está presente no banco de dados
-        const cliente = await prisma.clients.findUnique({ where: { id } });
-        if (cliente) {
-            // Se o cliente for encontrado, responde com mensagem de ID disponível
-            reply.send({ message: 'ID disponível' });
+export const verificarID = async (request: FastifyRequest, reply: FastifyReply) => {
+    const { id } = request.query as { id: string };
+
+    if (typeof id === 'string') { // Verifica se id é uma string
+        const existingClient = await prisma.clients.findUnique({
+            where: { id: String(id) }, // Garante que o id seja uma string
+        });
+
+        if (existingClient) {
+            reply.status(400).send({ error: 'ID já utilizado' });
         } else {
-            // Se o cliente não for encontrado, responde com mensagem de ID inválido
-            reply.send({ message: 'ID inválido' });
+            reply.status(200).send({ message: 'ID disponível' });
         }
-    } catch (error: any) {
-        // Em caso de erro, responde com erro interno do servidor
-        reply.status(500).send({ error: 'Erro ao verificar o ID' });
+    } else {
+        reply.status(400).send({ error: 'ID inválido' });
     }
-};
+};  
 
 export const getCadastro = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
