@@ -49,6 +49,8 @@
             // Recuperar o ID do QRCode da sessão de armazenamento
             const id = sessionStorage.getItem('id');
             const solicitante = sessionStorage.getItem('solicitante');
+            console.log("ID:", id);
+            console.log("Solicitante:", solicitante);
             document.getElementById('id').value = id;
             document.getElementById('solicitante').value = solicitante;
 
