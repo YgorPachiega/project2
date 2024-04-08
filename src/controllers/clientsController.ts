@@ -50,6 +50,7 @@ export const verificarCliente = async (request: FastifyRequest, reply: FastifyRe
                 reply.status(200).send({ message: 'ID disponível' });
             }
         } catch (error: any) {
+            console.error('Erro ao verificar o cliente:', error);
             reply.status(500).send({ error: 'Erro ao verificar o cliente' });
         }
     } else {
