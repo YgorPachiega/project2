@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Funcionário</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Detalhes do Funcionário</h1>
+
+    <div id="employee-details">
+        <!-- Os detalhes do funcionário serão preenchidos aqui -->
+    </div>
+
+    <form id="dateForm" action="#" method="POST" aria-label="Formulário de Cadastro">
+        <div class="form-group">
+            <label for="additionalInfo">Informação Adicional (Opcional):</label>
+            <input type="text" id="additionalInfo" name="additionalInfo">
+        </div>
+        <button type="submit" aria-label="Salvar Data e Hora">
+            <span>Salvar Data e Hora</span>
+            <span class="loading">Carregando...</span>
+        </button>
+    </form>
+
+    <button id="return-home-btn">Voltar para Home</button> <!-- Botão de retorno -->
+
+    <script>
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            window.location.href = '../login/login.html';
+        }
+
+        const url = 'https://newproject-0hev.onrender.com';
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const id = sessionStorage.getItem('id');
+            const solicitante = sessionStorage.getItem('solicitante');
+
+            // Recupera os dados do funcionário com o ID fornecido
+            fetch(`${url}/funcionario/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    const { id, ...employeeData } = data; // Exclui o ID dos dados do funcionário
+                    const employeeDetails = document.getElementById('employee-details');
+                    employeeDetails.innerHTML = `
+                        <p><strong>Nome:</strong> <span id="nome">${employeeData.nome}</span></p>
+                        <p><strong>CPF:</strong> <span id="cpf">${employeeData.cpf}</span></p>
+                        <p><strong>Empresa:</strong> <span id="empresa">${employeeData.empresa}</span></p>
+                    `;
+
+                    // Preenche o campo de informações adicionais, se disponível
+                    const additionalInfoField = document.getElementById('additionalInfo');
+                    if (employeeData.informacaoAdicional) {
+                        additionalInfoField.value = employeeData.informacaoAdicional;
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao recuperar os detalhes do funcionário:', error);
+                    alert('Erro ao recuperar os detalhes do funcionário. Por favor, tente novamente.');
+                });
+
+            document.getElementById('dateForm').addEventListener('submit', function(event) {
+                event.preventDefault(); // Impede o envio padrão do formulário
+
+                const additionalInfo = document.getElementById('additionalInfo').value;
+
+                // Obtém a data e hora atual
+                const currentDate = new Date().toISOString();
+
+                // Cria um objeto com os dados a serem enviados para o servidor
+                const dataToSend = {
+                    id: id,
+                    dataHora: currentDate,
+                    informacaoAdicional: additionalInfo
+                };
+
+                // Envia os dados para o servidor
+                fetch(`${url}/registrar-data`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSend)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Data e hora registradas com sucesso!');
+                    } else {
+                        throw new Error('Erro ao registrar data e hora.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao registrar data e hora:', error);
+                    alert('Erro ao registrar data e hora. Por favor, tente novamente.');
+                });
+            });
+
+            const returnHomeBtn = document.getElementById('return-home-btn');
+            returnHomeBtn.addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>

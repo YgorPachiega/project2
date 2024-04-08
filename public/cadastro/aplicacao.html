@@ -10,7 +10,7 @@
     <script>
         const token = sessionStorage.getItem('token');
         if (!token) {
-            window.location.href = 'login.html';
+            window.location.href = '../login/login.html';
         }
     </script>
 
@@ -91,7 +91,7 @@
                     if (response.ok) {
                         alert('Funcionário cadastrado com sucesso!');
                         // Redirecione para outra página após o cadastro, se necessário
-                        window.location.href = 'index.html';
+                        window.location.href = '../index.html';
                     } else {
                         throw new Error('Erro ao cadastrar funcionário.');
                     }

@@ -28,4 +28,3 @@ export const authMiddleware = async (request: AuthenticatedRequest, reply: Fasti
         return reply.redirect('/login');
     }
 };
-

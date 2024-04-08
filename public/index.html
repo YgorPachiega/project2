@@ -26,15 +26,15 @@
     <script>
         const token = sessionStorage.getItem('token');
         if (!token) {
-            window.location.href = 'login.html';
+            window.location.href = '/login/login.html';
         }
     </script>
-    
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const cadastrarBtn = document.getElementById('cadastrarBtn');
             cadastrarBtn.addEventListener('click', function() {
-                window.location.href = 'cadastrar.html';
+                window.location.href = '/cadastro/cadastrar.html';
             });
         });
     </script>

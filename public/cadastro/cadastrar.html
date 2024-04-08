@@ -19,7 +19,7 @@
     <script>
         const token = sessionStorage.getItem('token');
         if (!token) {
-            window.location.href = 'login.html';
+            window.location.href = '../login/login.html';
         }
     </script>
 
@@ -43,7 +43,7 @@
             });
 
             returnHomeBtn.addEventListener('click', function() { // Evento de clique para retornar para home
-                window.location.href = 'index.html';
+                window.location.href = '../index.html';
             });
 
             errorMessage.addEventListener('click', function() {
