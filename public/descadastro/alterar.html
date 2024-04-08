@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Funcionário</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
     <h1>Detalhes do Funcionário</h1>
@@ -36,10 +36,9 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             const id = sessionStorage.getItem('id');
-            const solicitante = sessionStorage.getItem('solicitante');
 
             // Recupera os dados do funcionário com o ID fornecido
-            fetch(`${url}/funcionario/${id}`)
+            fetch(`${url}/verificar/${id}`)
                 .then(response => response.json())
                 .then(data => {
                     const { id, ...employeeData } = data; // Exclui o ID dos dados do funcionário
@@ -71,7 +70,6 @@
 
                 // Cria um objeto com os dados a serem enviados para o servidor
                 const dataToSend = {
-                    id: id,
                     dataHora: currentDate,
                     informacaoAdicional: additionalInfo
                 };
