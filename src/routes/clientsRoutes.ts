@@ -4,7 +4,8 @@ import { authMiddleware } from '../middleware/authMiddleware';
 
 export default async function clientsRoutes(fastify: FastifyInstance) {
     fastify.get('/cadastro', getCadastro);
-    fastify.post('/cadastrar', cadastrarCliente);
     fastify.get('/verificar', verificarCliente);
+    fastify.post('/cadastrar', cadastrarCliente);
+
  }
 
