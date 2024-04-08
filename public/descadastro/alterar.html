@@ -38,7 +38,7 @@
             const id = sessionStorage.getItem('id');
 
             // Recupera os dados do funcionário com o ID fornecido
-            fetch(`${url}/verificar/${id}`)
+            fetch(`${url}/verificar?id=${id}`)
                 .then(response => response.json())
                 .then(data => {
                     const { id, ...employeeData } = data; // Exclui o ID dos dados do funcionário
