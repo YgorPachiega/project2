@@ -15,11 +15,11 @@
         </div>
         <div class="card">
             <h2>Descadastrar</h2>
-            <button class="Descadastrar">Descadastrar</button>
+            <button id="descadastrarBtn">Descadastrar</button>
         </div>
         <div class="card">
             <h2>Emitir Documento</h2>
-            <button class="export-btn">Exportar</button>
+            <button class="exportBtn">Exportar</button>
         </div>
     </div>
 
@@ -34,29 +34,19 @@
         document.addEventListener("DOMContentLoaded", function() {
             const cadastrarBtn = document.getElementById('cadastrarBtn');
             cadastrarBtn.addEventListener('click', function() {
-                window.location.href = '/cadastro/cadastrar.html';
+                window.location.href = 'cadastro/cadastrar.html';
             });
-        });
-    </script>
 
-    <script>
-                document.addEventListener("DOMContentLoaded", function() {
-            const cadastrarBtn = document.getElementById('Descadastrar');
-            cadastrarBtn.addEventListener('click', function() {
-                window.location.href = '/descadastro/capture.html';
+            const descadastrarBtn = document.getElementById('descadastrarBtn');
+            descadastrarBtn.addEventListener('click', function() {
+                window.location.href = 'descadastro/capture.html';
             });
-        });
-    </script>
-    <script>
-        const url = 'https://newproject-0hev.onrender.com'
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const exportBtns = document.querySelectorAll('.export-btn');
-
+            const exportBtns = document.querySelectorAll('.exportBtn');
             exportBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     // Envie uma solicitação ao servidor para obter o arquivo CSV
-                    fetch(url + '/exportar-csv', {
+                    fetch('https://newproject-0hev.onrender.com/exportar-csv', {
                         method: 'GET',
                     })
                     .then(response => response.blob())

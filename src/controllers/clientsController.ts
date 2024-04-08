@@ -35,4 +35,26 @@ export const cadastrarCliente = async (request: FastifyRequest, reply: FastifyRe
     }
 };
 
+export const verificarCliente = async (request: FastifyRequest, reply: FastifyReply) => {
+    const { id } = request.query as { id: string };
+
+    if (typeof id === 'string') {
+        try {
+            const existingClient = await prisma.clients.findUnique({
+                where: { id: String(id) },
+            });
+
+            if (existingClient) {
+                reply.status(400).send({ error: 'ID já utilizado' });
+            } else {
+                reply.status(200).send({ message: 'ID disponível' });
+            }
+        } catch (error: any) {
+            reply.status(500).send({ error: 'Erro ao verificar o cliente' });
+        }
+    } else {
+        reply.status(400).send({ error: 'ID inválido' });
+    }
+};
+
 // Outros métodos relacionados a clientes, se necessário
