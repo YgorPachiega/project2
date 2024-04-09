@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Funcionário</title>
     <link rel="stylesheet" href="../styles.css">
+    <style>
+        /* Esconde o campo de Última Atualização */
+        #updatedAt {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <h1>Detalhes do Funcionário</h1>
@@ -18,6 +24,8 @@
             <label for="additionalInfo">Observação (Opcional):</label>
             <input type="text" id="additionalInfo" name="additionalInfo">
         </div>
+        <!-- Campo de Última Atualização invisível -->
+        <input type="hidden" id="updatedAt" name="updatedAt">
         <button type="submit" aria-label="Salvar Observação">
             <span>Salvar Observação</span>
             <span class="loading">Carregando...</span>
@@ -47,12 +55,17 @@
                         <p><strong>CPF:</strong> <span id="cpf">${employeeData.cpf}</span></p>
                         <p><strong>Empresa:</strong> <span id="empresa">${employeeData.empresa}</span></p>
                         <p><strong>Observação:</strong> <span id="observacao">${employeeData.observacao}</span></p>
-                        <p><strong>Última Atualização:</strong> <span id="updatedAt">${employeeData.updatedAt}</span></p>
+                        <!-- Campo de Última Atualização invisível -->
+                        <span id="updatedAt" style="display: none;">${employeeData.updatedAt}</span>
                     `;
 
                     // Preenche o campo de observação, se disponível
                     const additionalInfoField = document.getElementById('additionalInfo');
                     additionalInfoField.value = employeeData.observacao || '';
+
+                    // Preenche o campo de última atualização invisível
+                    const updatedAtField = document.getElementById('updatedAt');
+                    updatedAtField.innerText = employeeData.updatedAt || '';
                 })
                 .catch(error => {
                     console.error('Erro ao recuperar os detalhes do funcionário:', error);
@@ -67,6 +80,9 @@
                 // Obtém a data e hora atual
                 const currentDate = new Date().toISOString();
 
+                // Preenche o campo de última atualização invisível com a data e hora atual
+                document.getElementById('updatedAt').innerText = currentDate;
+
                 // Cria um objeto com os dados a serem enviados para o servidor
                 const dataToSend = {
                     observacao: additionalInfo,
@@ -74,7 +90,7 @@
                 };
 
                 // Envia os dados para o servidor
-                fetch(`${url}/registrar-observacao?id=${id}`, {
+                fetch(`${url}/alterarFunc?id=${id}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
