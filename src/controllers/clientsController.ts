@@ -58,4 +58,59 @@ export const verificarCliente = async (request: FastifyRequest, reply: FastifyRe
     }
 };
 
+export const verificarFuncionario = async (request: FastifyRequest, reply: FastifyReply) => {
+    const { id } = request.query as { id: string };
+
+    if (typeof id === 'string') {
+        try {
+            const existingClient = await prisma.clients.findUnique({
+                where: { id: String(id) },
+            });
+
+            if (existingClient) {
+                reply.status(200).send(existingClient); // Retorna os detalhes do funcionário encontrado
+            } else {
+                reply.status(404).send({ error: 'Funcionário não encontrado' });
+            }
+        } catch (error: any) {
+            console.error('Erro ao verificar o funcionário:', error);
+            reply.status(500).send({ error: 'Erro ao verificar o funcionário' });
+        }
+    } else {
+        reply.status(400).send({ error: 'ID inválido' });
+    }
+};
+
+export const registrarObservacao = async (request: FastifyRequest, reply: FastifyReply) => {
+    const { id } = request.query as { id: string };
+    const { observacao, updatedAt } = request.body as { observacao: string, updatedAt: string };
+
+    try {
+        // Verificar se o funcionário existe
+        const funcionario = await prisma.clients.findUnique({
+            where: { id: String(id) }
+        });
+
+        if (!funcionario) {
+            reply.status(404).send({ error: 'Funcionário não encontrado' });
+            return;
+        }
+
+        // Atualizar a observação e a data de atualização do funcionário no banco de dados
+        await prisma.clients.update({
+            where: { id: String(id) },
+            data: {
+                observacao,
+                updatedAt: new Date(updatedAt)
+            }
+        });
+
+        // Responder com uma mensagem de sucesso
+        reply.status(200).send({ message: 'Observação registrada com sucesso!' });
+    } catch (error: any) {
+        console.error('Erro ao registrar observação:', error);
+        reply.status(500).send({ error: 'Erro ao registrar observação' });
+    }
+};
+
 // Outros métodos relacionados a clientes, se necessário

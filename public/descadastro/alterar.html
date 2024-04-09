@@ -15,11 +15,11 @@
 
     <form id="dateForm" action="#" method="POST" aria-label="Formulário de Cadastro">
         <div class="form-group">
-            <label for="additionalInfo">Informação Adicional (Opcional):</label>
+            <label for="additionalInfo">Observação (Opcional):</label>
             <input type="text" id="additionalInfo" name="additionalInfo">
         </div>
-        <button type="submit" aria-label="Salvar Data e Hora">
-            <span>Salvar Data e Hora</span>
+        <button type="submit" aria-label="Salvar Observação">
+            <span>Salvar Observação</span>
             <span class="loading">Carregando...</span>
         </button>
     </form>
@@ -38,22 +38,21 @@
             const id = sessionStorage.getItem('id');
 
             // Recupera os dados do funcionário com o ID fornecido
-            fetch(`${url}/verificar?id=${id}`)
+            fetch(`${url}/verificarFunc?id=${id}`)
                 .then(response => response.json())
-                .then(data => {
-                    const { id, ...employeeData } = data; // Exclui o ID dos dados do funcionário
+                .then(employeeData => {
                     const employeeDetails = document.getElementById('employee-details');
                     employeeDetails.innerHTML = `
                         <p><strong>Nome:</strong> <span id="nome">${employeeData.nome}</span></p>
                         <p><strong>CPF:</strong> <span id="cpf">${employeeData.cpf}</span></p>
                         <p><strong>Empresa:</strong> <span id="empresa">${employeeData.empresa}</span></p>
+                        <p><strong>Observação:</strong> <span id="observacao">${employeeData.observacao}</span></p>
+                        <p><strong>Última Atualização:</strong> <span id="updatedAt">${employeeData.updatedAt}</span></p>
                     `;
 
-                    // Preenche o campo de informações adicionais, se disponível
+                    // Preenche o campo de observação, se disponível
                     const additionalInfoField = document.getElementById('additionalInfo');
-                    if (employeeData.informacaoAdicional) {
-                        additionalInfoField.value = employeeData.informacaoAdicional;
-                    }
+                    additionalInfoField.value = employeeData.observacao || '';
                 })
                 .catch(error => {
                     console.error('Erro ao recuperar os detalhes do funcionário:', error);
@@ -70,12 +69,12 @@
 
                 // Cria um objeto com os dados a serem enviados para o servidor
                 const dataToSend = {
-                    dataHora: currentDate,
-                    informacaoAdicional: additionalInfo
+                    observacao: additionalInfo,
+                    updatedAt: currentDate
                 };
 
                 // Envia os dados para o servidor
-                fetch(`${url}/registrar-data`, {
+                fetch(`${url}/registrar-observacao?id=${id}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -84,20 +83,20 @@
                 })
                 .then(response => {
                     if (response.ok) {
-                        alert('Data e hora registradas com sucesso!');
+                        alert('Observação registrada com sucesso!');
                     } else {
-                        throw new Error('Erro ao registrar data e hora.');
+                        throw new Error('Erro ao registrar observação.');
                     }
                 })
                 .catch(error => {
-                    console.error('Erro ao registrar data e hora:', error);
-                    alert('Erro ao registrar data e hora. Por favor, tente novamente.');
+                    console.error('Erro ao registrar observação:', error);
+                    alert('Erro ao registrar observação. Por favor, tente novamente.');
                 });
             });
 
             const returnHomeBtn = document.getElementById('return-home-btn');
             returnHomeBtn.addEventListener('click', function() {
-                window.location.href = 'index.html';
+                window.location.href = '../index.html';
             });
         });
     </script>
