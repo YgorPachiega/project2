@@ -36,27 +36,38 @@ export const cadastrarCliente = async (request: FastifyRequest, reply: FastifyRe
 };
 
 export const verificarCliente = async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id } = request.query as { id: string };
-
-    if (typeof id === 'string') {
-        try {
-            const existingClient = await prisma.clients.findUnique({
-                where: { id: String(id) },
-            });
-
-            if (existingClient) {
-                reply.status(400).send({ error: 'ID já utilizado' });
-            } else {
-                reply.status(200).send({ message: 'ID disponível' });
-            }
-        } catch (error: any) {
-            console.error('Erro ao verificar o cliente:', error);
-            reply.status(500).send({ error: 'Erro ao verificar o cliente' });
-        }
-    } else {
-        reply.status(400).send({ error: 'ID inválido' });
+    const { id } = request.query as { id?: string };
+  
+    if (!id) {
+      return reply
+        .status(400)
+        .type('application/json')
+        .send({ message: 'ID inválido' });
     }
-};
+  
+    try {
+      const cliente = await prisma.clients.findUnique({ where: { id } });
+  
+      if (cliente) {
+        return reply
+          .status(200)
+          .type('application/json')
+          .send({ message: 'ID já utilizado' });
+      }
+  
+      return reply
+        .status(200)
+        .type('application/json')
+        .send({ message: 'ID disponível' });
+    } catch (error: any) {
+      console.error('Erro ao verificar cliente:', error);
+      return reply
+        .status(500)
+        .type('application/json')
+        .send({ message: 'Erro ao verificar cliente' });
+    }
+  };
+  
 
 export const verificarFuncionario = async (request: FastifyRequest, reply: FastifyReply) => {
     const { id } = request.query as { id: string };
