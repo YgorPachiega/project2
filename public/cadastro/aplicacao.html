@@ -14,7 +14,7 @@
         }
     </script>
 
-    <button id="return-home-btn">Voltar para Home</button> <!-- Botão de retorno -->
+    <button id="return-home-btn">Voltar para Home</button>
     <h1>Cadastro de Funcionários</h1>
     <form id="cadastroForm" action="#" method="POST" aria-label="Formulário de Cadastro">
         <div class="form-group">
@@ -37,24 +37,21 @@
         <input type="hidden" id="solicitante" name="solicitante" value="">        
         <button type="submit" aria-label="Salvar Funcionário">
             <span>Salvar</span>
-            <span class="loading">Carregando...</span>
+            <span class="loading" style="display: none;">Carregando...</span>
         </button>
     </form>
 
     <script>
-        // Correção do evento de clique do botão de retorno
         const returnHomeBtn = document.getElementById('return-home-btn');
-        returnHomeBtn.addEventListener('click', function() { // Evento de clique para retornar para home
+        returnHomeBtn.addEventListener('click', function() {
             window.location.href = '../index.html';
-        }); // Correção: fechar a tag de script corretamente
+        });
     </script>
     
     <script>
-
-        const url = 'https://app-jy7p.onrender.com'
+        const url = 'https://app-jy7p.onrender.com';
         
         document.addEventListener("DOMContentLoaded", function() {
-            // Recuperar o ID do QRCode da sessão de armazenamento
             const id = sessionStorage.getItem('id');
             const solicitante = sessionStorage.getItem('solicitante');
             console.log("ID:", id);
@@ -63,23 +60,18 @@
             document.getElementById('solicitante').value = solicitante;
 
             document.getElementById('cadastroForm').addEventListener('submit', function(event) {
-                event.preventDefault(); // Impede o envio padrão do formulário
+                event.preventDefault();
 
-                // Desabilita o botão de envio e mostra indicador de carregamento
                 const submitButton = document.querySelector('#cadastroForm button[type="submit"]');
                 submitButton.disabled = true;
                 submitButton.querySelector('.loading').style.display = 'inline';
 
-                // Obtenha os dados do formulário
                 const formData = new FormData(this);
-
-                // Converta os dados do formulário para um objeto JSON
                 const jsonData = {};
                 formData.forEach((value, key) => {
                     jsonData[key] = value;
                 });
 
-                // Envie os dados para o servidor
                 fetch(url + '/cadastrar', {
                     method: 'POST',
                     headers: {
@@ -90,7 +82,6 @@
                 .then(response => {
                     if (response.ok) {
                         alert('Funcionário cadastrado com sucesso!');
-                        // Redirecione para outra página após o cadastro, se necessário
                         window.location.href = '../index.html';
                     } else {
                         throw new Error('Erro ao cadastrar funcionário.');
@@ -101,7 +92,6 @@
                     alert('Erro ao cadastrar funcionário. Por favor, tente novamente.');
                 })
                 .finally(() => {
-                    // Habilita o botão de envio e oculta indicador de carregamento após o envio
                     submitButton.disabled = false;
                     submitButton.querySelector('.loading').style.display = 'none';
                 });

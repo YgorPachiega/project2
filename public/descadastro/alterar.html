@@ -6,7 +6,6 @@
     <title>Detalhes do Funcionário</title>
     <link rel="stylesheet" href="../styles.css">
     <style>
-        /* Esconde o campo de Última Atualização */
         #updatedAt {
             display: none;
         }
@@ -15,24 +14,21 @@
 <body>
     <h1>Detalhes do Funcionário</h1>
 
-    <div id="employee-details">
-        <!-- Os detalhes do funcionário serão preenchidos aqui -->
-    </div>
+    <div id="employee-details"></div>
 
     <form id="dateForm" action="#" method="POST" aria-label="Formulário de Cadastro">
         <div class="form-group">
             <label for="additionalInfo">Observação (Opcional):</label>
             <input type="text" id="additionalInfo" name="additionalInfo">
         </div>
-        <!-- Campo de Última Atualização invisível -->
         <input type="hidden" id="updatedAt" name="updatedAt">
         <button type="submit" aria-label="Salvar Observação">
             <span>Salvar Observação</span>
-            <span class="loading">Carregando...</span>
+            <span class="loading" style="display: none;">Carregando...</span>
         </button>
     </form>
 
-    <button id="return-home-btn">Voltar para Home</button> <!-- Botão de retorno -->
+    <button id="return-home-btn">Voltar para Home</button>
 
     <script>
         const token = sessionStorage.getItem('token');
@@ -45,7 +41,6 @@
         document.addEventListener("DOMContentLoaded", function() {
             const id = sessionStorage.getItem('id');
 
-            // Recupera os dados do funcionário com o ID fornecido
             fetch(`${url}/verificarFunc?id=${id}`)
                 .then(response => response.json())
                 .then(employeeData => {
@@ -55,15 +50,12 @@
                         <p><strong>CPF:</strong> <span id="cpf">${employeeData.cpf}</span></p>
                         <p><strong>Empresa:</strong> <span id="empresa">${employeeData.empresa}</span></p>
                         <p><strong>Observação:</strong> <span id="observacao">${employeeData.observacao}</span></p>
-                        <!-- Campo de Última Atualização invisível -->
                         <span id="updatedAt" style="display: none;">${employeeData.updatedAt}</span>
                     `;
 
-                    // Preenche o campo de observação, se disponível
                     const additionalInfoField = document.getElementById('additionalInfo');
                     additionalInfoField.value = employeeData.observacao || '';
 
-                    // Preenche o campo de última atualização invisível
                     const updatedAtField = document.getElementById('updatedAt');
                     updatedAtField.innerText = employeeData.updatedAt || '';
                 })
@@ -73,23 +65,21 @@
                 });
 
             document.getElementById('dateForm').addEventListener('submit', function(event) {
-                event.preventDefault(); // Impede o envio padrão do formulário
+                event.preventDefault();
+
+                const submitButton = document.querySelector('#dateForm button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.querySelector('.loading').style.display = 'inline';
 
                 const additionalInfo = document.getElementById('additionalInfo').value;
-
-                // Obtém a data e hora atual
                 const currentDate = new Date().toISOString();
-
-                // Preenche o campo de última atualização invisível com a data e hora atual
                 document.getElementById('updatedAt').innerText = currentDate;
 
-                // Cria um objeto com os dados a serem enviados para o servidor
                 const dataToSend = {
                     observacao: additionalInfo,
                     updatedAt: currentDate
                 };
 
-                // Envia os dados para o servidor
                 fetch(`${url}/alterarFunc?id=${id}`, {
                     method: 'POST',
                     headers: {
@@ -107,6 +97,10 @@
                 .catch(error => {
                     console.error('Erro ao registrar observação:', error);
                     alert('Erro ao registrar observação. Por favor, tente novamente.');
+                })
+                .finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.querySelector('.loading').style.display = 'none';
                 });
             });
 

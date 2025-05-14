@@ -124,4 +124,3 @@ export const registrarObservacao = async (request: FastifyRequest, reply: Fastif
     }
 };
 
-// Outros métodos relacionados a clientes, se necessário
