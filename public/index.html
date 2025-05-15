@@ -46,7 +46,7 @@
             exportBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     // Envie uma solicitação ao servidor para obter o arquivo CSV
-                    fetch('https://project2-dbfp.onrender.com/exportar-csv', {
+                    fetch('https://app-qreader.onrender.com/exportar-csv', {
                         method: 'GET',
                     })
                     .then(response => response.blob())
