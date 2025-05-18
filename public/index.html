@@ -1,78 +1,108 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Menu Principal</title>
+
+  <!-- Pico.css via CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+
+  <!-- Seu CSS local -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h1>Menu</h1>
-    <div class="options">
-        <div class="card">
-            <h2>Cadastrar</h2>
-            <button id="cadastrarBtn">Cadastrar</button>
-        </div>
-        <div class="card">
-            <h2>Descadastrar</h2>
-            <button id="descadastrarBtn">Descadastrar</button>
-        </div>
-        <div class="card">
-            <h2>Emitir Documento</h2>
-            <button class="exportBtn">Exportar</button>
-        </div>
-    </div>
 
-    <script>
-        const token = sessionStorage.getItem('token');
-        if (!token) {
+  <nav class="container-fluid">
+    <ul>
+      <li><strong>Sistema QReader</strong></li>
+    </ul>
+    <ul>
+      <li><a href="#">Início</a></li>
+      <li><a href="#">Sobre</a></li>
+      <li><a href="#" role="button">Sair</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <div class="grid">
+      <section>
+        <hgroup>
+          <h2>Menu Principal</h2>
+          <h3>Escolha uma das opções abaixo:</h3>
+        </hgroup>
+
+        <div class="grid">
+          <article class="card">
+            <h3>Cadastrar</h3>
+            <p>Cadastre um novo usuário no sistema.</p>
+            <button onclick="window.location.href='cadastro/cadastrar.html'">Cadastrar</button>
+          </article>
+
+          <article class="card">
+            <h3>Descadastrar</h3>
+            <p>Remova um usuário existente.</p>
+            <button onclick="window.location.href='descadastro/capture.html'">Descadastrar</button>
+          </article>
+
+          <article class="card">
+            <h3>Emitir Documento</h3>
+            <p>Gere e exporte os dados em formato CSV.</p>
+            <button onclick="exportarCSV()">Exportar</button>
+          </article>
+        </div>
+
+        <script>
+          const token = sessionStorage.getItem('token');
+          if (!token) {
             window.location.href = '/login/login.html';
-        }
-    </script>
+          }
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const cadastrarBtn = document.getElementById('cadastrarBtn');
-            cadastrarBtn.addEventListener('click', function() {
-                window.location.href = 'cadastro/cadastrar.html';
-            });
+          function exportarCSV() {
+            fetch('https://app-qreader.onrender.com/exportar-csv', {
+              method: 'GET',
+            })
+              .then(response => response.blob())
+              .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'dados.csv';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+              })
+              .catch(error => {
+                console.error('Erro ao exportar para CSV:', error);
+                alert('Erro ao exportar para CSV. Por favor, tente novamente.');
+              });
+          }
+        </script>
+      </section>
+    </div>
+  </main>
 
-            const descadastrarBtn = document.getElementById('descadastrarBtn');
-            descadastrarBtn.addEventListener('click', function() {
-                window.location.href = 'descadastro/capture.html';
-            });
+  <section aria-label="Inscreva-se">
+    <div class="container">
+      <article>
+        <hgroup>
+          <h2>Quer receber novidades?</h2>
+          <h3>Cadastre seu nome e email</h3>
+        </hgroup>
+        <form class="grid">
+          <input type="text" id="firstname" name="firstname" placeholder="Seu nome" aria-label="Nome" required />
+          <input type="email" id="email" name="email" placeholder="Seu email" aria-label="Email" required />
+          <button type="submit" onclick="event.preventDefault()">Inscrever-se</button>
+        </form>
+      </article>
+    </div>
+  </section>
 
-            const exportBtns = document.querySelectorAll('.exportBtn');
-            exportBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Envie uma solicitação ao servidor para obter o arquivo CSV
-                    fetch('https://app-qreader.onrender.com/exportar-csv', {
-                        method: 'GET',
-                    })
-                    .then(response => response.blob())
-                    .then(blob => {
-                        // Crie um URL temporário para o arquivo CSV
-                        const url = window.URL.createObjectURL(blob);
+  <footer class="container">
+    <small>
+      <a href="#">Política de Privacidade</a> • <a href="#">Termos de Uso</a>
+    </small>
+  </footer>
 
-                        // Crie um link de download para o arquivo CSV
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'dados.csv';
-
-                        // Adicione o link ao documento e clique nele para iniciar o download
-                        document.body.appendChild(a);
-                        a.click();
-
-                        // Limpe o URL temporário
-                        window.URL.revokeObjectURL(url);
-                    })
-                    .catch(error => {
-                        console.error('Erro ao exportar para CSV:', error);
-                        alert('Erro ao exportar para CSV. Por favor, tente novamente.');
-                    });
-                });
-            });
-        });
-    </script>
 </body>
 </html>
