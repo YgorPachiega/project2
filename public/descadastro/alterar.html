@@ -1,114 +1,153 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do Funcionário</title>
-    <link rel="stylesheet" href="../styles.css">
-    <style>
-        #updatedAt {
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes do Funcionário</title>
+
+  <!-- Pico.css via CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+
+  <!-- Seu CSS local -->
+  <link rel="stylesheet" href="../styles.css">
+
+  <style>
+    #updatedAt {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <h1>Detalhes do Funcionário</h1>
 
-    <div id="employee-details"></div>
+  <nav class="container-fluid">
+    <ul>
+      <li><strong>Sistema QReader</strong></li>
+    </ul>
+    <ul>
+      <li><a href="../index.html">Início</a></li>
+      <li><a href="#" role="button" id="return-home-btn">Voltar</a></li>
+    </ul>
+  </nav>
 
-    <form id="dateForm" action="#" method="POST" aria-label="Formulário de Cadastro">
-        <div class="form-group">
-            <label for="additionalInfo">Observação (Opcional):</label>
-            <input type="text" id="additionalInfo" name="additionalInfo">
-        </div>
+  <main class="container">
+    <section>
+      <hgroup>
+        <h2>Detalhes do Funcionário</h2>
+        <h3>Informações e observações</h3>
+      </hgroup>
+
+      <div id="employee-details"></div>
+
+      <form id="dateForm" aria-label="Formulário de Observação">
+        <label for="additionalInfo">Observação (Opcional):</label>
+        <input type="text" id="additionalInfo" name="additionalInfo" placeholder="Digite uma observação...">
+
         <input type="hidden" id="updatedAt" name="updatedAt">
+
         <button type="submit" aria-label="Salvar Observação">
-            <span>Salvar Observação</span>
-            <span class="loading" style="display: none;">Carregando...</span>
+          <span>Salvar Observação</span>
+          <span class="loading" style="display: none;">Carregando...</span>
         </button>
-    </form>
+      </form>
+    </section>
+  </main>
 
-    <button id="return-home-btn">Voltar para Home</button>
+  <section aria-label="Inscreva-se">
+    <div class="container">
+      <article>
+        <hgroup>
+          <h2>Quer receber novidades?</h2>
+          <h3>Cadastre seu nome e email</h3>
+        </hgroup>
+        <form class="grid">
+          <input type="text" id="firstname" name="firstname" placeholder="Seu nome" aria-label="Nome" required />
+          <input type="email" id="email" name="email" placeholder="Seu email" aria-label="Email" required />
+          <button type="submit" onclick="event.preventDefault()">Inscrever-se</button>
+        </form>
+      </article>
+    </div>
+  </section>
 
-    <script>
-        const token = sessionStorage.getItem('token');
-        if (!token) {
-            window.location.href = '../login/login.html';
-        }
+  <footer class="container">
+    <small><a href="#">Política de Privacidade</a> • <a href="#">Termos de Uso</a></small>
+  </footer>
 
-        const url = 'https://app-qreader.onrender.com';
+  <script>
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      window.location.href = '../login/login.html';
+    }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const id = sessionStorage.getItem('id');
+    const url = 'https://app-qreader.onrender.com';
 
-            fetch(`${url}/verificarFunc?id=${id}`)
-                .then(response => response.json())
-                .then(employeeData => {
-                    const employeeDetails = document.getElementById('employee-details');
-                    employeeDetails.innerHTML = `
-                        <p><strong>Nome:</strong> <span id="nome">${employeeData.nome}</span></p>
-                        <p><strong>CPF:</strong> <span id="cpf">${employeeData.cpf}</span></p>
-                        <p><strong>Empresa:</strong> <span id="empresa">${employeeData.empresa}</span></p>
-                        <p><strong>Observação:</strong> <span id="observacao">${employeeData.observacao}</span></p>
-                        <span id="updatedAt" style="display: none;">${employeeData.updatedAt}</span>
-                    `;
+    document.addEventListener("DOMContentLoaded", function() {
+      const id = sessionStorage.getItem('id');
 
-                    const additionalInfoField = document.getElementById('additionalInfo');
-                    additionalInfoField.value = employeeData.observacao || '';
+      fetch(`${url}/verificarFunc?id=${id}`)
+        .then(response => response.json())
+        .then(employeeData => {
+          const employeeDetails = document.getElementById('employee-details');
+          employeeDetails.innerHTML = `
+            <p><strong>Nome:</strong> <span id="nome">${employeeData.nome}</span></p>
+            <p><strong>CPF:</strong> <span id="cpf">${employeeData.cpf}</span></p>
+            <p><strong>Empresa:</strong> <span id="empresa">${employeeData.empresa}</span></p>
+            <p><strong>Observação:</strong> <span id="observacao">${employeeData.observacao}</span></p>
+            <span id="updatedAt" style="display: none;">${employeeData.updatedAt}</span>
+          `;
 
-                    const updatedAtField = document.getElementById('updatedAt');
-                    updatedAtField.innerText = employeeData.updatedAt || '';
-                })
-                .catch(error => {
-                    console.error('Erro ao recuperar os detalhes do funcionário:', error);
-                    alert('Erro ao recuperar os detalhes do funcionário. Por favor, tente novamente.');
-                });
-
-            document.getElementById('dateForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                const submitButton = document.querySelector('#dateForm button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.querySelector('.loading').style.display = 'inline';
-
-                const additionalInfo = document.getElementById('additionalInfo').value;
-                const currentDate = new Date().toISOString();
-                document.getElementById('updatedAt').innerText = currentDate;
-
-                const dataToSend = {
-                    observacao: additionalInfo,
-                    updatedAt: currentDate
-                };
-
-                fetch(`${url}/alterarFunc?id=${id}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dataToSend)
-                })
-                .then(response => {
-                    if (response.ok) {
-                        alert('Observação registrada com sucesso!');
-                    } else {
-                        throw new Error('Erro ao registrar observação.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro ao registrar observação:', error);
-                    alert('Erro ao registrar observação. Por favor, tente novamente.');
-                })
-                .finally(() => {
-                    submitButton.disabled = false;
-                    submitButton.querySelector('.loading').style.display = 'none';
-                });
-            });
-
-            const returnHomeBtn = document.getElementById('return-home-btn');
-            returnHomeBtn.addEventListener('click', function() {
-                window.location.href = '../index.html';
-            });
+          document.getElementById('additionalInfo').value = employeeData.observacao || '';
+          document.getElementById('updatedAt').innerText = employeeData.updatedAt || '';
+        })
+        .catch(error => {
+          console.error('Erro ao recuperar os detalhes do funcionário:', error);
+          alert('Erro ao recuperar os detalhes do funcionário. Por favor, tente novamente.');
         });
-    </script>
+
+      document.getElementById('dateForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const submitButton = this.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.querySelector('.loading').style.display = 'inline';
+
+        const additionalInfo = document.getElementById('additionalInfo').value;
+        const currentDate = new Date().toISOString();
+        document.getElementById('updatedAt').innerText = currentDate;
+
+        const dataToSend = {
+          observacao: additionalInfo,
+          updatedAt: currentDate
+        };
+
+        fetch(`${url}/alterarFunc?id=${id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dataToSend)
+        })
+        .then(response => {
+          if (response.ok) {
+            alert('Observação registrada com sucesso!');
+          } else {
+            throw new Error('Erro ao registrar observação.');
+          }
+        })
+        .catch(error => {
+          console.error('Erro ao registrar observação:', error);
+          alert('Erro ao registrar observação. Por favor, tente novamente.');
+        })
+        .finally(() => {
+          submitButton.disabled = false;
+          submitButton.querySelector('.loading').style.display = 'none';
+        });
+      });
+
+      document.getElementById('return-home-btn').addEventListener('click', function() {
+        window.location.href = '../index.html';
+      });
+    });
+  </script>
+
 </body>
 </html>

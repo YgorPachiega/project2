@@ -1,21 +1,64 @@
-teste 2.0
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Leitura de QR Code</title>
-  <link rel="stylesheet" href="../styles.css"/>
+
+  <!-- Pico.css via CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+
+  <!-- Seu CSS local -->
+  <link rel="stylesheet" href="../styles.css" />
 </head>
 <body>
-  <h1>Leitura de QR Code</h1>
-  <button id="open-camera-btn">Abrir Câmera</button>
-  <div id="video-container">
-    <video id="camera-feed" autoplay playsinline></video>
-    <p class="loading-message">Carregando...</p>
-    <p class="error-message" style="display: none;">Erro ao acessar a câmera.<br>Clique aqui para tentar novamente.</p>
-  </div>
-  <button id="return-home-btn">Voltar para Home</button>
+
+  <nav class="container-fluid">
+    <ul>
+      <li><strong>Sistema QReader</strong></li>
+    </ul>
+    <ul>
+      <li><a href="../index.html">Início</a></li>
+      <li><a href="#" role="button" id="return-home-btn">Voltar</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <section>
+      <hgroup>
+        <h2>Leitura de QR Code</h2>
+        <h3>Aponte a câmera para o código</h3>
+      </hgroup>
+
+      <button id="open-camera-btn">Abrir Câmera</button>
+
+      <div id="video-container">
+        <video id="camera-feed" autoplay playsinline style="width: 100%; max-width: 600px; border-radius: 8px;"></video>
+        <p class="loading-message">Carregando...</p>
+        <p class="error-message" style="display: none; cursor: pointer;">Erro ao acessar a câmera.<br>Clique aqui para tentar novamente.</p>
+      </div>
+    </section>
+  </main>
+
+  <section aria-label="Inscreva-se">
+    <div class="container">
+      <article>
+        <hgroup>
+          <h2>Quer receber novidades?</h2>
+          <h3>Cadastre seu nome e email</h3>
+        </hgroup>
+        <form class="grid">
+          <input type="text" id="firstname" name="firstname" placeholder="Seu nome" aria-label="Nome" required />
+          <input type="email" id="email" name="email" placeholder="Seu email" aria-label="Email" required />
+          <button type="submit" onclick="event.preventDefault()">Inscrever-se</button>
+        </form>
+      </article>
+    </div>
+  </section>
+
+  <footer class="container">
+    <small><a href="#">Política de Privacidade</a> • <a href="#">Termos de Uso</a></small>
+  </footer>
 
   <script>
     const token = sessionStorage.getItem('token');
@@ -27,6 +70,7 @@ teste 2.0
   <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
   <script>
     const url = 'https://app-qreader.onrender.com';
+
     document.addEventListener("DOMContentLoaded", function () {
       const openCameraBtn = document.getElementById('open-camera-btn');
       const returnHomeBtn = document.getElementById('return-home-btn');
@@ -39,15 +83,9 @@ teste 2.0
       let isProcessing = false;
       let lastQRCodeRead = '';
 
-      openCameraBtn.addEventListener('click', function () {
-        openCamera();
-      });
-
-      returnHomeBtn.addEventListener('click', function () {
-        window.location.href = '../index.html';
-      });
-
-      errorMessage.addEventListener('click', function () {
+      openCameraBtn.addEventListener('click', openCamera);
+      returnHomeBtn.addEventListener('click', () => window.location.href = '../index.html');
+      errorMessage.addEventListener('click', () => {
         errorMessage.style.display = 'none';
         openCamera();
       });
@@ -55,7 +93,7 @@ teste 2.0
       function openCamera() {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
           navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-            .then(function (stream) {
+            .then(stream => {
               videoContainer.style.display = 'block';
               loadingMessage.style.display = 'block';
               errorMessage.style.display = 'none';
@@ -63,7 +101,7 @@ teste 2.0
               cameraFeed.play();
               intervalId = setInterval(captureQRCode, 1000);
             })
-            .catch(function (error) {
+            .catch(error => {
               console.error('Erro ao acessar a câmera:', error);
               errorMessage.style.display = 'block';
               clearInterval(intervalId);
@@ -84,6 +122,7 @@ teste 2.0
         canvasElement.width = cameraFeed.videoWidth;
         canvasElement.height = cameraFeed.videoHeight;
         canvas.drawImage(cameraFeed, 0, 0, cameraFeed.videoWidth, cameraFeed.videoHeight);
+
         const imageData = canvas.getImageData(0, 0, cameraFeed.videoWidth, cameraFeed.videoHeight);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
 
@@ -94,8 +133,8 @@ teste 2.0
 
           fetch(`${url}/verificar?id=${id}`)
             .then(async response => {
-              let text = await response.text();
-              let data = { message: '' };
+              const text = await response.text();
+              let data = {};
 
               try {
                 data = JSON.parse(text);
@@ -132,5 +171,6 @@ teste 2.0
       }
     });
   </script>
+
 </body>
 </html>

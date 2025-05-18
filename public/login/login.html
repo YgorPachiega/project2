@@ -1,63 +1,121 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="../styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+
+  <!-- Pico.css via CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+
+  <!-- Seu CSS local -->
+  <link rel="stylesheet" href="../styles.css">
+
+  <style>
+    .message {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+  </style>
 </head>
 <body>
-    <h2>Login</h2>
-    <form id="login-form">
-        <input type="text" id="username" placeholder="Usuário" required>
-        <input type="password" id="password" placeholder="Senha" required>
+
+  <nav class="container-fluid">
+    <ul>
+      <li><strong>Sistema QReader</strong></li>
+    </ul>
+    <ul>
+      <li><a href="../index.html">Início</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <section>
+      <hgroup>
+        <h2>Login</h2>
+        <h3>Entre com suas credenciais</h3>
+      </hgroup>
+
+      <form id="login-form">
+        <input type="text" id="username" placeholder="Usuário" aria-label="Usuário" required>
+        <input type="password" id="password" placeholder="Senha" aria-label="Senha" required>
         <button type="submit">Login</button>
-    </form>
-    <div id="message" class="message"></div>
+      </form>
 
-    <script>
+      <!-- Botão para criar nova conta -->
+      <a href="cadastro_login.html" role="button" class="secondary">Criar uma nova conta</a>
 
-        const url = 'https://app-qreader.onrender.com';
-        const loginForm = document.getElementById('login-form');
+      <div id="message" class="message"></div>
+    </section>
+  </main>
 
-        loginForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
+  <section aria-label="Inscreva-se">
+    <div class="container">
+      <article>
+        <hgroup>
+          <h2>Quer receber novidades?</h2>
+          <h3>Cadastre seu nome e email</h3>
+        </hgroup>
+        <form class="grid">
+          <input type="text" id="firstname" name="firstname" placeholder="Seu nome" aria-label="Nome" required />
+          <input type="email" id="email" name="email" placeholder="Seu email" aria-label="Email" required />
+          <button type="submit" onclick="event.preventDefault()">Inscrever-se</button>
+        </form>
+      </article>
+    </div>
+  </section>
 
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+  <footer class="container">
+    <small><a href="#">Política de Privacidade</a> • <a href="#">Termos de Uso</a></small>
+  </footer>
 
-            try {
-                const response = await fetch(url + '/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ usuario: username, senha: password })
-                });
+  <script>
+    const url = 'https://app-qreader.onrender.com';
+    const loginForm = document.getElementById('login-form');
 
-                const data = await response.json();
+    loginForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
 
-                if (response.ok) {
-                    const token = data.token; // Recebe o token JWT do servidor
-                    sessionStorage.setItem('token', token); // Armazena o token no localStorage
-                    sessionStorage.setItem('solicitante', username);
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
 
-                    showMessage(data.message, 'success');
-                    // Redirecionar para a página de dashboard, por exemplo
-                    window.location.href = '../index.html';
-                } else {
-                    showMessage(data.error, 'error');
-                }
-            } catch (error) {
-                showMessage('Erro ao fazer login', 'error');
-            }
+      try {
+        const response = await fetch(url + '/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ usuario: username, senha: password })
         });
 
-        function showMessage(message, type) {
-            const messageElement = document.getElementById('message');
-            messageElement.textContent = message;
-            messageElement.className = 'message ' + type;
+        const data = await response.json();
+
+        if (response.ok) {
+          const token = data.token;
+          sessionStorage.setItem('token', token);
+          sessionStorage.setItem('solicitante', username);
+          showMessage(data.message, 'success');
+          window.location.href = '../index.html';
+        } else {
+          showMessage(data.error, 'error');
         }
-    </script>
+      } catch (error) {
+        showMessage('Erro ao fazer login', 'error');
+      }
+    });
+
+    function showMessage(message, type) {
+      const messageElement = document.getElementById('message');
+      messageElement.textContent = message;
+      messageElement.className = 'message ' + type;
+    }
+  </script>
+
 </body>
 </html>
