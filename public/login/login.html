@@ -16,12 +16,20 @@
   <main class="container">
     <section>
       <hgroup>
-        <h2>Login</h2>
-        <h3>Acesse com segurança via Auth0</h3>
+        <h2>Bem-vindo</h2>
+        <h3>Acesse ou crie sua conta com segurança via Auth0</h3>
       </hgroup>
-      <button id="login-btn">Entrar com Auth0</button>
+
+      <div class="grid">
+        <button id="login-btn">Entrar</button>
+        <button id="signup-btn" class="secondary">Criar conta</button>
+      </div>
     </section>
   </main>
+
+  <footer class="container">
+    <small><a href="#">Política de Privacidade</a> • <a href="#">Termos de Uso</a></small>
+  </footer>
 
   <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
   <script>
@@ -32,12 +40,6 @@
         domain: "dev-agq6qfbtj4yee13n.us.auth0.com",
         client_id: "zH6qQUwI5LMYtM4zOfw7N1DokYo9ruMV",
         cacheLocation: "localstorage"
-      });
-    }
-
-    async function login() {
-      await auth0.loginWithRedirect({
-        redirect_uri: window.location.origin + "/login/login.html"
       });
     }
 
@@ -66,7 +68,18 @@
       await finalizeLogin();
     };
 
-    document.getElementById("login-btn").addEventListener("click", login);
+    document.getElementById("login-btn").addEventListener("click", async () => {
+      await auth0.loginWithRedirect({
+        redirect_uri: window.location.origin + "/login/login.html"
+      });
+    });
+
+    document.getElementById("signup-btn").addEventListener("click", async () => {
+      await auth0.loginWithRedirect({
+        redirect_uri: window.location.origin + "/login/login.html",
+        screen_hint: "signup"
+      });
+    });
   </script>
 </body>
 </html>

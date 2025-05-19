@@ -1,27 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-br" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Leitura de QR Code</title>
 
-  <meta name="color-scheme" content ="dark">
+  <meta name="color-scheme" content="dark">
 
-  <!-- Pico.css via CDN -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-
-  <!-- Seu CSS local -->
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+  <link rel="stylesheet" href="../styles.css" />
 </head>
-<body>
+<body style="display: none;">
 
   <nav class="container-fluid">
     <ul>
       <li><strong>Sistema QReader</strong></li>
     </ul>
     <ul>
-      <li><a href="../index.html">Início</a></li>
-      <li><a href="#" role="button" id="return-home-btn">Voltar</a></li>
+      <li><strong>Bem-vindo, <span id="nome-usuario"></span></strong></li>
+      <li><a href="#" role="button" onclick="logout()">Sair</a></li>
     </ul>
   </nav>
 
@@ -48,7 +45,17 @@
 
   <script>
     const token = sessionStorage.getItem('token');
-    if (!token) {
+    const solicitante = sessionStorage.getItem('solicitante');
+
+    if (!token || !solicitante) {
+      window.location.href = '../login/login.html';
+    } else {
+      document.getElementById('nome-usuario').textContent = solicitante;
+      document.body.style.display = 'block';
+    }
+
+    function logout() {
+      sessionStorage.clear();
       window.location.href = '../login/login.html';
     }
   </script>
@@ -59,16 +66,16 @@
 
     document.addEventListener("DOMContentLoaded", function () {
       const openCameraBtn = document.getElementById('open-camera-btn');
-      const returnHomeBtn = document.getElementById('return-home-btn');
       const videoContainer = document.getElementById('video-container');
       const cameraFeed = document.getElementById('camera-feed');
       const loadingMessage = document.querySelector('.loading-message');
       const errorMessage = document.querySelector('.error-message');
 
       let intervalId;
+      let isProcessing = false;
+      let lastQRCodeRead = '';
 
       openCameraBtn.addEventListener('click', openCamera);
-      returnHomeBtn.addEventListener('click', () => window.location.href = '../index.html');
       errorMessage.addEventListener('click', () => {
         errorMessage.style.display = 'none';
         openCamera();
@@ -99,6 +106,8 @@
       }
 
       function captureQRCode() {
+        if (isProcessing) return;
+
         const canvasElement = document.createElement('canvas');
         const canvas = canvasElement.getContext('2d');
 
@@ -109,8 +118,10 @@
         const imageData = canvas.getImageData(0, 0, cameraFeed.videoWidth, cameraFeed.videoHeight);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
 
-        if (code) {
+        if (code && code.data !== lastQRCodeRead) {
           const id = code.data;
+          lastQRCodeRead = id;
+          isProcessing = true;
           sessionStorage.setItem('id', id);
           window.location.href = 'alterar.html';
         }

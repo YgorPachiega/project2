@@ -5,23 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Cadastro de Funcionários</title>
 
-  <meta name="color-scheme" content ="dark">
+  <meta name="color-scheme" content="dark">
 
-  <!-- Pico.css via CDN -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
-
-  <!-- Seu CSS local -->
   <link rel="stylesheet" href="../styles.css" />
 </head>
-<body>
 
+<body style="display: none;">
   <nav class="container-fluid">
     <ul>
       <li><strong>Sistema QReader</strong></li>
     </ul>
     <ul>
-      <li><a href="../index.html">Início</a></li>
-      <li><a href="#" role="button" id="return-home-btn">Voltar</a></li>
+      <li><strong>Bem-vindo, <span id="nome-usuario"></span></strong></li>
+      <li><a href="#" role="button" onclick="logout()">Sair</a></li>
     </ul>
   </nav>
 
@@ -35,16 +32,13 @@
 
         <form id="cadastroForm" aria-label="Formulário de Cadastro">
           <input type="text" id="nome" name="nome" placeholder="Nome" aria-label="Nome" required />
-
           <input type="text" id="cpf" name="cpf" placeholder="CPF" aria-label="CPF" required />
-
           <select id="empresa" name="empresa" aria-label="Empresa" required>
             <option value="" disabled selected>Selecione a empresa</option>
             <option value="empresa1">Empresa 1</option>
             <option value="empresa2">Empresa 2</option>
             <option value="empresa3">Empresa 3</option>
           </select>
-
           <input type="hidden" id="id" name="id" />
           <input type="hidden" id="solicitante" name="solicitante" />
 
@@ -63,7 +57,18 @@
 
   <script>
     const token = sessionStorage.getItem('token');
-    if (!token) {
+    const solicitante = sessionStorage.getItem('solicitante');
+    const id = sessionStorage.getItem('id');
+
+    if (!token || !solicitante || !id) {
+      window.location.href = '../login/login.html';
+    } else {
+      document.getElementById('nome-usuario').textContent = solicitante;
+      document.body.style.display = 'block';
+    }
+
+    function logout() {
+      sessionStorage.clear();
       window.location.href = '../login/login.html';
     }
 
@@ -72,9 +77,8 @@
     });
 
     const url = 'https://app-qreader.onrender.com';
+
     document.addEventListener("DOMContentLoaded", function () {
-      const id = sessionStorage.getItem('id');
-      const solicitante = sessionStorage.getItem('solicitante');
       document.getElementById('id').value = id;
       document.getElementById('solicitante').value = solicitante;
 
@@ -117,6 +121,5 @@
       });
     });
   </script>
-
 </body>
 </html>

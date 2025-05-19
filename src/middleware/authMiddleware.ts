@@ -1,30 +1,51 @@
-// No arquivo authMiddleware.ts
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { verificarToken } from '../utils/jwtUtils';
-import { JwtPayload } from 'jsonwebtoken';
-import { clientModel, Client } from '../models/clientModel';
+import jwt from 'jsonwebtoken';
+import jwksClient from 'jwks-rsa';
 
-interface AuthenticatedRequest extends FastifyRequest {
-    usuario?: string;
+const client = jwksClient({
+  jwksUri: 'https://dev-agq6qfbtj4yee13n.us.auth0.com/.well-known/jwks.json',
+  cache: true,
+  rateLimit: true,
+  jwksRequestsPerMinute: 5
+});
+
+function getKey(header: jwt.JwtHeader, callback: jwt.SigningKeyCallback) {
+  if (!header.kid) return callback(new Error('No kid found in token header'));
+
+  client.getSigningKey(header.kid, function (err, key) {
+    if (err) return callback(err);
+    const signingKey = key?.getPublicKey();
+    callback(null, signingKey);
+  });
 }
 
-export const authMiddleware = async (request: AuthenticatedRequest, reply: FastifyReply, done: () => void) => {
-    const token = request.headers['authorization'];
+export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
+  const authHeader = request.headers.authorization;
 
-    if (!token) {
-        return reply.redirect('/login');
-    }
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return reply.status(401).send({ error: 'Token ausente ou malformado' });
+  }
 
-    try {
-        const decodedToken = verificarToken(token);
+  const token = authHeader.split(' ')[1];
 
-        if (typeof decodedToken === 'object' && 'usuario' in decodedToken) {
-            request.usuario = (decodedToken as JwtPayload).usuario;
-            done();
-        } else {
-            return reply.redirect('/login');
+  return new Promise((resolve, reject) => {
+    jwt.verify(
+      token,
+      getKey,
+      {
+        audience: 'https://qreader.api', // Se você criou a API no Auth0
+        issuer: 'https://dev-agq6qfbtj4yee13n.us.auth0.com/',
+        algorithms: ['RS256']
+      },
+      (err, decoded) => {
+        if (err) {
+          return reply.status(401).send({ error: 'Token inválido' });
         }
-    } catch (error) {
-        return reply.redirect('/login');
-    }
-};
+
+        // Você pode armazenar os dados do usuário no request
+        (request as any).user = decoded;
+        resolve(true);
+      }
+    );
+  });
+}

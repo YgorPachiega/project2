@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-br" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Detalhes do Funcionário</title>
 
-  <meta name="color-scheme" content ="dark">
-
-  <!-- Pico.css via CDN -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-
-  <!-- Seu CSS local -->
-  <link rel="stylesheet" href="../styles.css">
+  <meta name="color-scheme" content="dark">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+  <link rel="stylesheet" href="../styles.css" />
 
   <style>
     #updatedAt {
@@ -19,15 +15,15 @@
     }
   </style>
 </head>
-<body>
+<body style="display: none;">
 
   <nav class="container-fluid">
     <ul>
       <li><strong>Sistema QReader</strong></li>
     </ul>
     <ul>
-      <li><a href="../index.html">Início</a></li>
-      <li><a href="#" role="button" id="return-home-btn">Voltar</a></li>
+      <li><strong>Olá, <span id="nome-usuario"></span></strong></li>
+      <li><a href="#" role="button" onclick="logout()">Sair</a></li>
     </ul>
   </nav>
 
@@ -42,10 +38,8 @@
 
       <form id="dateForm" aria-label="Formulário de Observação">
         <label for="additionalInfo">Observação (Opcional):</label>
-        <input type="text" id="additionalInfo" name="additionalInfo" placeholder="Digite uma observação...">
-
-        <input type="hidden" id="updatedAt" name="updatedAt">
-
+        <input type="text" id="additionalInfo" name="additionalInfo" placeholder="Digite uma observação..." />
+        <input type="hidden" id="updatedAt" name="updatedAt" />
         <button type="submit" aria-label="Salvar Observação">
           <span>Salvar Observação</span>
           <span class="loading" style="display: none;">Carregando...</span>
@@ -60,13 +54,23 @@
 
   <script>
     const token = sessionStorage.getItem('token');
-    if (!token) {
+    const solicitante = sessionStorage.getItem('solicitante');
+
+    if (!token || !solicitante) {
+      window.location.href = '../login/login.html';
+    } else {
+      document.getElementById('nome-usuario').textContent = solicitante;
+      document.body.style.display = 'block';
+    }
+
+    function logout() {
+      sessionStorage.clear();
       window.location.href = '../login/login.html';
     }
 
     const url = 'https://app-qreader.onrender.com';
 
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
       const id = sessionStorage.getItem('id');
 
       fetch(`${url}/verificarFunc?id=${id}`)
@@ -74,42 +78,37 @@
         .then(employeeData => {
           const employeeDetails = document.getElementById('employee-details');
           employeeDetails.innerHTML = `
-            <p><strong>Nome:</strong> <span id="nome">${employeeData.nome}</span></p>
-            <p><strong>CPF:</strong> <span id="cpf">${employeeData.cpf}</span></p>
-            <p><strong>Empresa:</strong> <span id="empresa">${employeeData.empresa}</span></p>
-            <p><strong>Observação:</strong> <span id="observacao">${employeeData.observacao}</span></p>
-            <span id="updatedAt" style="display: none;">${employeeData.updatedAt}</span>
+            <p><strong>Nome:</strong> ${employeeData.nome}</p>
+            <p><strong>CPF:</strong> ${employeeData.cpf}</p>
+            <p><strong>Empresa:</strong> ${employeeData.empresa}</p>
+            <p><strong>Observação:</strong> ${employeeData.observacao || 'Nenhuma'}</p>
+            <span id="updatedAt">${employeeData.updatedAt || ''}</span>
           `;
 
           document.getElementById('additionalInfo').value = employeeData.observacao || '';
-          document.getElementById('updatedAt').innerText = employeeData.updatedAt || '';
         })
         .catch(error => {
           console.error('Erro ao recuperar os detalhes do funcionário:', error);
           alert('Erro ao recuperar os detalhes do funcionário. Por favor, tente novamente.');
         });
 
-      document.getElementById('dateForm').addEventListener('submit', function(event) {
+      document.getElementById('dateForm').addEventListener('submit', function (event) {
         event.preventDefault();
 
         const submitButton = this.querySelector('button[type="submit"]');
         submitButton.disabled = true;
         submitButton.querySelector('.loading').style.display = 'inline';
 
-        const additionalInfo = document.getElementById('additionalInfo').value;
-        const currentDate = new Date().toISOString();
-        document.getElementById('updatedAt').innerText = currentDate;
+        const observacao = document.getElementById('additionalInfo').value;
+        const updatedAt = new Date().toISOString();
 
-        const dataToSend = {
-          observacao: additionalInfo,
-          updatedAt: currentDate
-        };
+        document.getElementById('updatedAt').innerText = updatedAt;
 
-        fetch(`${url}/alterarFunc?id=${id}`, {
+        const dataToSend = { observacao, updatedAt };
+
+        fetch(`${url}/alterarFunc?id=${sessionStorage.getItem('id')}`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(dataToSend)
         })
         .then(response => {
@@ -129,7 +128,7 @@
         });
       });
 
-      document.getElementById('return-home-btn').addEventListener('click', function() {
+      document.getElementById('return-home-btn').addEventListener('click', () => {
         window.location.href = '../index.html';
       });
     });
