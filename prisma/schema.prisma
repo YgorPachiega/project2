@@ -18,8 +18,8 @@ model Users {
   id           Int       @id @default(autoincrement())
   auth0Id      String    @unique
   email        String    @unique
-  tipo         String
-  empresa      String?
+  tipoUsuario         String
+  empresaRelacionada      String?
   aprovado     Boolean   @default(false)
   criadoEm     DateTime  @default(now())
 }

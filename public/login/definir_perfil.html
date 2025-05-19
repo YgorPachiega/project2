@@ -68,6 +68,12 @@
       }
 
       const user = await auth0.getUser();
+      const payload = {
+        email: user.email,
+        auth0Id: user.sub,
+        tipoUsuario: 'prestador', // ou 'empresa'
+        empresaRelacionada: 'Empresa X' // se aplicável
+      };
       sessionStorage.setItem("idAuth0", user.sub);
 
       document.getElementById('tipo').addEventListener('change', function () {

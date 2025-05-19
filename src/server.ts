@@ -3,7 +3,6 @@ import fastify from 'fastify';
 import { PrismaClient } from '@prisma/client';
 import { corsMiddleware } from './middleware/corsMiddleware';
 import clientsRoutes from './routes/clientsRoutes';
-import usersRoutes from './routes/usersRoutes';
 import perfilRoutes from './routes/perfilRoutes';
 import path from 'path';
 import fastifyStatic from '@fastify/static';
@@ -27,7 +26,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Rotas principais (sem autenticação aqui — cada rota pode usar authMiddleware)
 app.register(clientsRoutes, { prefix: '/api' });
-app.register(usersRoutes, { prefix: '/api' });
 app.register(perfilRoutes, { prefix: '/api' });
 
 // Inicialização do servidor

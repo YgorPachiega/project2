@@ -1,16 +1,18 @@
+// src/controllers/perfilController.ts
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { email, tipoUsuario, empresaRelacionada } = request.body as {
+  const { email, auth0Id, tipoUsuario, empresaRelacionada } = request.body as {
     email: string;
+    auth0Id: string;
     tipoUsuario: 'empresa' | 'prestador';
     empresaRelacionada?: string;
   };
 
-  if (!email || !tipoUsuario) {
+  if (!email || !auth0Id || !tipoUsuario) {
     return reply.status(400).send({ error: 'Dados obrigatórios não fornecidos.' });
   }
 
@@ -26,9 +28,10 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
     const perfil = await prisma.users.create({
       data: {
         email,
+        auth0Id,
         tipoUsuario,
         empresaRelacionada: tipoUsuario === 'prestador' ? empresaRelacionada : null,
-        aprovado: tipoUsuario === 'empresa',
+        aprovado: tipoUsuario === 'empresa', // empresas são aprovadas automaticamente
       },
     });
 
