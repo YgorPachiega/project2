@@ -59,7 +59,6 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
           aprovado: true,
           empresa: {
             create: {
-              // Removido userId: undefined
               nome: empresa.nome,
               cnpj: empresa.cnpj,
               endereco: empresa.endereco || null,
@@ -74,6 +73,8 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
     return reply.status(201).send({ message: 'Perfil definido com sucesso.', perfil });
   } catch (error) {
     console.error('Erro ao definir perfil:', error);
-    return reply.status(500).send({ error: 'Erro interno ao salvar perfil.' });
+    // Restringir o tipo de error para Error
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    return reply.status(500).send({ error: 'Erro interno ao salvar perfil.', details: errorMessage });
   }
 };
