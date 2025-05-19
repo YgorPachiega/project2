@@ -1,115 +1,73 @@
 <!DOCTYPE html>
 <html lang="pt-br" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro de Login</title>
-
-  <meta name="color-scheme" content ="dark">
-
-  <!-- Pico.css via CDN -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastro - QReader</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-
-  <!-- Seu CSS local -->
   <link rel="stylesheet" href="../styles.css">
-
-  <style>
-    .message {
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-    .success {
-      color: green;
-    }
-    .error {
-      color: red;
-    }
-  </style>
 </head>
 <body>
 
   <nav class="container-fluid">
-    <ul>
-      <li><strong>Sistema QReader</strong></li>
-    </ul>
-    <ul>
-      <li><a href="../index.html">Início</a></li>
-    </ul>
+    <ul><li><strong>Sistema QReader</strong></li></ul>
   </nav>
 
   <main class="container">
     <section>
       <hgroup>
-        <h2>Cadastro de Usuário</h2>
-        <h3>Crie um novo acesso ao sistema</h3>
+        <h2>Criar Conta</h2>
+        <h3>Cadastre-se com segurança via Auth0</h3>
       </hgroup>
-
-      <form id="signup-form">
-        <input type="text" id="username" placeholder="Usuário" aria-label="Usuário" required>
-        <input type="password" id="password" placeholder="Senha" aria-label="Senha" required>
-        <button type="submit">Cadastrar</button>
-      </form>
-
-      <div id="message" class="message"></div>
+      <button id="signup-btn">Cadastrar com Auth0</button>
     </section>
   </main>
 
-  <section aria-label="Inscreva-se">
-    <div class="container">
-      <article>
-        <hgroup>
-          <h2>Quer receber novidades?</h2>
-          <h3>Cadastre seu nome e email</h3>
-        </hgroup>
-        <form class="grid">
-          <input type="text" id="firstname" name="firstname" placeholder="Seu nome" aria-label="Nome" required />
-          <input type="email" id="email" name="email" placeholder="Seu email" aria-label="Email" required />
-          <button type="submit" onclick="event.preventDefault()">Inscrever-se</button>
-        </form>
-      </article>
-    </div>
-  </section>
-
-  <footer class="container">
-    <small><a href="#">Política de Privacidade</a> • <a href="#">Termos de Uso</a></small>
-  </footer>
-
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
   <script>
-    const url = 'https://app-qreader.onrender.com';
+    let auth0 = null;
 
-    document.getElementById('signup-form').addEventListener('submit', async function(event) {
-      event.preventDefault();
-
-      const password = document.getElementById('password').value;
-      const username = document.getElementById('username').value;
-
-      try {
-        const response = await fetch(url + '/cadastro_login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ usuario: username, senha: password })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          showMessage(data.message, 'success');
-        } else {
-          showMessage(data.error, 'error');
-        }
-      } catch (error) {
-        showMessage('Erro ao cadastrar usuário', 'error');
-      }
-    });
-
-    function showMessage(message, type) {
-      const messageElement = document.getElementById('message');
-      messageElement.textContent = message;
-      messageElement.className = 'message ' + type;
+    async function configureAuth0() {
+      auth0 = await createAuth0Client({
+        domain: "dev-agq6qfbtj4yee13n.us.auth0.com",
+        client_id: "zH6qQUwI5LMYtM4zOfw7N1DokYo9ruMV",
+        cacheLocation: "localstorage"
+      });
     }
-  </script>
 
+    async function signup() {
+      await auth0.loginWithRedirect({
+        redirect_uri: window.location.origin + "/login/cadastro_login.html",
+        screen_hint: "signup"
+      });
+    }
+
+    async function handleRedirect() {
+      const query = window.location.search;
+      if (query.includes("code=") && query.includes("state=")) {
+        await auth0.handleRedirectCallback();
+        window.history.replaceState({}, document.title, "/login/cadastro_login.html");
+      }
+    }
+
+    async function finalizeLogin() {
+      const isAuthenticated = await auth0.isAuthenticated();
+      if (isAuthenticated) {
+        const token = await auth0.getTokenSilently();
+        const user = await auth0.getUser();
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("solicitante", user.name || user.email);
+        window.location.href = "../index.html";
+      }
+    }
+
+    window.onload = async () => {
+      await configureAuth0();
+      await handleRedirect();
+      await finalizeLogin();
+    };
+
+    document.getElementById("signup-btn").addEventListener("click", signup);
+  </script>
 </body>
 </html>
