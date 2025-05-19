@@ -4,21 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Leitura de QR Code</title>
-
-  <meta name="color-scheme" content="dark">
-
+  <meta name="color-scheme" content="dark" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
   <link rel="stylesheet" href="../styles.css" />
 </head>
-<body style="display: none;">
+<body>
 
   <nav class="container-fluid">
     <ul>
       <li><strong>Sistema QReader</strong></li>
     </ul>
     <ul>
-      <li><strong>Bem-vindo, <span id="nome-usuario"></span></strong></li>
-      <li><a href="#" role="button" onclick="logout()">Sair</a></li>
+      <li><a href="../index.html">Início</a></li>
+      <li><a href="#" role="button" id="return-home-btn">Voltar</a></li>
+      <li><a href="#" role="button" id="logout-btn">Sair</a></li>
     </ul>
   </nav>
 
@@ -43,39 +42,51 @@
     <small><a href="#">Política de Privacidade</a> • <a href="#">Termos de Uso</a></small>
   </footer>
 
-  <script>
-    const token = sessionStorage.getItem('token');
-    const solicitante = sessionStorage.getItem('solicitante');
-
-    if (!token || !solicitante) {
-      window.location.href = '../login/login.html';
-    } else {
-      document.getElementById('nome-usuario').textContent = solicitante;
-      document.body.style.display = 'block';
-    }
-
-    function logout() {
-      sessionStorage.clear();
-      window.location.href = '../login/login.html';
-    }
-  </script>
-
   <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
   <script>
     const url = 'https://app-qreader.onrender.com';
 
-    document.addEventListener("DOMContentLoaded", function () {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      window.location.href = '../login/login.html';
+    }
+
+    let auth0 = null;
+
+    async function configureAuth0() {
+      auth0 = await createAuth0Client({
+        domain: "dev-agq6qfbtj4yee13n.us.auth0.com",
+        client_id: "zH6qQUwI5LMYtM4zOfw7N1DokYo9ruMV",
+        cacheLocation: "localstorage"
+      });
+    }
+
+    async function logout() {
+      await auth0.logout({
+        logoutParams: {
+          returnTo: window.location.origin + '/login/login.html'
+        }
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", async function () {
+      await configureAuth0();
+
+      const logoutBtn = document.getElementById('logout-btn');
+      logoutBtn.addEventListener('click', logout);
+
       const openCameraBtn = document.getElementById('open-camera-btn');
+      const returnHomeBtn = document.getElementById('return-home-btn');
       const videoContainer = document.getElementById('video-container');
       const cameraFeed = document.getElementById('camera-feed');
       const loadingMessage = document.querySelector('.loading-message');
       const errorMessage = document.querySelector('.error-message');
 
       let intervalId;
-      let isProcessing = false;
-      let lastQRCodeRead = '';
 
       openCameraBtn.addEventListener('click', openCamera);
+      returnHomeBtn.addEventListener('click', () => window.location.href = '../index.html');
       errorMessage.addEventListener('click', () => {
         errorMessage.style.display = 'none';
         openCamera();
@@ -106,8 +117,6 @@
       }
 
       function captureQRCode() {
-        if (isProcessing) return;
-
         const canvasElement = document.createElement('canvas');
         const canvas = canvasElement.getContext('2d');
 
@@ -118,10 +127,8 @@
         const imageData = canvas.getImageData(0, 0, cameraFeed.videoWidth, cameraFeed.videoHeight);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
 
-        if (code && code.data !== lastQRCodeRead) {
+        if (code) {
           const id = code.data;
-          lastQRCodeRead = id;
-          isProcessing = true;
           sessionStorage.setItem('id', id);
           window.location.href = 'alterar.html';
         }
