@@ -21,9 +21,6 @@
       </hgroup>
 
       <form id="perfil-form">
-        <label for="nome">Nome completo:</label>
-        <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
-
         <label for="tipo">Tipo de usuário:</label>
         <select id="tipo" name="tipo" required>
           <option value="">Selecione</option>
@@ -31,16 +28,10 @@
           <option value="prestador">Prestador</option>
         </select>
 
-        <label for="cpfOuCnpj">CPF ou CNPJ:</label>
-        <input type="text" id="cpfOuCnpj" name="cpfOuCnpj" placeholder="Somente números" required>
-
         <div id="empresa-container" class="hidden">
-          <label for="empresaVinculada">Empresa vinculada:</label>
-          <input type="text" id="empresaVinculada" name="empresaVinculada" placeholder="Nome da empresa">
+          <label for="empresaRelacionada">Empresa vinculada:</label>
+          <input type="text" id="empresaRelacionada" name="empresaRelacionada" placeholder="Nome da empresa">
         </div>
-
-        <label for="contato">Contato (e-mail ou telefone):</label>
-        <input type="text" id="contato" name="contato" placeholder="Ex: (11) 99999-9999">
 
         <button type="submit">Salvar Perfil</button>
       </form>
@@ -68,49 +59,43 @@
       }
 
       const user = await auth0.getUser();
-      const payload = {
-        email: user.email,
-        auth0Id: user.sub,
-        tipoUsuario: 'prestador', // ou 'empresa'
-        empresaRelacionada: 'Empresa X' // se aplicável
-      };
-      sessionStorage.setItem("idAuth0", user.sub);
+      const email = user.email;
 
       document.getElementById('tipo').addEventListener('change', function () {
-        const empresaContainer = document.getElementById('empresa-container');
-        empresaContainer.classList.toggle('hidden', this.value !== 'prestador');
+        const container = document.getElementById('empresa-container');
+        container.classList.toggle('hidden', this.value !== 'prestador');
       });
 
       document.getElementById('perfil-form').addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        const perfil = {
-          idAuth0: sessionStorage.getItem("idAuth0"),
-          nome: document.getElementById("nome").value,
-          tipo: document.getElementById("tipo").value,
-          cpfOuCnpj: document.getElementById("cpfOuCnpj").value,
-          empresaVinculada: document.getElementById("empresaVinculada").value || null,
-          contato: document.getElementById("contato").value,
-          status: document.getElementById("tipo").value === "prestador" ? "pendente" : "aprovado"
+        const tipoUsuario = document.getElementById('tipo').value;
+        const empresaRelacionada = tipoUsuario === 'prestador'
+          ? document.getElementById('empresaRelacionada').value
+          : null;
+
+        const payload = {
+          email,
+          tipoUsuario,
+          empresaRelacionada
         };
 
         try {
-          const response = await fetch(`${url}/definir-perfil`, {
+          const response = await fetch(`${url}/definir_perfil`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(perfil)
+            body: JSON.stringify(payload)
           });
 
           if (response.ok) {
-            sessionStorage.setItem("tipo", perfil.tipo);
             alert("Perfil salvo com sucesso!");
             window.location.href = "../index.html";
           } else {
             const data = await response.json();
             document.getElementById("mensagem").textContent = data.error || "Erro ao salvar perfil.";
           }
-        } catch (error) {
-          console.error(error);
+        } catch (err) {
+          console.error(err);
           document.getElementById("mensagem").textContent = "Erro na comunicação com o servidor.";
         }
       });

@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="../styles.css">
 </head>
 <body>
-
   <nav class="container-fluid">
     <ul><li><strong>Sistema QReader</strong></li></ul>
   </nav>
@@ -24,6 +23,7 @@
         <button id="login-btn">Entrar</button>
         <button id="signup-btn" class="secondary">Criar conta</button>
       </div>
+      <div id="loading" style="display: none; margin-top: 1rem;">Carregando...</div>
     </section>
   </main>
 
@@ -43,42 +43,90 @@
       });
     }
 
-    async function handleRedirect() {
+    async function handleAuth() {
       const query = window.location.search;
-      if (query.includes("code=") && query.includes("state=")) {
-        await auth0.handleRedirectCallback();
-        window.history.replaceState({}, document.title, "/login/login.html");
-      }
-    }
+      console.log("Query params:", query);
+      console.log("signup_flow antes de verificar:", sessionStorage.getItem("signup_flow"));
 
-    async function finalizeLogin() {
-      const isAuthenticated = await auth0.isAuthenticated();
-      if (isAuthenticated) {
-        const token = await auth0.getTokenSilently();
-        const user = await auth0.getUser();
-        sessionStorage.setItem("token", token);
-        sessionStorage.setItem("solicitante", user.name || user.email);
-        window.location.href = "../index.html";
+      if (query.includes("code=") && query.includes("state=")) {
+        const isSignupFlow = sessionStorage.getItem("signup_flow") === "true";
+        console.log("isSignupFlow:", isSignupFlow);
+        try {
+          await auth0.handleRedirectCallback();
+          window.history.replaceState({}, document.title, "/login/login.html");
+
+          const isAuthenticated = await auth0.isAuthenticated();
+          if (isAuthenticated) {
+            const token = await auth0.getTokenSilently();
+            const user = await auth0.getUser();
+
+            sessionStorage.setItem("token", token);
+            sessionStorage.setItem("solicitante", user.name || user.email);
+
+            if (isSignupFlow) {
+              sessionStorage.removeItem("signup_flow");
+              console.log("Redirecionando para definir_perfil.html");
+              window.location.href = `${window.location.origin}/login/definir_perfil.html`;
+            } else {
+              console.log("Redirecionando para index.html");
+              window.location.href = `${window.location.origin}/index.html`;
+            }
+          }
+        } catch (error) {
+          console.error("Erro no callback do Auth0:", error);
+          alert("Erro ao processar o cadastro. Tente novamente.");
+        }
+      } else {
+        const isAuthenticated = await auth0.isAuthenticated();
+        console.log("Usuário já autenticado:", isAuthenticated);
+        if (isAuthenticated) {
+          const token = await auth0.getTokenSilently();
+          const user = await auth0.getUser();
+
+          sessionStorage.setItem("token", token);
+          sessionStorage.setItem("solicitante", user.name || user.email);
+          window.location.href = `${window.location.origin}/index.html`;
+        }
       }
     }
 
     window.onload = async () => {
-      await configureAuth0();
-      await handleRedirect();
-      await finalizeLogin();
+      try {
+        await configureAuth0();
+        await handleAuth();
+      } catch (error) {
+        console.error("Erro na autenticação:", error);
+        alert("Ocorreu um erro ao processar sua solicitação. Tente novamente.");
+      }
     };
 
     document.getElementById("login-btn").addEventListener("click", async () => {
-      await auth0.loginWithRedirect({
-        redirect_uri: window.location.origin + "/login/login.html"
-      });
+      document.getElementById("loading").style.display = "block";
+      try {
+        await auth0.loginWithRedirect({
+          redirect_uri: window.location.origin + "/login/login.html"
+        });
+      } catch (error) {
+        document.getElementById("loading").style.display = "none";
+        console.error("Erro no login:", error);
+        alert("Erro ao iniciar o login. Tente novamente.");
+      }
     });
 
     document.getElementById("signup-btn").addEventListener("click", async () => {
-      await auth0.loginWithRedirect({
-        redirect_uri: window.location.origin + "/login/login.html",
-        screen_hint: "signup"
-      });
+      document.getElementById("loading").style.display = "block";
+      sessionStorage.setItem("signup_flow", "true");
+      console.log("signup_flow definido:", sessionStorage.getItem("signup_flow"));
+      try {
+        await auth0.loginWithRedirect({
+          redirect_uri: window.location.origin + "/login/login.html",
+          screen_hint: "signup"
+        });
+      } catch (error) {
+        document.getElementById("loading").style.display = "none";
+        console.error("Erro no cadastro:", error);
+        alert("Erro ao iniciar o cadastro. Tente novamente.");
+      }
     });
   </script>
 </body>
