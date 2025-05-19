@@ -1,15 +1,21 @@
-// src/controllers/perfilController.ts
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { email, auth0Id, tipoUsuario, empresaRelacionada } = request.body as {
+  const { email, auth0Id, tipoUsuario, empresaRelacionada, empresa } = request.body as {
     email: string;
     auth0Id: string;
     tipoUsuario: 'empresa' | 'prestador';
     empresaRelacionada?: string;
+    empresa?: {
+      nome: string;
+      cnpj: string;
+      endereco?: string;
+      setor?: string;
+      telefone?: string;
+    };
   };
 
   if (!email || !auth0Id || !tipoUsuario) {
@@ -25,15 +31,45 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
       return reply.status(400).send({ error: 'Perfil já definido para este e-mail.' });
     }
 
-    const perfil = await prisma.users.create({
-      data: {
-        email,
-        auth0Id,
-        tipoUsuario,
-        empresaRelacionada: tipoUsuario === 'prestador' ? empresaRelacionada : null,
-        aprovado: tipoUsuario === 'empresa', // empresas são aprovadas automaticamente
-      },
-    });
+    let perfil;
+    if (tipoUsuario === 'prestador') {
+      if (!empresaRelacionada) {
+        return reply.status(400).send({ error: 'Empresa relacionada é obrigatória para prestadores.' });
+      }
+
+      perfil = await prisma.users.create({
+        data: {
+          email,
+          auth0Id,
+          tipoUsuario,
+          empresaRelacionada,
+          aprovado: false,
+        },
+      });
+    } else if (tipoUsuario === 'empresa') {
+      if (!empresa || !empresa.nome || !empresa.cnpj) {
+        return reply.status(400).send({ error: 'Nome e CNPJ da empresa são obrigatórios.' });
+      }
+
+      perfil = await prisma.users.create({
+        data: {
+          email,
+          auth0Id,
+          tipoUsuario,
+          aprovado: true,
+          empresa: {
+            create: {
+              // Removido userId: undefined
+              nome: empresa.nome,
+              cnpj: empresa.cnpj,
+              endereco: empresa.endereco || null,
+              setor: empresa.setor || null,
+              telefone: empresa.telefone || null,
+            },
+          },
+        },
+      });
+    }
 
     return reply.status(201).send({ message: 'Perfil definido com sucesso.', perfil });
   } catch (error) {
