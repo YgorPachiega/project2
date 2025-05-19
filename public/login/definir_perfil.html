@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Definir Perfil</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  <link rel="stylesheet" href="../styles.css">
+
+  <style>
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section>
+      <hgroup>
+        <h2>Definir Perfil</h2>
+        <h3>Complete seu cadastro</h3>
+      </hgroup>
+
+      <form id="perfil-form">
+        <label for="nome">Nome completo:</label>
+        <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
+
+        <label for="tipo">Tipo de usuário:</label>
+        <select id="tipo" name="tipo" required>
+          <option value="">Selecione</option>
+          <option value="empresa">Empresa</option>
+          <option value="prestador">Prestador</option>
+        </select>
+
+        <label for="cpfOuCnpj">CPF ou CNPJ:</label>
+        <input type="text" id="cpfOuCnpj" name="cpfOuCnpj" placeholder="Somente números" required>
+
+        <div id="empresa-container" class="hidden">
+          <label for="empresaVinculada">Empresa vinculada:</label>
+          <input type="text" id="empresaVinculada" name="empresaVinculada" placeholder="Nome da empresa">
+        </div>
+
+        <label for="contato">Contato (e-mail ou telefone):</label>
+        <input type="text" id="contato" name="contato" placeholder="Ex: (11) 99999-9999">
+
+        <button type="submit">Salvar Perfil</button>
+      </form>
+
+      <p id="mensagem" class="message"></p>
+    </section>
+  </main>
+
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
+  <script>
+    const url = 'https://app-qreader.onrender.com';
+    let auth0 = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      auth0 = await createAuth0Client({
+        domain: "dev-agq6qfbtj4yee13n.us.auth0.com",
+        client_id: "zH6qQUwI5LMYtM4zOfw7N1DokYo9ruMV",
+        cacheLocation: "localstorage"
+      });
+
+      const isAuthenticated = await auth0.isAuthenticated();
+      if (!isAuthenticated) {
+        window.location.href = "../login/login.html";
+        return;
+      }
+
+      const user = await auth0.getUser();
+      sessionStorage.setItem("idAuth0", user.sub);
+
+      document.getElementById('tipo').addEventListener('change', function () {
+        const empresaContainer = document.getElementById('empresa-container');
+        empresaContainer.classList.toggle('hidden', this.value !== 'prestador');
+      });
+
+      document.getElementById('perfil-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const perfil = {
+          idAuth0: sessionStorage.getItem("idAuth0"),
+          nome: document.getElementById("nome").value,
+          tipo: document.getElementById("tipo").value,
+          cpfOuCnpj: document.getElementById("cpfOuCnpj").value,
+          empresaVinculada: document.getElementById("empresaVinculada").value || null,
+          contato: document.getElementById("contato").value,
+          status: document.getElementById("tipo").value === "prestador" ? "pendente" : "aprovado"
+        };
+
+        try {
+          const response = await fetch(`${url}/definir-perfil`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(perfil)
+          });
+
+          if (response.ok) {
+            sessionStorage.setItem("tipo", perfil.tipo);
+            alert("Perfil salvo com sucesso!");
+            window.location.href = "../index.html";
+          } else {
+            const data = await response.json();
+            document.getElementById("mensagem").textContent = data.error || "Erro ao salvar perfil.";
+          }
+        } catch (error) {
+          console.error(error);
+          document.getElementById("mensagem").textContent = "Erro na comunicação com o servidor.";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
