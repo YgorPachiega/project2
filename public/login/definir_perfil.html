@@ -6,13 +6,19 @@
   <title>Definir Perfil - QReader</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
   <link rel="stylesheet" href="../styles.css">
+
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <main class="container">
     <section>
       <hgroup>
         <h2>Definir Perfil</h2>
-        <h3>Complete seu cadastro</h3>
+        <h3>Complete seu cadastro para continuar</h3>
       </hgroup>
 
       <form id="profile-form">
@@ -23,12 +29,12 @@
           <option value="prestador">Prestador</option>
         </select>
 
-        <div id="empresa-fields" style="display: none;">
-          <label for="nome">Nome da Empresa:</label>
-          <input type="text" id="nome" name="nome" required />
+        <div id="empresa-fields" class="hidden">
+          <label for="nome">Nome da empresa:</label>
+          <input type="text" id="nome" name="nome" />
 
           <label for="cnpj">CNPJ:</label>
-          <input type="text" id="cnpj" name="cnpj" required pattern="\d{14}" title="CNPJ deve ter 14 dígitos" />
+          <input type="text" id="cnpj" name="cnpj" pattern="\\d{14}" placeholder="Somente números" />
 
           <label for="endereco">Endereço:</label>
           <input type="text" id="endereco" name="endereco" />
@@ -40,119 +46,120 @@
           <input type="text" id="telefone" name="telefone" />
         </div>
 
-        <label for="empresaRelacionada" id="empresaRelacionada-label">Empresa vinculada:</label>
-        <input type="text" id="empresaRelacionada" name="empresaRelacionada" />
+        <div id="prestador-fields" class="hidden">
+          <label for="empresaRelacionada">Empresa vinculada:</label>
+          <select id="empresaRelacionada" name="empresaRelacionada">
+            <option value="">Carregando empresas...</option>
+          </select>
+        </div>
 
         <button type="submit">Salvar Perfil</button>
+        <p id="mensagem" class="message"></p>
       </form>
     </section>
   </main>
 
-  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
   <script>
     const url = 'https://app-qreader.onrender.com';
-    let auth0 = null;
+    const tipoUsuario = document.getElementById("tipoUsuario");
+    const empresaFields = document.getElementById("empresa-fields");
+    const prestadorFields = document.getElementById("prestador-fields");
+    const empresaRelacionadaSelect = document.getElementById("empresaRelacionada");
 
-    document.addEventListener("DOMContentLoaded", async () => {
-      auth0 = await createAuth0Client({
-        domain: "dev-agq6qfbtj4yee13n.us.auth0.com",
-        client_id: "zH6qQUwI5LMYtM4zOfw7N1DokYo9ruMV",
-        cacheLocation: "localstorage"
-      });
+    tipoUsuario.addEventListener("change", () => {
+      if (tipoUsuario.value === "empresa") {
+        empresaFields.classList.remove("hidden");
+        prestadorFields.classList.add("hidden");
+      } else if (tipoUsuario.value === "prestador") {
+        empresaFields.classList.add("hidden");
+        prestadorFields.classList.remove("hidden");
+        carregarEmpresas();
+      } else {
+        empresaFields.classList.add("hidden");
+        prestadorFields.classList.add("hidden");
+      }
+    });
 
-      const isAuthenticated = await auth0.isAuthenticated();
-      if (!isAuthenticated) {
+    async function carregarEmpresas() {
+      try {
+        const response = await fetch(`${url}/api/empresas`);
+        const empresas = await response.json();
+
+        empresaRelacionadaSelect.innerHTML = '<option value="">Selecione uma empresa</option>';
+        empresas.forEach(emp => {
+          const option = document.createElement("option");
+          option.value = emp.nome;
+          option.textContent = emp.nome;
+          empresaRelacionadaSelect.appendChild(option);
+        });
+      } catch (error) {
+        console.error("Erro ao carregar empresas:", error);
+        empresaRelacionadaSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+      }
+    }
+
+    document.getElementById("profile-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = sessionStorage.getItem("solicitante");
+      const auth0Id = sessionStorage.getItem("auth0Id");
+
+      if (!email || !auth0Id) {
+        alert("Erro: Usuário não autenticado.");
         window.location.href = "/login/login.html";
         return;
       }
 
-      const user = await auth0.getUser();
-      const email = user.email;
-      const auth0Id = user.sub;
+      const tipo = tipoUsuario.value;
+      const data = {
+        email,
+        auth0Id,
+        tipoUsuario: tipo,
+      };
 
-      sessionStorage.setItem("solicitante", email);
-      sessionStorage.setItem("auth0Id", auth0Id);
+      if (tipo === "empresa") {
+        const nome = document.getElementById("nome").value;
+        const cnpj = document.getElementById("cnpj").value;
 
-      const tipoUsuario = document.getElementById("tipoUsuario");
-      const empresaFields = document.getElementById("empresa-fields");
-      const empresaRelacionadaLabel = document.getElementById("empresaRelacionada-label");
-      const empresaRelacionadaInput = document.getElementById("empresaRelacionada");
-
-      tipoUsuario.addEventListener("change", () => {
-        if (tipoUsuario.value === "empresa") {
-          empresaFields.style.display = "block";
-          empresaRelacionadaLabel.style.display = "none";
-          empresaRelacionadaInput.style.display = "none";
-          empresaRelacionadaInput.required = false;
-        } else if (tipoUsuario.value === "prestador") {
-          empresaFields.style.display = "none";
-          empresaRelacionadaLabel.style.display = "block";
-          empresaRelacionadaInput.style.display = "block";
-          empresaRelacionadaInput.required = true;
-        } else {
-          empresaFields.style.display = "none";
-          empresaRelacionadaLabel.style.display = "block";
-          empresaRelacionadaInput.style.display = "block";
-          empresaRelacionadaInput.required = false;
+        if (!nome || !cnpj) {
+          alert("Nome e CNPJ são obrigatórios.");
+          return;
         }
-      });
 
-      document.getElementById("profile-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const tipoUsuarioValue = tipoUsuario.value;
-
-        const data = {
-          email,
-          auth0Id,
-          tipoUsuario: tipoUsuarioValue,
+        data.empresa = {
+          nome,
+          cnpj,
+          endereco: document.getElementById("endereco").value,
+          setor: document.getElementById("setor").value,
+          telefone: document.getElementById("telefone").value,
         };
-
-        if (tipoUsuarioValue === "prestador") {
-          const empresaRelacionada = empresaRelacionadaInput.value;
-          if (!empresaRelacionada) {
-            alert("Erro: Empresa vinculada é obrigatória para prestadores.");
-            return;
-          }
-          data.empresaRelacionada = empresaRelacionada;
-        } else if (tipoUsuarioValue === "empresa") {
-          const nome = document.getElementById("nome").value;
-          const cnpj = document.getElementById("cnpj").value;
-          const endereco = document.getElementById("endereco").value;
-          const setor = document.getElementById("setor").value;
-          const telefone = document.getElementById("telefone").value;
-
-          if (!nome || !cnpj) {
-            alert("Nome da empresa e CNPJ são obrigatórios.");
-            return;
-          }
-
-          data.empresa = { nome, cnpj, endereco, setor, telefone };
+      } else if (tipo === "prestador") {
+        const empresaRelacionada = empresaRelacionadaSelect.value;
+        if (!empresaRelacionada) {
+          alert("Selecione a empresa vinculada.");
+          return;
         }
+        data.empresaRelacionada = empresaRelacionada;
+      }
 
-        try {
-          const response = await fetch(`${url}/api/definir_perfil`, {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+      try {
+        const response = await fetch(`${url}/api/definir_perfil`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
 
-          if (!response.ok) {
-            const text = await response.text();
-            console.error('Erro na resposta da API:', response.status, text);
-            throw new Error(`Erro na API: ${response.status} - ${text || 'Sem mensagem de erro'}`);
-          }
-
-          const result = await response.json();
+        if (response.ok) {
           alert("Perfil salvo com sucesso!");
           window.location.href = "/index.html";
-        } catch (error) {
-          console.error("Erro ao enviar dados:", error);
-          alert(`Erro ao salvar o perfil: ${error.message}. Tente novamente.`);
+        } else {
+          const erro = await response.json();
+          document.getElementById("mensagem").textContent = erro.error || "Erro ao salvar perfil.";
         }
-      });
+      } catch (err) {
+        console.error("Erro na requisição:", err);
+        document.getElementById("mensagem").textContent = "Erro ao salvar perfil.";
+      }
     });
   </script>
 </body>
