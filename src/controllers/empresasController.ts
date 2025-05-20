@@ -21,3 +21,17 @@ export const getEmpresaByUserId = async (request: FastifyRequest, reply: Fastify
     return reply.status(500).send({ error: 'Erro interno ao buscar empresa.' });
   }
 };
+
+export const listarEmpresas = async (request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const empresas = await prisma.empresas.findMany({
+      select: { id: true, nome: true },
+      orderBy: { nome: 'asc' }
+    });
+
+    return reply.status(200).send(empresas);
+  } catch (error) {
+    console.error('Erro ao listar empresas:', error);
+    return reply.status(500).send({ error: 'Erro interno ao listar empresas.' });
+  }
+};
