@@ -91,3 +91,24 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
     return reply.status(500).send({ error: 'Erro interno ao salvar perfil.', details: errorMessage });
   }
 };
+
+export const verificarPerfil = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { email } = request.query as { email: string };
+
+  if (!email) {
+    return reply.status(400).send({ error: 'Email não fornecido.' });
+  }
+
+  try {
+    const perfil = await prisma.users.findUnique({ where: { email } });
+
+    if (!perfil) {
+      return reply.status(404).send({ error: 'Perfil não encontrado.' });
+    }
+
+    return reply.status(200).send({ message: 'Perfil já cadastrado.' });
+  } catch (error) {
+    console.error('Erro ao verificar perfil:', error);
+    return reply.status(500).send({ error: 'Erro ao verificar perfil.' });
+  }
+};
