@@ -69,9 +69,10 @@
           if (empresa) {
             sessionStorage.setItem("empresaNome", empresa.nome);
           }
+          window.location.href = `${window.location.origin}/empresas/painel_empresas.html`;
+        } else {
+          window.location.href = `${window.location.origin}/index.html`;
         }
-
-        window.location.href = `${window.location.origin}/index.html`;
 
       } catch (error) {
         console.error("Erro ao verificar perfil:", error);
