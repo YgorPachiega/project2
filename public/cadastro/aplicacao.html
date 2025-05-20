@@ -1,59 +1,58 @@
 <!DOCTYPE html>
-<html lang="pt-br" data-theme="dark">
+<html lang="pt-br" data-bs-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Cadastro de Funcionários</title>
-
-  <meta name="color-scheme" content="dark">
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
-  <link rel="stylesheet" href="../styles.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
 </head>
-
 <body style="display: none;">
-  <nav class="container-fluid">
-    <ul>
-      <li><strong>Sistema QReader</strong></li>
-    </ul>
-    <ul>
-      <li><strong>Bem-vindo, <span id="nome-usuario"></span></strong></li>
-      <li><a href="#" role="button" id="return-home-btn">Voltar</a></li>
-      <li><a href="#" role="button" id="logout-btn">Sair</a></li>
-    </ul>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <div class="container-fluid">
+      <span class="navbar-brand">Sistema QReader</span>
+      <div class="d-flex align-items-center">
+        <span class="me-3 text-white">Bem-vindo, <strong id="nome-usuario"></strong></span>
+        <button class="btn btn-outline-light me-2" id="return-home-btn">Voltar</button>
+        <button class="btn btn-danger" id="logout-btn">Sair</button>
+      </div>
+    </div>
   </nav>
 
-  <main class="container">
-    <div class="grid">
-      <section>
-        <hgroup>
-          <h2>Cadastro de Funcionários</h2>
-          <h3>Preencha os dados abaixo</h3>
-        </hgroup>
-
-        <form id="cadastroForm" aria-label="Formulário de Cadastro">
-          <input type="text" id="nome" name="nome" placeholder="Nome" aria-label="Nome" required />
-          <input type="text" id="cpf" name="cpf" placeholder="CPF" aria-label="CPF" required />
-          <select id="empresa" name="empresa" aria-label="Empresa" required>
+  <main class="container py-4">
+    <div class="card p-4 shadow">
+      <h2>Cadastro de Funcionários</h2>
+      <p>Preencha os dados abaixo</p>
+      <form id="cadastroForm">
+        <div class="mb-3">
+          <label for="nome" class="form-label">Nome</label>
+          <input type="text" class="form-control" id="nome" name="nome" required>
+        </div>
+        <div class="mb-3">
+          <label for="cpf" class="form-label">CPF</label>
+          <input type="text" class="form-control" id="cpf" name="cpf" required>
+        </div>
+        <div class="mb-3">
+          <label for="empresa" class="form-label">Empresa</label>
+          <select class="form-select" id="empresa" name="empresa" required>
             <option value="" disabled selected>Selecione a empresa</option>
             <option value="empresa1">Empresa 1</option>
             <option value="empresa2">Empresa 2</option>
             <option value="empresa3">Empresa 3</option>
           </select>
-          <input type="hidden" id="id" name="id" />
-          <input type="hidden" id="solicitante" name="solicitante" />
-
-          <button type="submit" aria-label="Salvar Funcionário">
-            <span>Salvar</span>
-            <span class="loading" style="display: none;">Carregando...</span>
-          </button>
-        </form>
-      </section>
+        </div>
+        <input type="hidden" id="id" name="id">
+        <input type="hidden" id="solicitante" name="solicitante">
+        <button type="submit" class="btn btn-primary">
+          <span>Salvar</span>
+          <span class="loading" style="display: none;">Carregando...</span>
+        </button>
+      </form>
     </div>
   </main>
 
-  <footer class="container">
-    <small><a href="#">Política de Privacidade</a> • <a href="#">Termos de Uso</a></small>
+  <footer class="bg-dark text-center text-white py-3">
+    <small><a href="#" class="text-white text-decoration-none">Política de Privacidade</a> • <a href="#" class="text-white text-decoration-none">Termos de Uso</a></small>
   </footer>
 
   <script>
@@ -68,18 +67,18 @@
       document.body.style.display = 'block';
     }
 
-    function logout() {
+    document.getElementById('logout-btn').addEventListener('click', () => {
       sessionStorage.clear();
       window.location.href = '../login/login.html';
-    }
+    });
 
-    document.getElementById('return-home-btn').addEventListener('click', function () {
+    document.getElementById('return-home-btn').addEventListener('click', () => {
       window.location.href = '../index.html';
     });
 
     const url = 'https://app-qreader.onrender.com';
 
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('id').value = id;
       document.getElementById('solicitante').value = solicitante;
 
@@ -122,5 +121,6 @@
       });
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
