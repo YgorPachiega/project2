@@ -81,6 +81,7 @@
 
     async function logout() {
       sessionStorage.clear();
+      localStorage.clear();
       await auth0.logout({
         returnTo: window.location.origin + "/login/login.html",
         federated: true
