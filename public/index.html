@@ -101,7 +101,8 @@
     async function logout() {
       await auth0.logout({
         logoutParams: {
-          returnTo: window.location.origin + "/login/login.html"
+          returnTo: window.location.origin + "/login/login.html",
+          federated: true
         }
       });
     }
