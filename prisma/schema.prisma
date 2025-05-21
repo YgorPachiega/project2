@@ -28,7 +28,7 @@ model users {
 
 model empresas {
   id              Int      @id @default(autoincrement())
-  userID          Int      @unique
+  userId          Int      @unique
   nome            String   @db.VarChar(255)
   cnpj            String   @unique @db.VarChar(14)
   endereco        String?  @db.VarChar(255)
