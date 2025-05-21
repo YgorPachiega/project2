@@ -15,26 +15,28 @@ datasource db {
 }
 
 model users {
-  id              Int       @id @default(autoincrement())
-  email           String    @unique
-  auth0Id         String    @unique
-  tipoUsuario     String    @default("prestador")
-  empresaRelacionada String?   // Nome da empresa para prestadores
-  aprovado        Boolean   @default(false)
-  empresa         empresas? // Opcional, pois nem todo usuário é uma empresa
-  empresaId       Int?      @unique
+  id                  Int       @id @default(autoincrement())
+  email               String    @unique
+  auth0Id             String    @unique
+  tipoUsuario         String    @default("prestador")
+  empresaRelacionada  String?   // (opcional, pode ser removido no futuro)
+  aprovado            Boolean   @default(false)
+  empresaId           Int?      // Chave estrangeira para empresas
+
+  empresa             empresas? @relation(fields: [empresaId], references: [id])
 }
 
 model empresas {
-  id              Int       @id @default(autoincrement())
-  userId          Int       @unique
-  nome            String    @db.VarChar(255)
-  cnpj            String    @unique @db.VarChar(14)
-  endereco        String?   @db.VarChar(255)
-  setor           String?   @db.VarChar(100)
-  telefone        String?   @db.VarChar(20)
-  user            users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              Int      @id @default(autoincrement())
+  nome            String   @db.VarChar(255)
+  cnpj            String   @unique @db.VarChar(14)
+  endereco        String?  @db.VarChar(255)
+  setor           String?  @db.VarChar(100)
+  telefone        String?  @db.VarChar(20)
+
+  usuarios        users[]  // Relacionamento 1:N
 }
+
 
 model Clients {
   id        String   @unique
