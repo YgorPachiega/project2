@@ -6,7 +6,9 @@
   <title>Painel da Empresa - QReader</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
 </head>
+
 <body>
   <div class="container-fluid">
     <div class="row">
@@ -28,7 +30,9 @@
 
         <section id="aprovacoes" class="hidden">
           <h2>Aprovação de Prestadores</h2>
-          <p>Em breve aqui você poderá aprovar ou rejeitar prestadores vinculados.</p>
+          <div id="lista-aprovacoes">
+            <p>Carregando...</p>
+          </div>
         </section>
 
         <section id="eventos" class="hidden">
@@ -45,7 +49,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
 
   <script>
     let auth0 = null;
@@ -58,9 +61,11 @@
       });
     }
 
-    async function validarSessao() {
+    async function validarAcesso() {
       const email = sessionStorage.getItem("solicitante");
+
       if (!email) {
+        alert("Acesso negado. Faça login novamente.");
         window.location.href = "/login/login.html";
         return;
       }
@@ -72,30 +77,126 @@
         if (!perfil || perfil.tipoUsuario !== "empresa") {
           alert("Acesso restrito a empresas.");
           window.location.href = "/index.html";
+        } else {
+          sessionStorage.setItem("empresaNome", perfil.empresa);
         }
       } catch (error) {
-        console.error("Erro ao validar o acesso:", error);
+        console.error("Erro ao validar acesso:", error);
+        alert("Erro ao validar o acesso. Faça login novamente.");
         window.location.href = "/login/login.html";
       }
     }
 
     async function logout() {
       sessionStorage.clear();
-      localStorage.clear();
+      const auth0 = await createAuth0Client({
+        domain: "dev-agq6qfbtj4yee13n.us.auth0.com",
+        client_id: "zH6qQUwI5LMYtM4zOfw7N1DokYo9ruMV",
+        cacheLocation: "localstorage"
+      });
       await auth0.logout({
-        returnTo: window.location.origin + "/login/login.html",
-        federated: true
+        logoutParams: {
+          returnTo: window.location.origin + "/login/login.html",
+          federated: true
+        }
       });
     }
 
     function mostrarSecao(secao) {
       document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
       document.getElementById(secao).classList.remove('hidden');
+
+      if (secao === 'aprovacoes') {
+        carregarAprovacoes();
+      }
+    }
+
+    async function carregarAprovacoes() {
+      const empresaNome = sessionStorage.getItem('empresaNome');
+
+      if (!empresaNome) {
+        document.getElementById('lista-aprovacoes').innerHTML = `<p>Erro: nome da empresa não encontrado.</p>`;
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://app-qreader.onrender.com/api/prestadores/pendentes?empresaNome=${empresaNome}`);
+        const prestadores = await response.json();
+
+        if (!response.ok) {
+          document.getElementById('lista-aprovacoes').innerHTML = `<p>${prestadores.error || 'Erro ao carregar dados.'}</p>`;
+          return;
+        }
+
+        if (prestadores.length === 0) {
+          document.getElementById('lista-aprovacoes').innerHTML = `<p>Não há prestadores pendentes.</p>`;
+          return;
+        }
+
+        let html = `
+          <table class="table table-dark table-bordered">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        prestadores.forEach(prestador => {
+          html += `
+            <tr>
+              <td>${prestador.nome}</td>
+              <td>${prestador.email}</td>
+              <td>
+                <button class="btn btn-success btn-sm" onclick="aprovarPrestador(${prestador.id})">Aprovar</button>
+              </td>
+            </tr>
+          `;
+        });
+
+        html += `
+            </tbody>
+          </table>
+        `;
+
+        document.getElementById('lista-aprovacoes').innerHTML = html;
+
+      } catch (error) {
+        console.error('Erro ao carregar aprovações:', error);
+        document.getElementById('lista-aprovacoes').innerHTML = `<p>Erro ao carregar aprovações.</p>`;
+      }
+    }
+
+    async function aprovarPrestador(id) {
+      const confirmar = confirm('Deseja realmente aprovar este prestador?');
+
+      if (!confirmar) return;
+
+      try {
+        const response = await fetch(`https://app-qreader.onrender.com/api/prestadores/aprovar/${id}`, {
+          method: 'PUT',
+        });
+
+        const resultado = await response.json();
+
+        if (response.ok) {
+          alert('Prestador aprovado com sucesso.');
+          carregarAprovacoes();
+        } else {
+          alert(resultado.error || 'Erro ao aprovar prestador.');
+        }
+      } catch (error) {
+        console.error('Erro ao aprovar prestador:', error);
+        alert('Erro na comunicação com o servidor.');
+      }
     }
 
     window.onload = async () => {
       await configureAuth0();
-      await validarSessao();
+      await validarAcesso();
     };
   </script>
 </body>
