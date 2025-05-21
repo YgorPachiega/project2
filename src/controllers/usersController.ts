@@ -9,6 +9,9 @@ export const getUserByEmail = async (request: FastifyRequest, reply: FastifyRepl
   try {
     const user = await prisma.users.findUnique({
       where: { email },
+      include: {
+        empresa: true, // Isso inclui os dados da tabela empresas vinculada
+      },
     });
 
     if (!user) {

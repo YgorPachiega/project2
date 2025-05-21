@@ -78,7 +78,7 @@
           alert("Acesso restrito a empresas.");
           window.location.href = "/index.html";
         } else {
-          sessionStorage.setItem("empresaNome", perfil.empresa);
+          sessionStorage.setItem("empresaNome", perfil.empresa.nome);
         }
       } catch (error) {
         console.error("Erro ao validar acesso:", error);

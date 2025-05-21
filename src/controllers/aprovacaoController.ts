@@ -8,7 +8,7 @@ export const listarPrestadoresPendentes = async (request: FastifyRequest, reply:
   const { empresaNome } = request.query as { empresaNome: string };
 
   if (!empresaNome) {
-    return reply.status(400).send({ error: 'Nome da empresa é obrigatório.' });
+    return reply.status(400).send({ error: 'O nome da empresa é obrigatório.' });
   }
 
   try {
@@ -18,12 +18,16 @@ export const listarPrestadoresPendentes = async (request: FastifyRequest, reply:
         empresaRelacionada: empresaNome,
         aprovado: false,
       },
+      select: {
+        id: true,
+        email: true,
+      },
     });
 
     return reply.status(200).send(prestadores);
   } catch (error) {
     console.error('Erro ao listar prestadores pendentes:', error);
-    return reply.status(500).send({ error: 'Erro interno ao listar prestadores.' });
+    return reply.status(500).send({ error: 'Erro interno ao listar prestadores pendentes.' });
   }
 };
 
