@@ -1,63 +1,76 @@
 <!DOCTYPE html>
-<html lang="pt-br" data-theme="dark">
+<html lang="pt-br" data-bs-theme="dark">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Definir Perfil - QReader</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
-
-  <style>
-    .hidden {
-      display: none;
-    }
-  </style>
 </head>
-<body>
-  <main class="container">
-    <section>
-      <hgroup>
-        <h2>Definir Perfil</h2>
-        <h3>Complete seu cadastro para continuar</h3>
-      </hgroup>
+
+<body class="bg-dark text-light">
+  <div class="container py-5">
+    <div class="card bg-secondary p-4">
+      <h2 class="mb-3">Definir Perfil</h2>
+      <p class="mb-4">Complete seu cadastro para continuar</p>
 
       <form id="profile-form">
-        <label for="tipoUsuario">Tipo de usuário:</label>
-        <select id="tipoUsuario" name="tipoUsuario" required>
-          <option value="" disabled selected>Selecione</option>
-          <option value="empresa">Empresa</option>
-          <option value="prestador">Prestador</option>
-        </select>
-
-        <div id="empresa-fields" class="hidden">
-          <label for="nome">Nome da empresa:</label>
-          <input type="text" id="nome" name="nome" />
-
-          <label for="cnpj">CNPJ:</label>
-          <input type="text" id="cnpj" name="cnpj" pattern="\\d{14}" placeholder="Somente números" />
-
-          <label for="endereco">Endereço:</label>
-          <input type="text" id="endereco" name="endereco" />
-
-          <label for="setor">Setor:</label>
-          <input type="text" id="setor" name="setor" />
-
-          <label for="telefone">Telefone:</label>
-          <input type="text" id="telefone" name="telefone" />
-        </div>
-
-        <div id="prestador-fields" class="hidden">
-          <label for="empresaRelacionada">Empresa vinculada:</label>
-          <select id="empresaRelacionada" name="empresaRelacionada">
-            <option value="">Carregando empresas...</option>
+        <div class="mb-3">
+          <label for="tipoUsuario" class="form-label">Tipo de usuário:</label>
+          <select id="tipoUsuario" name="tipoUsuario" class="form-select" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="empresa">Empresa</option>
+            <option value="prestador">Prestador</option>
           </select>
         </div>
 
-        <button type="submit">Salvar Perfil</button>
-        <p id="mensagem" class="message"></p>
+        <div id="empresa-fields" class="hidden">
+          <div class="mb-3">
+            <label for="nome" class="form-label">Nome da empresa:</label>
+            <input type="text" id="nome" name="nome" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label for="cnpj" class="form-label">CNPJ:</label>
+            <input type="text" id="cnpj" name="cnpj" class="form-control" placeholder="00.000.000/0000-00">
+          </div>
+
+          <div class="mb-3">
+            <label for="endereco" class="form-label">Endereço:</label>
+            <input type="text" id="endereco" name="endereco" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label for="setor" class="form-label">Setor:</label>
+            <input type="text" id="setor" name="setor" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label for="telefone" class="form-label">Telefone:</label>
+            <input type="text" id="telefone" name="telefone" class="form-control">
+          </div>
+        </div>
+
+        <div id="prestador-fields" class="hidden">
+          <div class="mb-3">
+            <label for="empresaRelacionada" class="form-label">Empresa vinculada:</label>
+            <select id="empresaRelacionada" name="empresaRelacionada" class="form-select">
+              <option value="">Carregando empresas...</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Salvar Perfil</button>
+        </div>
+
+        <p id="mensagem" class="mt-3 text-warning"></p>
       </form>
-    </section>
-  </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     const url = 'https://app-qreader.onrender.com';
@@ -98,6 +111,19 @@
       }
     }
 
+    // Máscara de CNPJ
+    document.getElementById('cnpj').addEventListener('input', function (e) {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 14) value = value.slice(0, 14);
+
+      value = value.replace(/^(\d{2})(\d)/, "$1.$2");
+      value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+      value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
+      value = value.replace(/(\d{4})(\d)/, "$1-$2");
+
+      e.target.value = value;
+    });
+
     document.getElementById("profile-form").addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -119,10 +145,10 @@
 
       if (tipo === "empresa") {
         const nome = document.getElementById("nome").value;
-        const cnpj = document.getElementById("cnpj").value;
+        const cnpj = document.getElementById("cnpj").value.replace(/\D/g, '');
 
-        if (!nome || !cnpj) {
-          alert("Nome e CNPJ são obrigatórios.");
+        if (!nome || !cnpj || cnpj.length !== 14) {
+          alert("Nome e CNPJ válidos são obrigatórios.");
           return;
         }
 
@@ -162,5 +188,12 @@
       }
     });
   </script>
+
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
 </body>
+
 </html>
