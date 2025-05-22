@@ -1,7 +1,7 @@
 import fastify from 'fastify';
 import { PrismaClient } from '@prisma/client';
 import { corsMiddleware } from './middleware/corsMiddleware';
-import clientsRoutes from './routes/clientsRoutes';
+import clientsRoutes from './routes/participantesRoutes';
 import perfilRoutes from './routes/perfilRoutes';
 import aprovacaoRoutes from './routes/aprovacaoRoutes';
 import usersRoutes from './routes/usersRoutes';

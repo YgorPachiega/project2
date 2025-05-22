@@ -5,7 +5,7 @@ import {
   verificarCliente,
   verificarFuncionario,
   registrarObservacao
-} from '../controllers/clientsController';
+} from '../controllers/participantesController';
 
 export default async function clientsRoutes(fastify: FastifyInstance) {
   fastify.get('/cadastro', getCadastro);
