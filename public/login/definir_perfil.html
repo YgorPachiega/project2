@@ -10,7 +10,16 @@
 </head>
 
 <body class="bg-dark text-light">
-  <div class="container py-5">
+
+  <!-- Spinner -->
+  <div id="spinner" class="d-flex justify-content-center align-items-center vh-100">
+    <div class="spinner-border text-light" role="status">
+      <span class="visually-hidden">Carregando...</span>
+    </div>
+  </div>
+
+  <!-- Conteúdo da página -->
+  <div id="content" class="container py-5" style="display:none;">
     <div class="card bg-secondary p-4">
       <h2 class="mb-3">Definir Perfil</h2>
       <p class="mb-4">Complete seu cadastro para continuar</p>
@@ -79,6 +88,19 @@
     const prestadorFields = document.getElementById("prestador-fields");
     const empresaRelacionadaSelect = document.getElementById("empresaRelacionada");
 
+    window.onload = () => {
+      const email = sessionStorage.getItem("solicitante");
+      const auth0Id = sessionStorage.getItem("auth0Id");
+
+      if (!email || !auth0Id) {
+        alert("Sessão não encontrada. Você será redirecionado para o login.");
+        window.location.href = "/login/login.html";
+      } else {
+        document.getElementById("spinner").style.display = "none";
+        document.getElementById("content").style.display = "block";
+      }
+    };
+
     tipoUsuario.addEventListener("change", () => {
       if (tipoUsuario.value === "empresa") {
         empresaFields.classList.remove("hidden");
@@ -101,8 +123,8 @@
         empresaRelacionadaSelect.innerHTML = '<option value="">Selecione uma empresa</option>';
         empresas.forEach(emp => {
           const option = document.createElement("option");
-          option.value = emp.id; // <- Envia ID
-          option.textContent = emp.nome; // <- Exibe nome
+          option.value = emp.id;
+          option.textContent = emp.nome;
           empresaRelacionadaSelect.appendChild(option);
         });
       } catch (error) {
@@ -130,12 +152,6 @@
       const email = sessionStorage.getItem("solicitante");
       const auth0Id = sessionStorage.getItem("auth0Id");
 
-      if (!email || !auth0Id) {
-        alert("Erro: Usuário não autenticado.");
-        window.location.href = "/login/login.html";
-        return;
-      }
-
       const tipo = tipoUsuario.value;
       const data = {
         email,
@@ -160,12 +176,12 @@
           telefone: document.getElementById("telefone").value,
         };
       } else if (tipo === "prestador") {
-        const empresaId = empresaRelacionadaSelect.value;
-        if (!empresaId) {
+        const empresaRelacionada = empresaRelacionadaSelect.value;
+        if (!empresaRelacionada) {
           alert("Selecione a empresa vinculada.");
           return;
         }
-        data.empresaId = parseInt(empresaId);
+        data.empresaId = parseInt(empresaRelacionada);
       }
 
       try {
@@ -198,6 +214,6 @@
       display: none;
     }
   </style>
-</body>
 
+</body>
 </html>
