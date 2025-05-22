@@ -39,27 +39,12 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
 
     let perfilCriado;
 
-    if (tipoUsuario === 'prestador') {
-      if (!empresaRelacionada) {
-        return reply.status(400).send({ error: 'Empresa vinculada é obrigatória para prestadores.' });
-      }
-
-      perfilCriado = await prisma.users.create({
-        data: {
-          email,
-          auth0Id,
-          tipoUsuario,
-          empresaRelacionada,
-          aprovado: false, // Aguarda aprovação da empresa
-        },
-      });
-
-    } else if (tipoUsuario === 'empresa') {
+    if (tipoUsuario === 'empresa') {
       if (!empresa || !empresa.nome || !empresa.cnpj) {
         return reply.status(400).send({ error: 'Nome e CNPJ da empresa são obrigatórios.' });
       }
 
-      // 1 - Cria o usuário primeiro
+      // Cria o usuário
       const usuarioEmpresa = await prisma.users.create({
         data: {
           email,
@@ -69,7 +54,7 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
         },
       });
 
-      // 2 - Cria a empresa vinculada ao usuário
+      // Cria a empresa e vincula ao usuário
       const empresaCriada = await prisma.empresas.create({
         data: {
           nome: empresa.nome,
@@ -77,14 +62,44 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
           endereco: empresa.endereco || null,
           setor: empresa.setor || null,
           telefone: empresa.telefone || null,
-          userId: usuarioEmpresa.id, // Vincula o usuário na empresa
+          userId: usuarioEmpresa.id,
         },
       });
 
-      // 3 - Atualiza o usuário com empresaId corretamente
-      perfilCriado = await prisma.users.update({
+      // Atualiza o usuário com o empresaId
+      await prisma.users.update({
         where: { id: usuarioEmpresa.id },
-        data: { empresaId: empresaCriada.id },
+        data: {
+          empresaId: empresaCriada.id,
+        },
+      });
+
+      perfilCriado = usuarioEmpresa;
+
+    } else if (tipoUsuario === 'prestador') {
+      if (!empresaRelacionada) {
+        return reply.status(400).send({ error: 'Empresa vinculada é obrigatória para prestadores.' });
+      }
+
+      // Busca a empresa pelo nome para obter o ID
+      const empresaEncontrada = await prisma.empresas.findFirst({
+        where: { nome: empresaRelacionada },
+      });
+
+      if (!empresaEncontrada) {
+        return reply.status(404).send({ error: 'Empresa não encontrada.' });
+      }
+
+      // Cria o usuário prestador vinculado à empresa
+      perfilCriado = await prisma.users.create({
+        data: {
+          email,
+          auth0Id,
+          tipoUsuario: 'prestador',
+          empresaRelacionada, // Somente visual
+          empresaId: empresaEncontrada.id, // Relacionamento real
+          aprovado: false, // Aguarda aprovação
+        },
       });
     } else {
       return reply.status(400).send({ error: 'Tipo de usuário inválido.' });
@@ -99,7 +114,7 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
 };
 
 
-// Verificar perfil (durante o login)
+// Verificar perfil (durante o login ou carregamento)
 export const verificarPerfil = async (request: FastifyRequest, reply: FastifyReply) => {
   const { email } = request.query as { email: string };
 
