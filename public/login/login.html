@@ -94,7 +94,7 @@
           const empresaResponse = await fetch(`https://app-qreader.onrender.com/api/empresas/by-user/${perfil.id}`);
           const empresa = empresaResponse.ok ? await empresaResponse.json() : null;
           if (empresa) {
-            sessionStorage.setItem("empresaNome", empresa.nome);
+            sessionStorage.setItem("empresaId", perfil.empresaId);
           }
           window.location.href = `${window.location.origin}/empresas/painel_empresas.html`;
         } else {

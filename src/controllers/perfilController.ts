@@ -70,18 +70,22 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
       });
 
       // 2 - Cria a empresa vinculada ao usuário
-      await prisma.empresas.create({
+      const empresaCriada = await prisma.empresas.create({
         data: {
           nome: empresa.nome,
           cnpj: empresa.cnpj,
           endereco: empresa.endereco || null,
           setor: empresa.setor || null,
           telefone: empresa.telefone || null,
-          userId: usuarioEmpresa.id, // Vincula o usuário
+          userId: usuarioEmpresa.id, // Vincula o usuário na empresa
         },
       });
 
-      perfilCriado = usuarioEmpresa;
+      // 3 - Atualiza o usuário com empresaId corretamente
+      perfilCriado = await prisma.users.update({
+        where: { id: usuarioEmpresa.id },
+        data: { empresaId: empresaCriada.id },
+      });
     } else {
       return reply.status(400).send({ error: 'Tipo de usuário inválido.' });
     }

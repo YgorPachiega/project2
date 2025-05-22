@@ -101,8 +101,8 @@
         empresaRelacionadaSelect.innerHTML = '<option value="">Selecione uma empresa</option>';
         empresas.forEach(emp => {
           const option = document.createElement("option");
-          option.value = emp.nome;
-          option.textContent = emp.nome;
+          option.value = emp.id; // <- Envia ID
+          option.textContent = emp.nome; // <- Exibe nome
           empresaRelacionadaSelect.appendChild(option);
         });
       } catch (error) {
@@ -160,12 +160,12 @@
           telefone: document.getElementById("telefone").value,
         };
       } else if (tipo === "prestador") {
-        const empresaRelacionada = empresaRelacionadaSelect.value;
-        if (!empresaRelacionada) {
+        const empresaId = empresaRelacionadaSelect.value;
+        if (!empresaId) {
           alert("Selecione a empresa vinculada.");
           return;
         }
-        data.empresaRelacionada = empresaRelacionada;
+        data.empresaId = parseInt(empresaId);
       }
 
       try {
@@ -177,11 +177,11 @@
 
         if (response.ok) {
           alert("Perfil salvo com sucesso!");
-          if (tipo === "empresa"){
+          if (tipo === "empresa") {
             window.location.href = "/empresas/painel_empresas.html";
           } else {
-            window.location.href = "/index.html"
-          }          
+            window.location.href = "/index.html";
+          }
         } else {
           const erro = await response.json();
           document.getElementById("mensagem").textContent = erro.error || "Erro ao salvar perfil.";
