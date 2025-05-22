@@ -16,6 +16,7 @@ datasource db {
 
 model users {
   id                  Int       @id @default(autoincrement())
+  nome                String    
   email               String    @unique
   auth0Id             String    @unique
   tipoUsuario         String    @default("prestador")

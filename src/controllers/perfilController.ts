@@ -7,12 +7,14 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
   const {
     email,
     auth0Id,
+    nome,
     tipoUsuario,
     empresaRelacionada,
     empresa,
   } = request.body as {
     email: string;
     auth0Id: string;
+    nome: string;
     tipoUsuario: 'empresa' | 'prestador';
     empresaRelacionada?: string;
     empresa?: {
@@ -49,6 +51,7 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
         data: {
           email,
           auth0Id,
+          nome,
           tipoUsuario: 'empresa',
           aprovado: true,
         },
@@ -93,6 +96,7 @@ export const definirPerfil = async (request: FastifyRequest, reply: FastifyReply
       // Cria o usuário prestador vinculado à empresa
       perfilCriado = await prisma.users.create({
         data: {
+          nome,
           email,
           auth0Id,
           tipoUsuario: 'prestador',

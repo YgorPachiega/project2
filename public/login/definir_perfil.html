@@ -104,6 +104,7 @@
     window.onload = async () => {
       const email = sessionStorage.getItem("solicitante");
       const auth0Id = sessionStorage.getItem("auth0Id");
+      const nome = sessionStorage.getItem("nome");
 
       if (!email || !auth0Id) {
         alert("Erro: Usuário não autenticado.");
@@ -164,6 +165,7 @@
 
       const email = sessionStorage.getItem("solicitante");
       const auth0Id = sessionStorage.getItem("auth0Id");
+      const nome = sessionStorage.getItem("nome");
 
       if (!email || !auth0Id) {
         alert("Erro: Usuário não autenticado.");
@@ -175,6 +177,7 @@
       const data = {
         email,
         auth0Id,
+        nome,
         tipoUsuario: tipo,
       };
 
