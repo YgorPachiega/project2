@@ -10,16 +10,15 @@
 </head>
 
 <body class="bg-dark text-light">
-
-  <!-- Spinner -->
+  <!-- Spinner de carregamento -->
   <div id="spinner" class="d-flex justify-content-center align-items-center vh-100">
     <div class="spinner-border text-light" role="status">
       <span class="visually-hidden">Carregando...</span>
     </div>
   </div>
 
-  <!-- Conteúdo da página -->
-  <div id="content" class="container py-5" style="display:none;">
+  <!-- Conteúdo principal -->
+  <div id="content" class="container py-5" style="display: none;">
     <div class="card bg-secondary p-4">
       <h2 class="mb-3">Definir Perfil</h2>
       <p class="mb-4">Complete seu cadastro para continuar</p>
@@ -34,6 +33,7 @@
           </select>
         </div>
 
+        <!-- Campos para empresa -->
         <div id="empresa-fields" class="hidden">
           <div class="mb-3">
             <label for="nome" class="form-label">Nome da empresa:</label>
@@ -61,6 +61,7 @@
           </div>
         </div>
 
+        <!-- Campos para prestador -->
         <div id="prestador-fields" class="hidden">
           <div class="mb-3">
             <label for="empresaRelacionada" class="form-label">Empresa vinculada:</label>
@@ -88,19 +89,7 @@
     const prestadorFields = document.getElementById("prestador-fields");
     const empresaRelacionadaSelect = document.getElementById("empresaRelacionada");
 
-    window.onload = () => {
-      const email = sessionStorage.getItem("solicitante");
-      const auth0Id = sessionStorage.getItem("auth0Id");
-
-      if (!email || !auth0Id) {
-        alert("Sessão não encontrada. Você será redirecionado para o login.");
-        window.location.href = "/login/login.html";
-      } else {
-        document.getElementById("spinner").style.display = "none";
-        document.getElementById("content").style.display = "block";
-      }
-    };
-
+    // Manipula a seleção do tipo de usuário
     tipoUsuario.addEventListener("change", () => {
       if (tipoUsuario.value === "empresa") {
         empresaFields.classList.remove("hidden");
@@ -115,6 +104,7 @@
       }
     });
 
+    // Carrega empresas para o select
     async function carregarEmpresas() {
       try {
         const response = await fetch(`${url}/api/empresas`);
@@ -123,7 +113,7 @@
         empresaRelacionadaSelect.innerHTML = '<option value="">Selecione uma empresa</option>';
         empresas.forEach(emp => {
           const option = document.createElement("option");
-          option.value = emp.id;
+          option.value = emp.id;  // Aqui salva o ID para backend
           option.textContent = emp.nome;
           empresaRelacionadaSelect.appendChild(option);
         });
@@ -146,11 +136,18 @@
       e.target.value = value;
     });
 
+    // Envio do formulário
     document.getElementById("profile-form").addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const email = sessionStorage.getItem("solicitante");
       const auth0Id = sessionStorage.getItem("auth0Id");
+
+      if (!email || !auth0Id) {
+        alert("Erro: Usuário não autenticado.");
+        window.location.href = "/login/login.html";
+        return;
+      }
 
       const tipo = tipoUsuario.value;
       const data = {
@@ -160,7 +157,7 @@
       };
 
       if (tipo === "empresa") {
-        const nome = document.getElementById("nome").value;
+        const nome = document.getElementById("nome").value.trim();
         const cnpj = document.getElementById("cnpj").value.replace(/\D/g, '');
 
         if (!nome || !cnpj || cnpj.length !== 14) {
@@ -171,9 +168,9 @@
         data.empresa = {
           nome,
           cnpj,
-          endereco: document.getElementById("endereco").value,
-          setor: document.getElementById("setor").value,
-          telefone: document.getElementById("telefone").value,
+          endereco: document.getElementById("endereco").value.trim(),
+          setor: document.getElementById("setor").value.trim(),
+          telefone: document.getElementById("telefone").value.trim(),
         };
       } else if (tipo === "prestador") {
         const empresaRelacionada = empresaRelacionadaSelect.value;
@@ -181,7 +178,7 @@
           alert("Selecione a empresa vinculada.");
           return;
         }
-        data.empresaId = parseInt(empresaRelacionada);
+        data.empresaRelacionada = empresaRelacionada;
       }
 
       try {
@@ -207,6 +204,21 @@
         document.getElementById("mensagem").textContent = "Erro ao salvar perfil.";
       }
     });
+
+    // Controle do spinner
+    window.onload = () => {
+      const email = sessionStorage.getItem("solicitante");
+      const auth0Id = sessionStorage.getItem("auth0Id");
+
+      if (!email || !auth0Id) {
+        alert("Erro: Usuário não autenticado.");
+        window.location.href = "/login/login.html";
+        return;
+      }
+
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+    };
   </script>
 
   <style>
@@ -214,6 +226,6 @@
       display: none;
     }
   </style>
-
 </body>
+
 </html>
