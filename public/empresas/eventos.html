@@ -170,7 +170,7 @@
       dataInicio: document.getElementById('dataInicio').value,
       dataFim: document.getElementById('dataFim').value,
       empresaId: empresaId,
-      prestadores: Array.from(document.getElementById('prestadores').selectedOptions).map(o => o.value)
+      prestadoresIds: Array.from(document.getElementById('prestadores').selectedOptions).map(o => o.value)
     };
 
     const url = id ? `${API_BASE}/eventos/${id}` : `${API_BASE}/eventos`;
