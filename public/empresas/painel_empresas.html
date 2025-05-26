@@ -143,7 +143,7 @@
     }
 
     async function carregarAprovacoes() {
-      const empresaNome = sessionStorage.getItem('empresaNome');
+      const empresaId = sessionStorage.getItem('empresaId');
 
       if (!empresaNome) {
         document.getElementById('lista-aprovacoes').innerHTML = `<p>Erro: nome da empresa não encontrado.</p>`;
@@ -151,7 +151,7 @@
       }
 
       try {
-        const response = await fetch(`https://app-qreader.onrender.com/api/prestadores/pendentes?empresaNome=${empresaNome}`);
+        const response = await fetch(`https://app-qreader.onrender.com/api/prestadores/pendentes?empresaId=${empresaId}`);
         const prestadores = await response.json();
 
         if (!response.ok) {

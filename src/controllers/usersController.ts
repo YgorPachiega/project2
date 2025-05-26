@@ -38,7 +38,7 @@ export const listarPrestadoresPendentes = async (request: FastifyRequest, reply:
     const prestadores = await prisma.users.findMany({
       where: {
         tipoUsuario: 'prestador',
-        empresaId: empresaId,
+        empresaId,
         aprovado: false,
       },
       select: {
