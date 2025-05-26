@@ -1,12 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-/* ====== Sidebar ====== */
+/* ================== CONFIGURAÇÕES GERAIS ================== */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  background-color: #121212;
+  color: #f8f9fa;
+}
+
+/* ================== SIDEBAR ================== */
 .sidebar {
-  width: 250px;
-  height: 100vh;
   position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 240px;
   background-color: #212529;
+  color: white;
   padding: 20px;
+  overflow-y: auto;
+  border-right: 1px solid #343a40;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+.sidebar.show {
+  transform: translateX(0);
 }
 
 .sidebar h4 {
@@ -14,55 +39,104 @@
 }
 
 .sidebar a {
-  color: white;
-  padding: 10px 15px;
   display: block;
-  border-radius: 5px;
+  color: #adb5bd;
   text-decoration: none;
-  transition: background-color 0.2s;
+  margin-bottom: 15px;
+  transition: color 0.2s;
 }
 
 .sidebar a:hover {
+  color: #ffffff;
+}
+
+.sidebar hr {
+  border-color: #495057;
+}
+
+/* ================== BOTÃO TOGGLE SIDEBAR ================== */
+.sidebar-toggle {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: #212529;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  z-index: 1100;
+  border-radius: 4px;
+}
+
+.sidebar-toggle:hover {
   background-color: #343a40;
 }
 
-.sidebar a.text-danger:hover {
-  background-color: #ff4d4d;
-}
-
-/* ====== Layout com Sidebar ====== */
-body {
-  font-family: 'Roboto', sans-serif;
-  margin: 0;
-  padding: 0;
-  margin-left: 250px;
-}
-
+/* ================== CONTEÚDO PRINCIPAL ================== */
 .main-content {
+  margin-left: 260px;
   padding: 20px;
+  transition: margin-left 0.3s ease;
 }
 
-@media (max-width: 768px) {
-  .sidebar {
-    position: relative;
-    width: 100%;
-    height: auto;
-  }
-  body {
-    margin-left: 0;
-  }
+body.sidebar-collapsed .main-content {
+  margin-left: 20px;
 }
 
-/* ====== Cards ====== */
+/* ================== FORMULÁRIOS ================== */
+form.custom-form {
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #1f1f1f;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.form-group {
+  margin-bottom: 30px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #343a40;
+  background-color: #212529;
+  color: white;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #0d6efd;
+}
+
+/* ================== BOTÕES ================== */
+button {
+  font-family: 'Roboto', sans-serif;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* ================== CARDS ================== */
 .card {
-  border: 1px solid var(--pico-border-color);
+  border: 1px solid #343a40;
   border-radius: 8px;
   padding: 20px;
   margin: 10px auto;
-  width: 200px;
+  width: 240px;
   display: inline-block;
-  background-color: var(--pico-background-color);
-  color: var(--pico-color);
+  background-color: #1f1f1f;
+  color: white;
 }
 
 .card h2 {
@@ -73,30 +147,18 @@ body {
   margin-top: 10px;
 }
 
-/* ====== Câmera Responsiva ====== */
-@media (max-width: 768px) {
-  #camera-feed {
-    width: 100%;
-    border-radius: 0;
-  }
+/* ================== ELEMENTOS DE VÍDEO ================== */
+#video-container {
+  display: none;
 }
 
-@media (min-width: 769px) {
-  #camera-feed {
-    width: 50%;
-    margin: 0 auto;
-  }
+#camera-feed {
+  width: 50%;
+  margin: 0 auto;
+  border-radius: 8px;
 }
 
-/* ====== Botão de Retorno Fixo ====== */
-#return-home-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-}
-
-/* ====== Mensagens ====== */
+/* ================== MENSAGENS ================== */
 .loading-message,
 .error-message {
   text-align: center;
@@ -109,43 +171,40 @@ body {
   color: red;
 }
 
-/* ====== Título Principal ====== */
+/* ================== TÍTULOS ================== */
 h1 {
   text-align: center;
   margin-top: 50px;
 }
 
-/* ====== Formulários ====== */
-form.custom-form {
-  max-width: 400px;
-  margin: 0 auto;
-  background-color: var(--pico-card-background-color, #fff);
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+h2, h3, h4 {
+  color: #ffffff;
 }
 
-.form-group {
-  margin-bottom: 30px;
+/* ================== BOTÃO FIXO DE RETORNO ================== */
+#return-home-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
 }
 
-/* Inputs */
-input[type="text"],
-input[type="password"],
-select {
-  font-family: 'Roboto', sans-serif;
-}
+/* ================== RESPONSIVIDADE ================== */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
 
-/* Botões */
-button {
-  font-family: 'Roboto', sans-serif;
-}
+  .sidebar.show {
+    transform: translateX(0);
+  }
 
-/* ====== Utilitários ====== */
-.hidden {
-  display: none !important;
-}
+  .main-content {
+    margin-left: 20px;
+  }
 
-.table {
-  text-align: left;
+  #camera-feed {
+    width: 100%;
+    border-radius: 0;
+  }
 }
