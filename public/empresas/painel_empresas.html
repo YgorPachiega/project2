@@ -145,7 +145,7 @@
     async function carregarAprovacoes() {
       const empresaId = sessionStorage.getItem('empresaId');
 
-      if (!empresaNome) {
+      if (!empresaId) {
         document.getElementById('lista-aprovacoes').innerHTML = `<p>Erro: nome da empresa não encontrado.</p>`;
         return;
       }
