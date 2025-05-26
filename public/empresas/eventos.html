@@ -78,7 +78,7 @@
   const empresaId = sessionStorage.getItem('empresaId');
 
   async function carregarEventos() {
-    const res = await fetch(`${API_BASE}/eventos/by-empresa/${empresaId}`);
+    const res = await fetch(`${API_BASE}/eventos/empresa?empresaId=${empresaId}`);
     eventos = await res.json();
     renderizarListaEventos();
   }
