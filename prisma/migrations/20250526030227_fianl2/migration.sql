@@ -1,23 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Clients` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `empresas` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `users` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "users" DROP CONSTRAINT "users_empresaId_fkey";
-
--- DropTable
-DROP TABLE "Clients";
-
--- DropTable
-DROP TABLE "empresas";
-
--- DropTable
-DROP TABLE "users";
-
 -- CreateTable
 CREATE TABLE "Empresas" (
     "id" TEXT NOT NULL,
