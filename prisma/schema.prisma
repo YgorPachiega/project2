@@ -30,6 +30,7 @@ model Users {
   empresaId        String
   empresa          Empresas  @relation(fields: [empresaId], references: [id])
   participantes    Participantes[]
+  eventoVinculados EventoPrestadores[]
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 }
@@ -43,6 +44,7 @@ model Eventos {
   local       String?
   empresaId   String
   empresa     Empresas  @relation(fields: [empresaId], references: [id])
+  prestadores EventoPrestadores[]
   checkins    Checkin[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -71,4 +73,15 @@ model Checkin {
   observacao      String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+}
+
+model EventoPrestadores{
+  id              String @id @default(uuid())
+  eventoId       String
+  prestadorId   String
+
+  evento          Eventos @relation(fields: [eventoId], references: [id])
+  prestador       Users   @relation(fields: [prestadorId], references: [id])
+
+  @@unique([eventoId, prestadorId])
 }

@@ -8,6 +8,7 @@ import empresasRoutes from './routes/empresasRoutes';
 import path from 'path';
 import fastifyStatic from '@fastify/static';
 import checkinRoutes from './routes/checkinRoutes';
+import eventosRoutes from './routes/eventosRoutes';
 
 const app = fastify();
 const prisma = new PrismaClient();
@@ -29,7 +30,8 @@ app.register(perfilRoutes, { prefix: '/api' });
 app.register(checkinRoutes, { prefix: '/api' });
 app.register(usersRoutes, { prefix: '/api' });
 app.register(empresasRoutes, { prefix: '/api' });
-
+app.register(eventosRoutes, { prefix: '/api'});
+ 
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 app.listen({ host: '0.0.0.0', port }).then(() => {
   console.log(`✅ Http server running on http://localhost:${port}`);
