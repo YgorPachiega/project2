@@ -82,3 +82,31 @@ export const aprovarPrestador = async (request: FastifyRequest, reply: FastifyRe
     return reply.status(500).send({ error: 'Erro interno ao aprovar prestador.' });
   }
 };
+
+export const listarPrestadoresPorEmpresa = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { empresaId } = request.query as { empresaId: string};
+
+  if (!empresaId) {
+    return reply.status(400).send ({ error: 'O ID da empresa é obrigatorio.'});
+  }
+
+  try {
+    const prestadores = await prisma.users.findMany({
+      where: {
+        empresaId,
+        tipoUsuario: 'prestador',
+        aprovado: true,
+      },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+      },
+    });
+
+    return reply.status(200).send(prestadores);
+  } catch (error) {
+    console.error('Erro ao buscar prestadores:', error);
+    return reply.status(500).send({ error: 'Erro interno ao buscar prestadores.'});
+  }
+};
