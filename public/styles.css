@@ -1,210 +1,144 @@
+/* Importação de fonte */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-/* ================== CONFIGURAÇÕES GERAIS ================== */
+:root {
+  --sidebar-width: 240px;
+  --sidebar-bg: #121212;
+  --sidebar-text: #ffffff;
+  --sidebar-border: #333;
+  --main-bg: #1e1e1e;
+}
+
+/* Reset geral */
 body {
-  font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
-  text-align: center;
-  background-color: #121212;
-  color: #f8f9fa;
-}
-
-/* ================== SIDEBAR ================== */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 240px;
-  background-color: #212529;
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--main-bg);
   color: white;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg);
   padding: 20px;
-  overflow-y: auto;
-  border-right: 1px solid #343a40;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  border-right: 1px solid var(--sidebar-border);
   transition: transform 0.3s ease;
-  z-index: 1000;
-}
-
-.sidebar.collapsed {
-  transform: translateX(-100%);
-}
-
-.sidebar.show {
-  transform: translateX(0);
 }
 
 .sidebar h4 {
-  margin-bottom: 20px;
+  color: var(--sidebar-text);
+  margin-top: 0;
 }
 
 .sidebar a {
   display: block;
-  color: #adb5bd;
+  color: var(--sidebar-text);
   text-decoration: none;
   margin-bottom: 15px;
-  transition: color 0.2s;
 }
 
 .sidebar a:hover {
-  color: #ffffff;
+  text-decoration: underline;
 }
 
 .sidebar hr {
-  border-color: #495057;
+  border-color: var(--sidebar-border);
 }
 
-/* ================== BOTÃO TOGGLE SIDEBAR ================== */
-.sidebar-toggle {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  background-color: #212529;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  z-index: 1100;
-  border-radius: 4px;
+/* Sidebar oculto no mobile */
+body.sidebar-collapsed .sidebar {
+  transform: translateX(-100%);
 }
 
-.sidebar-toggle:hover {
-  background-color: #343a40;
-}
-
-/* ================== CONTEÚDO PRINCIPAL ================== */
+/* Conteúdo principal */
 .main-content {
-  margin-left: 260px;
+  flex-grow: 1;
   padding: 20px;
   transition: margin-left 0.3s ease;
 }
 
-body.sidebar-collapsed .main-content {
-  margin-left: 20px;
-}
-
-/* ================== FORMULÁRIOS ================== */
-form.custom-form {
-  max-width: 500px;
-  margin: 0 auto;
-  background-color: #1f1f1f;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-.form-group {
-  margin-bottom: 30px;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="email"],
-input[type="date"],
-select,
-textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #343a40;
-  background-color: #212529;
-  color: white;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: #0d6efd;
-}
-
-/* ================== BOTÕES ================== */
-button {
-  font-family: 'Roboto', sans-serif;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-/* ================== CARDS ================== */
-.card {
-  border: 1px solid #343a40;
-  border-radius: 8px;
-  padding: 20px;
-  margin: 10px auto;
-  width: 240px;
-  display: inline-block;
-  background-color: #1f1f1f;
-  color: white;
-}
-
-.card h2 {
-  margin-top: 0;
-}
-
-.card button {
-  margin-top: 10px;
-}
-
-/* ================== ELEMENTOS DE VÍDEO ================== */
-#video-container {
-  display: none;
-}
-
-#camera-feed {
-  width: 50%;
-  margin: 0 auto;
-  border-radius: 8px;
-}
-
-/* ================== MENSAGENS ================== */
-.loading-message,
-.error-message {
-  text-align: center;
-  font-size: 18px;
-  margin-top: 20px;
-  font-family: 'Roboto', sans-serif;
-}
-
-.error-message {
-  color: red;
-}
-
-/* ================== TÍTULOS ================== */
-h1 {
-  text-align: center;
-  margin-top: 50px;
-}
-
-h2, h3, h4 {
-  color: #ffffff;
-}
-
-/* ================== BOTÃO FIXO DE RETORNO ================== */
-#return-home-btn {
+/* Botão de toggle (menu) */
+.sidebar-toggle {
   position: fixed;
   top: 20px;
-  right: 20px;
-  z-index: 9999;
+  left: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 999;
+  display: none; /* Escondido no desktop */
 }
 
-/* ================== RESPONSIVIDADE ================== */
-@media (max-width: 768px) {
+/* Esconde a sidebar no mobile por padrão */
+@media (max-width: 991px) {
   .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 998;
     transform: translateX(-100%);
   }
 
-  .sidebar.show {
+  body:not(.sidebar-collapsed) .sidebar {
     transform: translateX(0);
   }
 
-  .main-content {
-    margin-left: 20px;
+  .sidebar-toggle {
+    display: block;
+  }
+}
+
+/* Mantém a sidebar sempre visível no desktop */
+@media (min-width: 992px) {
+  .sidebar {
+    transform: translateX(0);
+    position: relative;
+    height: auto;
   }
 
-  #camera-feed {
-    width: 100%;
-    border-radius: 0;
+  .sidebar-toggle {
+    display: none;
   }
+}
+
+/* Classes utilitárias */
+.hidden {
+  display: none;
+}
+
+/* Estilo de tabelas e conteúdo */
+table {
+  width: 100%;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid var(--sidebar-border);
+}
+
+th {
+  background-color: #333;
+}
+
+/* Cards ou seções */
+section {
+  background-color: #2a2a2a;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+/* Scroll em dispositivos menores */
+body {
+  overflow-x: hidden;
 }
