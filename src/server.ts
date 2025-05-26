@@ -1,26 +1,27 @@
 import fastify from 'fastify';
-import cors from '@fastify/cors';
 import { PrismaClient } from '@prisma/client';
-import { corsMiddleware } from './middleware/corsMiddleware';
+import path from 'path';
+import fastifyStatic from '@fastify/static';
+import cors from '@fastify/cors';
+
+// Rotas
 import clientsRoutes from './routes/participantesRoutes';
 import perfilRoutes from './routes/perfilRoutes';
 import usersRoutes from './routes/usersRoutes';
 import empresasRoutes from './routes/empresasRoutes';
-import path from 'path';
-import fastifyStatic from '@fastify/static';
 import checkinRoutes from './routes/checkinRoutes';
 import eventosRoutes from './routes/eventosRoutes';
 
 const app = fastify();
-app.register(cors, {
-  origin: ['https://project2-dbfp.onrender.com'],
-  credentials: true,
-})
-
 const prisma = new PrismaClient();
 
-app.addHook('onRequest', corsMiddleware);
+// Configura CORS oficial
+app.register(cors, {
+  origin: '*', // Você pode colocar seu domínio aqui, ex.: 'https://project2-dbfp.onrender.com'
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
 
+// Servir arquivos estáticos em desenvolvimento
 if (process.env.NODE_ENV !== 'production') {
   app.register(fastifyStatic, {
     root: path.join(__dirname, '../public'),
@@ -31,13 +32,15 @@ if (process.env.NODE_ENV !== 'production') {
   console.log('🚀 Ambiente de produção: arquivos estáticos desativados');
 }
 
+// Rotas
 app.register(clientsRoutes, { prefix: '/api' });
 app.register(perfilRoutes, { prefix: '/api' });
 app.register(checkinRoutes, { prefix: '/api' });
 app.register(usersRoutes, { prefix: '/api' });
 app.register(empresasRoutes, { prefix: '/api' });
-app.register(eventosRoutes, { prefix: '/api'});
- 
+app.register(eventosRoutes, { prefix: '/api' });
+
+// Start
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 app.listen({ host: '0.0.0.0', port }).then(() => {
   console.log(`✅ Http server running on http://localhost:${port}`);
