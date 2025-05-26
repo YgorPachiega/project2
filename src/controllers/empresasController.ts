@@ -7,15 +7,16 @@ export const getEmpresaByUserId = async (request: FastifyRequest, reply: Fastify
   const { userId } = request.params as { userId: string };
 
   try {
-    const empresa = await prisma.empresas.findFirst({
-      where: { userId: parseInt(userId) },
+    const user = await prisma.users.findUnique({
+      where: { id: userId },
+      include: { empresa: true},
     });
 
-    if (!empresa) {
-      return reply.status(404).send({ error: 'Empresa não encontrada.' });
+    if (!user || !user.empresa) {
+      return reply.status(404).send({ error: 'Empresa não encontrada para este usuário.' });
     }
 
-    return reply.status(200).send(empresa);
+    return reply.status(200).send(user.empresa);
   } catch (error) {
     console.error('Erro ao buscar empresa:', error);
     return reply.status(500).send({ error: 'Erro interno ao buscar empresa.' });

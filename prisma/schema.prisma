@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
@@ -14,42 +7,68 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model users {
-  id                  Int       @id @default(autoincrement())
-  nome                String    
-  email               String    @unique
-  auth0Id             String    @unique
-  tipoUsuario         String    @default("prestador")
-  empresaRelacionada  String?   // (opcional, pode ser removido no futuro)
-  aprovado            Boolean   @default(false)
-  empresaId           Int?      // Chave estrangeira para empresas
-
-  empresa             empresas? @relation(fields: [empresaId], references: [id])
-}
-
-model empresas {
-  id              Int      @id @default(autoincrement())
-  userId          Int      @unique
-  nome            String   @db.VarChar(255)
-  cnpj            String   @unique @db.VarChar(14)
-  endereco        String?  @db.VarChar(255)
-  setor           String?  @db.VarChar(100)
-  telefone        String?  @db.VarChar(20)
-
-  usuarios        users[]  // Relacionamento 1:N
-}
-
-
-model participantes {
-  id        String   @id @unique
+model Empresas {
+  id        String  @id @default(uuid())
   nome      String
-  cpf       String
-  empresa   String
-  solicitante String
+  cnpj      String  @unique
+  endereco  String?
+  setor     String?
+  telefone  String?
+  users     Users[]
+  eventos   Eventos[]
   createdAt DateTime @default(now())
-  updatedAt    DateTime? @updatedAt
-  observacao   String?
-  pulseira     String?
-  status       String?
+  updatedAt DateTime @updatedAt
 }
 
+model Users {
+  id               String    @id @default(uuid())
+  nome             String
+  email            String    @unique
+  auth0Id          String    @unique
+  tipoUsuario      String
+  aprovado         Boolean   @default(false)
+  empresaId        String
+  empresa          Empresas  @relation(fields: [empresaId], references: [id])
+  participantes    Participantes[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Eventos {
+  id          String    @id @default(uuid())
+  nome        String
+  descricao   String?
+  dataInicio  DateTime
+  dataFim     DateTime
+  local       String?
+  empresaId   String
+  empresa     Empresas  @relation(fields: [empresaId], references: [id])
+  checkins    Checkin[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Participantes {
+  id            String    @id @default(uuid())
+  nome          String
+  cpf           String    @unique
+  empresa       String
+  solicitanteId String
+  solicitante   Users     @relation(fields: [solicitanteId], references: [id])
+  checkins      Checkin[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Checkin {
+  id              String        @id @default(uuid())
+  entrada         DateTime
+  saida           DateTime?
+  participanteId  String
+  eventoId        String
+  participante    Participantes @relation(fields: [participanteId], references: [id])
+  evento          Eventos       @relation(fields: [eventoId], references: [id])
+  observacao      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}

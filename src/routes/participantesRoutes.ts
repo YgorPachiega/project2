@@ -1,16 +1,19 @@
 import { FastifyInstance } from 'fastify';
 import {
-  getCadastro,
-  cadastrarCliente,
-  verificarCliente,
-  verificarFuncionario,
-  registrarObservacao
+  listarParticipantes,
+  cadastrarParticipante,
+  buscarParticipantePorId,
+  deletarParticipante,
+  atualizarParticipante,
+  verificarDisponibilidadeId,
 } from '../controllers/participantesController';
 
 export default async function clientsRoutes(fastify: FastifyInstance) {
-  fastify.get('/cadastro', getCadastro);
-  fastify.get('/verificar', verificarCliente);
-  fastify.post('/cadastrar', cadastrarCliente);
-  fastify.get('/verificarFunc', verificarFuncionario);
-  fastify.post('/alterarFunc', registrarObservacao);
+  fastify.get('/participantes', listarParticipantes);
+  fastify.post('/participantes/cadastrar', cadastrarParticipante);
+  fastify.get('/participantes/verificar', verificarDisponibilidadeId);
+  fastify.get('/participantes/:id', buscarParticipantePorId);
+  fastify.put('/participantes/:id', atualizarParticipante);
+  fastify.delete('/participantes/id:', deletarParticipante);
+
 }
