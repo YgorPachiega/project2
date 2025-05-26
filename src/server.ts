@@ -17,7 +17,7 @@ const prisma = new PrismaClient();
 
 // Configura CORS oficial
 app.register(cors, {
-  origin: '*', // Você pode colocar seu domínio aqui, ex.: 'https://project2-dbfp.onrender.com'
+  origin: 'https://project2-dbfp.onrender.com', // Você pode colocar seu domínio aqui, ex.: 'https://project2-dbfp.onrender.com'
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 });
 
