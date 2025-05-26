@@ -1,355 +1,209 @@
-/* Fonte */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 :root {
-  --sidebar-width: 240px;
-  --sidebar-bg: #0f0f0f;
-  --sidebar-text: #ffffff;
-  --sidebar-border: #1a1a1a;
-  --main-bg: #121212;
-  --accent-color: #ffffff;
+  --primary-color: #00b894;
+  --secondary-color: #2d3436;
+  --background-color: #121212;
+  --card-background: #1e1e1e;
+  --text-color: #f1f1f1;
+  --border-color: #2c2c2c;
 }
 
-/* Reset e estrutura base */
-body {
+/* Reset básico */
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+}
+
+body {
   font-family: 'Roboto', sans-serif;
-  background-color: var(--main-bg);
-  color: var(--sidebar-text);
-  display: flex;
-  min-height: 100vh;
-  overflow-x: hidden;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 /* Sidebar */
 .sidebar {
-  width: var(--sidebar-width);
-  background-color: var(--sidebar-bg);
-  padding: 20px;
-  box-sizing: border-box;
-  flex-shrink: 0;
-  border-right: 1px solid var(--sidebar-border);
+  background-color: var(--secondary-color);
+  height: 100vh;
   position: fixed;
-  top: 0;
   left: 0;
-  bottom: 0;
+  top: 0;
+  width: 250px;
+  padding: 20px;
   transition: transform 0.3s ease;
   z-index: 1000;
 }
 
 .sidebar h4 {
-  color: var(--sidebar-text);
-  margin-top: 0;
+  color: var(--text-color);
+  margin-bottom: 20px;
 }
 
 .sidebar a {
   display: block;
-  color: var(--sidebar-text);
+  color: var(--text-color);
   text-decoration: none;
-  margin-bottom: 20px;
-  font-weight: 500;
+  padding: 10px 0;
+  transition: background-color 0.2s;
 }
 
 .sidebar a:hover {
-  color: var(--accent-color);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .sidebar hr {
-  border-color: var(--sidebar-border);
+  border-color: #555;
 }
 
-/* Sidebar oculto */
-body.sidebar-collapsed .sidebar {
+/* Sidebar escondida */
+.sidebar.hidden {
   transform: translateX(-100%);
 }
 
-/* Conteúdo */
-.main-content {
-  margin-left: var(--sidebar-width);
-  flex-grow: 1;
-  padding: 30px;
-  transition: margin-left 0.3s ease;
-}
-
-body.sidebar-collapsed .main-content {
-  margin-left: 0;
-}
-
-/* Toggle Button */
-.sidebar-toggle {
+/* Botão de toggle da sidebar */
+.toggle-btn {
   position: fixed;
   top: 20px;
   left: 20px;
-  background-color: transparent;
-  color: var(--sidebar-text);
-  border: 1px solid var(--sidebar-border);
-  padding: 8px 12px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 12px;
   border-radius: 4px;
   cursor: pointer;
   z-index: 1100;
-  display: none;
 }
 
-.sidebar-toggle:hover {
-  background-color: #1f1f1f;
+.toggle-btn:hover {
+  background-color: #019474;
 }
 
-/* Mobile */
-@media (max-width: 991px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-
-  body:not(.sidebar-collapsed) .sidebar {
-    transform: translateX(0);
-  }
-
-  .sidebar-toggle {
-    display: block;
-  }
-
-  .main-content {
-    margin-left: 0;
-  }
+/* Área principal */
+.main-content {
+  margin-left: 250px;
+  padding: 40px;
+  transition: margin-left 0.3s ease;
 }
 
-/* Desktop */
-@media (min-width: 992px) {
-  .sidebar {
-    transform: translateX(0);
-  }
-
-  .sidebar-toggle {
-    display: none;
-  }
-
-  body.sidebar-collapsed .sidebar {
-    transform: translateX(0);
-  }
+.sidebar.hidden ~ .main-content {
+  margin-left: 0;
 }
 
-/* Estilo de Tabelas */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 12px;
-  border: 1px solid var(--sidebar-border);
-}
-
-th {
-  background-color: #1a1a1a;
-  text-align: left;
-}
-
-/* Seções */
-section {
-  background-color: #1a1a1a;
-  padding: 24px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-}
-
-/* Títulos */
-h1, h2, h3, h4 {
-  color: var(--accent-color);
-}
-
-/* Scroll */
-body {
-  scrollbar-width: thin;
-  scrollbar-color: #333 #121212;
-}
-
-body::-webkit-scrollbar {
-  width: 8px;
-}
-
-body::-webkit-scrollbar-thumb {
-  background-color: #333;
-  border-radius: 4px;
-}
-
-body::-webkit-scrollbar-track {
-  background: #121212;
-} /* Fonte */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-
-:root {
-  --sidebar-width: 240px;
-  --sidebar-bg: #0f0f0f;
-  --sidebar-text: #ffffff;
-  --sidebar-border: #1a1a1a;
-  --main-bg: #121212;
-  --accent-color: #ffffff;
-}
-
-/* Reset e estrutura base */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Roboto', sans-serif;
-  background-color: var(--main-bg);
-  color: var(--sidebar-text);
-  display: flex;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* Sidebar */
-.sidebar {
-  width: var(--sidebar-width);
-  background-color: var(--sidebar-bg);
+/* Cards */
+.card {
+  background-color: var(--card-background);
   padding: 20px;
-  box-sizing: border-box;
-  flex-shrink: 0;
-  border-right: 1px solid var(--sidebar-border);
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  transition: transform 0.3s ease;
-  z-index: 1000;
-}
-
-.sidebar h4 {
-  color: var(--sidebar-text);
-  margin-top: 0;
-}
-
-.sidebar a {
-  display: block;
-  color: var(--sidebar-text);
-  text-decoration: none;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
   margin-bottom: 20px;
-  font-weight: 500;
 }
 
-.sidebar a:hover {
-  color: var(--accent-color);
+.card h2 {
+  margin-bottom: 10px;
 }
 
-.sidebar hr {
-  border-color: var(--sidebar-border);
+.card p {
+  color: #ccc;
 }
 
-/* Sidebar oculto */
-body.sidebar-collapsed .sidebar {
-  transform: translateX(-100%);
-}
-
-/* Conteúdo */
-.main-content {
-  margin-left: var(--sidebar-width);
-  flex-grow: 1;
-  padding: 30px;
-  transition: margin-left 0.3s ease;
-}
-
-body.sidebar-collapsed .main-content {
-  margin-left: 0;
-}
-
-/* Toggle Button */
-.sidebar-toggle {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  background-color: transparent;
-  color: var(--sidebar-text);
-  border: 1px solid var(--sidebar-border);
-  padding: 8px 12px;
-  border-radius: 4px;
+/* Botões gerais */
+button,
+.btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
   cursor: pointer;
-  z-index: 1100;
-  display: none;
+  transition: background-color 0.2s;
 }
 
-.sidebar-toggle:hover {
-  background-color: #1f1f1f;
+button:hover,
+.btn:hover {
+  background-color: #019474;
 }
 
-/* Mobile */
-@media (max-width: 991px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-
-  body:not(.sidebar-collapsed) .sidebar {
-    transform: translateX(0);
-  }
-
-  .sidebar-toggle {
-    display: block;
-  }
-
-  .main-content {
-    margin-left: 0;
-  }
+.btn-danger {
+  background-color: #d63031;
 }
 
-/* Desktop */
-@media (min-width: 992px) {
-  .sidebar {
-    transform: translateX(0);
-  }
-
-  .sidebar-toggle {
-    display: none;
-  }
-
-  body.sidebar-collapsed .sidebar {
-    transform: translateX(0);
-  }
+.btn-danger:hover {
+  background-color: #b71c1c;
 }
 
-/* Estilo de Tabelas */
+.btn-secondary {
+  background-color: #636e72;
+}
+
+.btn-secondary:hover {
+  background-color: #4b5558;
+}
+
+/* Tabelas */
 table {
   width: 100%;
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   padding: 12px;
-  border: 1px solid var(--sidebar-border);
-}
-
-th {
-  background-color: #1a1a1a;
+  border: 1px solid var(--border-color);
   text-align: left;
 }
 
-/* Seções */
-section {
-  background-color: #1a1a1a;
-  padding: 24px;
-  border-radius: 12px;
-  margin-bottom: 24px;
+th {
+  background-color: #2d3436;
 }
 
-/* Títulos */
+td {
+  background-color: var(--card-background);
+}
+
+/* Modais */
+.modal-content {
+  background-color: var(--card-background);
+  color: var(--text-color);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--border-color);
+}
+
+.btn-close {
+  filter: invert(1);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .toggle-btn {
+    top: 15px;
+    left: 15px;
+  }
+}
+
+/* Logo */
+.sidebar .logo {
+  width: 180px;
+  margin-bottom: 30px;
+}
+
+/* Titles */
 h1, h2, h3, h4 {
-  color: var(--accent-color);
-}
-
-/* Scroll */
-body {
-  scrollbar-width: thin;
-  scrollbar-color: #333 #121212;
-}
-
-body::-webkit-scrollbar {
-  width: 8px;
-}
-
-body::-webkit-scrollbar-thumb {
-  background-color: #333;
-  border-radius: 4px;
-}
-
-body::-webkit-scrollbar-track {
-  background: #121212;
+  color: var(--text-color);
 }
