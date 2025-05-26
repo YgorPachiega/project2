@@ -3,11 +3,11 @@ import { PrismaClient } from '@prisma/client';
 import { corsMiddleware } from './middleware/corsMiddleware';
 import clientsRoutes from './routes/participantesRoutes';
 import perfilRoutes from './routes/perfilRoutes';
-import aprovacaoRoutes from './routes/aprovacaoRoutes';
 import usersRoutes from './routes/usersRoutes';
 import empresasRoutes from './routes/empresasRoutes';
 import path from 'path';
 import fastifyStatic from '@fastify/static';
+import checkinRoutes from './routes/checkinRoutes';
 
 const app = fastify();
 const prisma = new PrismaClient();
@@ -26,7 +26,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.register(clientsRoutes, { prefix: '/api' });
 app.register(perfilRoutes, { prefix: '/api' });
-app.register(aprovacaoRoutes, { prefix: '/api' });
+app.register(checkinRoutes, { prefix: '/api' });
 app.register(usersRoutes, { prefix: '/api' });
 app.register(empresasRoutes, { prefix: '/api' });
 
