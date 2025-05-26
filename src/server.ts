@@ -1,4 +1,5 @@
 import fastify from 'fastify';
+import cors from '@fastify/cors';
 import { PrismaClient } from '@prisma/client';
 import { corsMiddleware } from './middleware/corsMiddleware';
 import clientsRoutes from './routes/participantesRoutes';
@@ -11,6 +12,11 @@ import checkinRoutes from './routes/checkinRoutes';
 import eventosRoutes from './routes/eventosRoutes';
 
 const app = fastify();
+app.register(cors, {
+  origin: ['https://project2-dbfp.onrender.com'],
+  credentials: true,
+})
+
 const prisma = new PrismaClient();
 
 app.addHook('onRequest', corsMiddleware);
