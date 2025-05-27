@@ -1,85 +1,114 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QReader - Sua Solução de Controle</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IDFlow - Gestão de Eventos e Check-in</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-    <a class="navbar-brand" href="#">QReader</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="#sobre">Sobre</a></li>
-        <li class="nav-item"><a class="nav-link" href="#funcionalidades">Funcionalidades</a></li>
-        <li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>
-        <li class="nav-item">
-          <a href="/login/login.html" class="btn btn-primary ms-3">Entrar</a>
-        </li>
-      </ul>
+<body class="bg-dark text-light">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">IDFlow</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#sobre">Sobre</a></li>
+          <li class="nav-item"><a class="nav-link" href="#funcionalidades">Funcionalidades</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>
+          <li class="nav-item"><a class="btn btn-primary ms-2" href="/login/login.html">Acessar</a></li>
+        </ul>
+      </div>
     </div>
   </nav>
 
-  <header class="text-center py-5 bg-dark text-light">
+  <!-- Hero Section -->
+  <section class="text-center py-5">
     <div class="container">
-      <h1 class="display-4">Bem-vindo ao QReader</h1>
-      <p class="lead">Gestão inteligente de eventos, controle de participantes e muito mais.</p>
-      <a href="/login/login.html" class="btn btn-primary btn-lg">Acessar minha conta</a>
+      <h1 class="display-4 fw-bold">IDFlow</h1>
+      <p class="lead">Gestão inteligente de eventos, controle de acesso e check-ins de forma simples, segura e eficiente.</p>
+      <a href="/login/login.html" class="btn btn-primary btn-lg mt-3">Começar Agora</a>
     </div>
-  </header>
+  </section>
 
-  <section id="sobre" class="py-5">
+  <!-- Sobre -->
+  <section id="sobre" class="py-5 bg-secondary bg-opacity-10">
     <div class="container">
-      <h2 class="mb-4 text-center">Sobre o QReader</h2>
+      <h2 class="text-center mb-4">Sobre o IDFlow</h2>
       <p class="text-center">
-        O QReader é uma plataforma completa para gestão de eventos, controle de check-in e check-out de participantes e acompanhamento em tempo real.
+        O IDFlow nasceu da necessidade de empresas e organizadores de eventos terem uma plataforma fácil, segura e eficiente para
+        gerenciar prestadores, participantes e controle de acessos. Com ele, você elimina listas em papel, processos manuais e
+        ineficiências operacionais.
+      </p>
+      <p class="text-center">
+        Oferecemos uma solução completa de gestão, onde é possível cadastrar empresas, criar eventos, registrar participantes e fazer
+        check-in e check-out com leitura de QR Code, tudo em tempo real e de qualquer dispositivo.
       </p>
     </div>
   </section>
 
-  <section id="funcionalidades" class="py-5 bg-secondary text-light">
+  <!-- Funcionalidades -->
+  <section id="funcionalidades" class="py-5">
     <div class="container">
-      <h2 class="mb-4 text-center">Funcionalidades</h2>
-      <div class="row text-center">
+      <h2 class="text-center mb-5">Funcionalidades</h2>
+      <div class="row g-4">
         <div class="col-md-4">
-          <div class="card p-3 bg-dark">
-            <h4>Gestão de Eventos</h4>
-            <p>Crie, edite e acompanhe todos os seus eventos com facilidade.</p>
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Gestão de Eventos</h5>
+              <p class="card-text">
+                Crie, edite e acompanhe seus eventos com facilidade. Controle todos os detalhes, participantes e prestadores vinculados.
+              </p>
+            </div>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card p-3 bg-dark">
-            <h4>Check-in e Check-out</h4>
-            <p>Controle preciso dos participantes, com leitura de QR Code e relatórios.</p>
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Check-in e Check-out</h5>
+              <p class="card-text">
+                Realize check-in e check-out dos participantes por meio de QR Code. Tenha total controle de quem está presente em tempo real.
+              </p>
+            </div>
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card p-3 bg-dark">
-            <h4>Gestão de Prestadores</h4>
-            <p>Acompanhe os prestadores vinculados aos eventos e aprove seus cadastros.</p>
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Aprovação de Prestadores</h5>
+              <p class="card-text">
+                Fluxo de aprovação para prestadores. Garanta que apenas profissionais autorizados estejam presentes no seu evento.
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="contato" class="py-5">
+  <!-- Contato -->
+  <section id="contato" class="py-5 bg-secondary bg-opacity-10">
     <div class="container">
-      <h2 class="mb-4 text-center">Fale Conosco</h2>
-      <p class="text-center">
-        Entre em contato pelo email: <strong>contato@qreader.com</strong>
-      </p>
+      <h2 class="text-center mb-4">Fale Conosco</h2>
+      <p class="text-center">Em breve, disponibilizaremos nossos canais de atendimento. Enquanto isso, acesse sua conta para começar a usar.</p>
+      <div class="text-center">
+        <a href="/login/login.html" class="btn btn-primary">Acessar Plataforma</a>
+      </div>
     </div>
   </section>
 
-  <footer class="text-center py-4 bg-dark text-light">
-    <p>&copy; 2025 QReader - Todos os direitos reservados.</p>
+  <!-- Footer -->
+  <footer class="py-4 border-top text-center">
+    <div class="container">
+      <small>© 2025 IDFlow. Todos os direitos reservados.</small>
+    </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
