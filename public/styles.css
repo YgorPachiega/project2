@@ -1,20 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-/* ====== Reset e Layout Global ====== */
+/* ====== Reset ====== */
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
   background-color: #121212;
-  color: #f1f1f1;
-}
-
-h1, h2, h3, h4, h5 {
-  color: #ffffff;
-}
-
-a {
-  text-decoration: none;
+  color: #f8f9fa;
 }
 
 /* ====== Sidebar ====== */
@@ -22,22 +18,24 @@ a {
   width: 250px;
   height: 100vh;
   position: fixed;
-  background-color: #1f1f1f;
+  background-color: #1c1c1e;
   padding: 20px;
   top: 0;
   left: 0;
+  overflow-y: auto;
 }
 
 .sidebar h4 {
-  margin-bottom: 30px;
-  color: #fff;
+  margin-bottom: 20px;
+  color: white;
 }
 
 .sidebar a {
   color: white;
-  padding: 12px 15px;
+  padding: 10px 15px;
   display: block;
   border-radius: 5px;
+  text-decoration: none;
   transition: background-color 0.2s;
 }
 
@@ -49,9 +47,12 @@ a {
   background-color: #ff4d4d;
 }
 
-/* ====== Conteúdo Principal ====== */
-.main-content {
+/* ====== Layout com Sidebar ====== */
+body {
   margin-left: 250px;
+}
+
+.main-content {
   padding: 20px;
 }
 
@@ -61,137 +62,144 @@ a {
     width: 100%;
     height: auto;
   }
-  .main-content {
+  body {
     margin-left: 0;
   }
 }
 
-/* ====== Seções Ocultáveis ====== */
-.hidden {
-  display: none !important;
+/* ====== Cards e Tabelas ====== */
+.card {
+  background-color: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
-/* ====== Estilo de Tabelas ====== */
-table {
-  color: white;
+.card h2 {
+  margin-top: 0;
 }
 
-.table thead {
-  background-color: #343a40;
-}
-
-.table tbody tr {
+.table {
   background-color: #1f1f1f;
 }
 
-.table tbody tr:hover {
-  background-color: #2a2a2a;
+.table th,
+.table td {
+  vertical-align: middle;
 }
 
-/* ====== Botões ====== */
-button, .btn {
+/* ====== Botões e Inputs ====== */
+button,
+input,
+select {
   font-family: 'Roboto', sans-serif;
 }
 
-.btn-success {
-  background-color: #198754;
-  border: none;
+button {
+  transition: background-color 0.2s, color 0.2s;
 }
 
-.btn-success:hover {
-  background-color: #157347;
+button:hover {
+  opacity: 0.9;
 }
 
-.btn-warning {
-  background-color: #ffc107;
-  border: none;
-  color: black;
-}
-
-.btn-warning:hover {
-  background-color: #e0a800;
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  border: none;
-}
-
-.btn-danger:hover {
-  background-color: #bb2d3b;
-}
-
-/* ====== Modal ====== */
-.modal-content {
-  background-color: #1f1f1f;
-  color: white;
-}
-
-.modal-header, .modal-footer {
-  border-color: #343a40;
-}
-
-/* ====== Inputs e Forms ====== */
 input[type="text"],
 input[type="password"],
 input[type="date"],
 select,
 textarea {
-  background-color: #121212;
-  color: white;
-  border: 1px solid #343a40;
-}
-
-input:focus, select:focus, textarea:focus {
   background-color: #1f1f1f;
-  color: white;
-  border-color: #495057;
+  color: #f8f9fa;
+  border: 1px solid #333;
 }
 
-label {
-  margin-bottom: 5px;
-  display: block;
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #007bff;
+  outline: none;
 }
 
-/* ====== Alerts ====== */
-.alert-success {
-  background-color: #198754;
-  color: white;
-}
-
-.alert-danger {
-  background-color: #dc3545;
+/* ====== Modal ====== */
+.modal-content {
+  background-color: #1c1c1e;
   color: white;
 }
 
-/* ====== Títulos ====== */
-section h2 {
-  border-bottom: 1px solid #343a40;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
+/* ====== Formulários ====== */
+form.custom-form {
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #1c1c1e;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
 
-/* ====== Listas ====== */
-.list-group-item {
-  background-color: #1f1f1f;
+/* ====== Textos e Utilitários ====== */
+h1, h2, h3, h4, h5 {
   color: white;
-  border: 1px solid #343a40;
 }
 
-/* ====== Scroll ====== */
-::-webkit-scrollbar {
-  width: 8px;
+.hidden {
+  display: none !important;
 }
 
-::-webkit-scrollbar-track {
-  background: #121212;
+.text-center {
+  text-align: center;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #343a40;
-  border-radius: 4px;
+.loading-message,
+.error-message {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+.error-message {
+  color: red;
+}
+
+.success-message {
+  color: green;
+}
+
+/* ====== Responsividade para Câmera ou Vídeo ====== */
+@media (max-width: 768px) {
+  #camera-feed {
+    width: 100%;
+    border-radius: 0;
+  }
+}
+
+@media (min-width: 769px) {
+  #camera-feed {
+    width: 50%;
+    margin: 0 auto;
+  }
+}
+
+/* ====== Botão de retorno fixo (opcional) ====== */
+#return-home-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+/* ====== Footer (opcional) ====== */
+footer {
+  margin-top: 40px;
+  text-align: center;
+  color: #aaa;
+}
+
+footer a {
+  color: #aaa;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }
