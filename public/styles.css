@@ -1,9 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-/* ====== Reset ====== */
-* {
-  box-sizing: border-box;
-}
+/* ==========================
+   Layout com Sidebar
+========================== */
 
 body {
   font-family: 'Roboto', sans-serif;
@@ -13,12 +12,15 @@ body {
   color: #f8f9fa;
 }
 
-/* ====== Sidebar ====== */
+body.com-sidebar {
+  margin-left: 250px;
+}
+
 .sidebar {
   width: 250px;
   height: 100vh;
   position: fixed;
-  background-color: #1c1c1e;
+  background-color: #212529;
   padding: 20px;
   top: 0;
   left: 0;
@@ -27,14 +29,14 @@ body {
 
 .sidebar h4 {
   margin-bottom: 20px;
-  color: white;
+  color: #f8f9fa;
 }
 
 .sidebar a {
-  color: white;
+  color: #f8f9fa;
   padding: 10px 15px;
   display: block;
-  border-radius: 5px;
+  border-radius: 6px;
   text-decoration: none;
   transition: background-color 0.2s;
 }
@@ -44,17 +46,12 @@ body {
 }
 
 .sidebar a.text-danger:hover {
-  background-color: #ff4d4d;
+  background-color: #c82333;
 }
 
-/* ====== Layout com Sidebar ====== */
-body {
-  margin-left: 250px;
-}
-
-.main-content {
-  padding: 20px;
-}
+/* ==========================
+   Sidebar Responsiva
+========================== */
 
 @media (max-width: 768px) {
   .sidebar {
@@ -62,94 +59,71 @@ body {
     width: 100%;
     height: auto;
   }
-  body {
+
+  body.com-sidebar {
     margin-left: 0;
   }
 }
 
-/* ====== Cards e Tabelas ====== */
-.card {
-  background-color: #1f1f1f;
-  border: 1px solid #333;
-  border-radius: 8px;
+/* ==========================
+   Conteúdo Principal
+========================== */
+.main-content {
   padding: 20px;
-  margin-bottom: 20px;
-}
-
-.card h2 {
-  margin-top: 0;
-}
-
-.table {
-  background-color: #1f1f1f;
-}
-
-.table th,
-.table td {
-  vertical-align: middle;
-}
-
-/* ====== Botões e Inputs ====== */
-button,
-input,
-select {
-  font-family: 'Roboto', sans-serif;
-}
-
-button {
-  transition: background-color 0.2s, color 0.2s;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="date"],
-select,
-textarea {
-  background-color: #1f1f1f;
-  color: #f8f9fa;
-  border: 1px solid #333;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-/* ====== Modal ====== */
-.modal-content {
-  background-color: #1c1c1e;
-  color: white;
-}
-
-/* ====== Formulários ====== */
-form.custom-form {
-  max-width: 500px;
-  margin: 0 auto;
-  background-color: #1c1c1e;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-}
-
-/* ====== Textos e Utilitários ====== */
-h1, h2, h3, h4, h5 {
-  color: white;
 }
 
 .hidden {
   display: none !important;
 }
 
-.text-center {
-  text-align: center;
+/* ==========================
+   Cards
+========================== */
+.card {
+  background-color: #212529;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px auto;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
 }
 
+.card h2, .card h4 {
+  color: #fff;
+}
+
+.card button {
+  margin-top: 10px;
+}
+
+/* ==========================
+   Tabelas
+========================== */
+.table {
+  background-color: #212529;
+  color: #fff;
+}
+
+.table th {
+  background-color: #343a40;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+/* ==========================
+   Botão de Retorno Fixo
+========================== */
+#return-home-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+/* ==========================
+   Mensagens
+========================== */
 .loading-message,
 .error-message {
   text-align: center;
@@ -158,14 +132,96 @@ h1, h2, h3, h4, h5 {
 }
 
 .error-message {
-  color: red;
+  color: #ff4d4d;
 }
 
-.success-message {
-  color: green;
+/* ==========================
+   Título Principal
+========================== */
+h1 {
+  text-align: center;
+  margin-top: 50px;
 }
 
-/* ====== Responsividade para Câmera ou Vídeo ====== */
+/* ==========================
+   Formulários
+========================== */
+form.custom-form {
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: #212529;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.4);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+select,
+textarea {
+  background-color: #343a40;
+  color: #fff;
+  border: 1px solid #495057;
+  border-radius: 6px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #adb5bd;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
+}
+
+/* ==========================
+   Botões
+========================== */
+button,
+.btn {
+  font-family: 'Roboto', sans-serif;
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border: none;
+}
+
+.btn-secondary:hover {
+  background-color: #5c636a;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #bb2d3b;
+}
+
+/* ==========================
+   Câmera Responsiva
+========================== */
 @media (max-width: 768px) {
   #camera-feed {
     width: 100%;
@@ -180,23 +236,38 @@ h1, h2, h3, h4, h5 {
   }
 }
 
-/* ====== Botão de retorno fixo (opcional) ====== */
-#return-home-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
+/* ==========================
+   Centralização (Telas sem Sidebar)
+========================== */
+.center-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
-/* ====== Footer (opcional) ====== */
+.center-card {
+  background-color: #212529;
+  padding: 30px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* ==========================
+   Footer
+========================== */
 footer {
   margin-top: 40px;
+  padding: 20px;
   text-align: center;
-  color: #aaa;
+  color: #adb5bd;
 }
 
 footer a {
-  color: #aaa;
+  color: #adb5bd;
   text-decoration: none;
 }
 
