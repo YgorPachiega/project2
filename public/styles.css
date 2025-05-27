@@ -60,7 +60,7 @@ body.com-sidebar {
     height: auto;
   }
 
-  body.com-sidebar {
+  .main-content {
     margin-left: 0;
   }
 }
@@ -69,6 +69,7 @@ body.com-sidebar {
    Conteúdo Principal
 ========================== */
 .main-content {
+  margin-left: 250px;
   padding: 20px;
 }
 
@@ -229,7 +230,7 @@ button,
   }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 768px) {
   #camera-feed {
     width: 50%;
     margin: 0 auto;
