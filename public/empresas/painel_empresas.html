@@ -2,194 +2,330 @@
 <html lang="pt-br" data-bs-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel da Empresa - QReader</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
 </head>
 
 <body>
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h4>Menu</h4>
-    <a href="#" onclick="mostrarSecao('inicio')">Início</a>
-    <a href="#" onclick="mostrarSecao('aprovacoes')">Aprovações</a>
-    <a href="#" onclick="mostrarSecao('eventos')">Eventos</a>
-    <a href="#" onclick="mostrarSecao('configuracoes')">Configurações</a>
-    <hr>
-    <a href="#" onclick="logout()" class="text-danger">Sair</a>
+<div class="sidebar">
+  <h4>Menu</h4>
+  <a href="#" onclick="mostrarSecao('inicio')">Início</a>
+  <a href="#" onclick="mostrarSecao('aprovacoes')">Aprovações</a>
+  <a href="#" onclick="mostrarSecao('eventos')">Eventos</a>
+  <a href="#" onclick="mostrarSecao('configuracoes')">Configurações</a>
+  <hr>
+  <a href="#" onclick="logout()" class="text-danger">Sair</a>
+</div>
+
+<main class="main-content">
+  <section id="inicio">
+    <h2>Bem-vindo(a) ao Painel da Empresa</h2>
+    <p>Use o menu ao lado para navegar entre as funcionalidades.</p>
+  </section>
+
+  <section id="aprovacoes" class="hidden">
+    <h2>Aprovação de Prestadores</h2>
+    <div id="lista-aprovacoes">
+      <p>Carregando...</p>
+    </div>
+  </section>
+
+  <section id="eventos" class="hidden">
+    <h2>Eventos</h2>
+    <button class="btn btn-success mb-3" onclick="abrirModalCriarEvento()">+ Novo Evento</button>
+    <div id="listaEventos">Carregando eventos...</div>
+  </section>
+
+  <section id="configuracoes" class="hidden">
+    <h2>Configurações</h2>
+    <p>Atualize os dados da sua empresa.</p>
+  </section>
+</main>
+
+<!-- Modal de criação/edição de evento -->
+<div class="modal fade" id="modalEvento" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form onsubmit="salvarEvento(event)">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tituloModalEvento">Novo Evento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="eventoId">
+          <div class="mb-3">
+            <label class="form-label">Nome do Evento</label>
+            <input type="text" id="nome" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Descrição</label>
+            <textarea id="descricao" class="form-control"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Local</label>
+            <input type="text" id="local" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Data de Início</label>
+            <input type="date" id="dataInicio" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Data de Fim</label>
+            <input type="date" id="dataFim" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Vincular Prestadores</label>
+            <select multiple id="prestadores" class="form-select"></select>
+            <div class="form-text">Segure CTRL (ou CMD) para selecionar múltiplos prestadores</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
   </div>
+</div>
 
-  <!-- Conteúdo Principal -->
-  <main class="main-content">
-    <section id="inicio">
-      <h2>Bem-vindo(a) ao Painel da Empresa</h2>
-      <p>Use o menu ao lado para navegar entre as funcionalidades.</p>
-    </section>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <section id="aprovacoes" class="hidden">
-      <h2>Aprovação de Prestadores</h2>
-      <div id="lista-aprovacoes">Carregando...</div>
-    </section>
+<script>
+const API_BASE = "https://app-qreader.onrender.com/api";
+let auth0 = null;
+let eventos = [];
+const empresaId = sessionStorage.getItem('empresaId');
+const empresaNome = sessionStorage.getItem('empresaNome');
 
-    <section id="eventos" class="hidden">
-      <h2>Eventos</h2>
-      <div id="lista-eventos">Carregando...</div>
-    </section>
+// --------------------- Auth0 e Validação ----------------------
+async function configureAuth0() {
+  auth0 = await createAuth0Client({
+    domain: "dev-agq6qfbtj4yee13n.us.auth0.com",
+    client_id: "zH6qQUwI5LMYtM4zOfw7N1DokYo9ruMV",
+    cacheLocation: "localstorage"
+  });
+}
 
-    <section id="configuracoes" class="hidden">
-      <h2>Configurações</h2>
-      <p>Aqui você pode atualizar os dados da sua empresa.</p>
-    </section>
-  </main>
+async function validarAcesso() {
+  const email = sessionStorage.getItem("solicitante");
+  if (!email) {
+    alert("Acesso negado. Faça login novamente.");
+    window.location.href = "/login/login.html";
+    return;
+  }
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  const response = await fetch(`${API_BASE}/users/${email}`);
+  const perfil = await response.json();
 
-  <script>
-    // Função para alternar as seções
-    function mostrarSecao(secao) {
-      const secoes = document.querySelectorAll('main section');
-      secoes.forEach(s => s.classList.add('hidden'));
+  if (!perfil || perfil.tipoUsuario !== "empresa") {
+    alert("Acesso restrito.");
+    sessionStorage.clear();
+    window.location.href = "/login/login.html";
+    return;
+  }
 
-      const secaoSelecionada = document.getElementById(secao);
-      if (secaoSelecionada) {
-        secaoSelecionada.classList.remove('hidden');
-      }
+  sessionStorage.setItem("empresaId", perfil.empresaId);
+  sessionStorage.setItem("empresaNome", perfil.empresa.nome);
+}
 
-      // Carrega dados se necessário
-      if (secao === 'aprovacoes') carregarAprovacoes();
-      if (secao === 'eventos') carregarEventos();
+async function logout() {
+  sessionStorage.clear();
+  const auth0Client = await createAuth0Client({
+    domain: "dev-agq6qfbtj4yee13n.us.auth0.com",
+    client_id: "zH6qQUwI5LMYtM4zOfw7N1DokYo9ruMV",
+    cacheLocation: "localstorage"
+  });
+  await auth0Client.logout({
+    logoutParams: {
+      returnTo: window.location.origin + "/login/login.html"
     }
+  });
+}
 
-    async function carregarAprovacoes() {
-      const empresaId = sessionStorage.getItem('empresaId');
-      if (!empresaId) {
-        document.getElementById('lista-aprovacoes').innerHTML = `<p>Erro: Empresa não identificada.</p>`;
-        return;
-      }
+// ----------------- Sidebar Navegação --------------------
+function mostrarSecao(secao) {
+  document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+  document.getElementById(secao).classList.remove('hidden');
 
-      try {
-        const res = await fetch(`https://app-qreader.onrender.com/api/prestadores/pendentes?empresaId=${empresaId}`);
-        const prestadores = await res.json();
+  if (secao === 'aprovacoes') carregarAprovacoes();
+  if (secao === 'eventos') carregarEventos();
+}
 
-        if (!res.ok) {
-          document.getElementById('lista-aprovacoes').innerHTML = `<p>Erro ao carregar dados.</p>`;
-          return;
-        }
+// ----------------- Aprovação de Prestadores --------------------
+async function carregarAprovacoes() {
+  const res = await fetch(`${API_BASE}/prestadores/pendentes?empresaId=${empresaId}`);
+  const prestadores = await res.json();
 
-        if (prestadores.length === 0) {
-          document.getElementById('lista-aprovacoes').innerHTML = `<p>Não há prestadores pendentes.</p>`;
-          return;
-        }
+  if (!res.ok || prestadores.length === 0) {
+    document.getElementById('lista-aprovacoes').innerHTML = `<p>${prestadores.error || 'Sem prestadores pendentes.'}</p>`;
+    return;
+  }
 
-        let html = `
-          <table class="table table-dark table-bordered">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Email</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-        `;
+  const html = `
+    <table class="table table-dark table-bordered">
+      <thead>
+        <tr><th>Nome</th><th>Email</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        ${prestadores.map(p => `
+          <tr>
+            <td>${p.nome}</td>
+            <td>${p.email}</td>
+            <td><button class="btn btn-success btn-sm" onclick="aprovarPrestador('${p.id}')">Aprovar</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+  document.getElementById('lista-aprovacoes').innerHTML = html;
+}
 
-        prestadores.forEach(p => {
-          html += `
-            <tr>
-              <td>${p.nome}</td>
-              <td>${p.email}</td>
-              <td>
-                <button class="btn btn-success btn-sm" onclick="aprovarPrestador('${p.id}')">Aprovar</button>
-              </td>
-            </tr>
-          `;
-        });
+async function aprovarPrestador(id) {
+  if (!confirm('Deseja realmente aprovar este prestador?')) return;
+  const res = await fetch(`${API_BASE}/prestadores/aprovar/${id}`, { method: 'PUT' });
+  const resultado = await res.json();
+  if (res.ok) {
+    alert('Prestador aprovado!');
+    carregarAprovacoes();
+  } else {
+    alert(resultado.error || 'Erro ao aprovar prestador.');
+  }
+}
 
-        html += `</tbody></table>`;
-        document.getElementById('lista-aprovacoes').innerHTML = html;
+// ----------------- Gerenciamento de Eventos --------------------
+async function carregarEventos() {
+  const res = await fetch(`${API_BASE}/eventos/empresa?empresaId=${empresaId}`);
+  eventos = await res.json();
 
-      } catch (error) {
-        console.error('Erro ao carregar aprovações:', error);
-        document.getElementById('lista-aprovacoes').innerHTML = `<p>Erro ao carregar aprovações.</p>`;
-      }
-    }
+  if (!res.ok || eventos.length === 0) {
+    document.getElementById('listaEventos').innerHTML = `<p>Sem eventos cadastrados.</p>`;
+    return;
+  }
 
-    async function aprovarPrestador(id) {
-      const confirmar = confirm('Deseja realmente aprovar este prestador?');
-      if (!confirmar) return;
-
-      try {
-        const response = await fetch(`https://app-qreader.onrender.com/api/prestadores/aprovar/${id}`, {
-          method: 'PUT',
-        });
-
-        const resultado = await response.json();
-
-        if (response.ok) {
-          alert('Prestador aprovado com sucesso.');
-          carregarAprovacoes();
-        } else {
-          alert(resultado.error || 'Erro ao aprovar prestador.');
-        }
-      } catch (error) {
-        console.error('Erro ao aprovar prestador:', error);
-        alert('Erro na comunicação com o servidor.');
-      }
-    }
-
-    async function carregarEventos() {
-      const empresaId = sessionStorage.getItem('empresaId');
-      const res = await fetch(`https://app-qreader.onrender.com/api/eventos/empresa?empresaId=${empresaId}`);
-      const eventos = await res.json();
-
-      if (!res.ok) {
-        document.getElementById('lista-eventos').innerHTML = `<p>Erro ao carregar eventos.</p>`;
-        return;
-      }
-
-      if (eventos.length === 0) {
-        document.getElementById('lista-eventos').innerHTML = `<p>Não há eventos cadastrados.</p>`;
-        return;
-      }
-
-      let html = `
-        <table class="table table-dark table-bordered">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Local</th>
-              <th>Período</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-
-      eventos.forEach(ev => {
-        const periodo = `${new Date(ev.dataInicio).toLocaleDateString()} - ${new Date(ev.dataFim).toLocaleDateString()}`;
-        html += `
+  const html = `
+    <table class="table table-dark table-bordered">
+      <thead>
+        <tr><th>Nome</th><th>Local</th><th>Período</th><th>Prestadores</th><th>Ações</th></tr>
+      </thead>
+      <tbody>
+        ${eventos.map(ev => `
           <tr>
             <td>${ev.nome}</td>
             <td>${ev.local}</td>
-            <td>${periodo}</td>
-          </tr>
-        `;
-      });
+            <td>${new Date(ev.dataInicio).toLocaleDateString()} - ${new Date(ev.dataFim).toLocaleDateString()}</td>
+            <td>${ev.prestadores?.map(p => p.prestador.nome).join(', ') || 'Nenhum'}</td>
+            <td>
+              <button class="btn btn-warning btn-sm" onclick="editarEvento('${ev.id}')">Editar</button>
+              <button class="btn btn-danger btn-sm" onclick="deletarEvento('${ev.id}')">Excluir</button>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+  document.getElementById('listaEventos').innerHTML = html;
+}
 
-      html += `</tbody></table>`;
-      document.getElementById('lista-eventos').innerHTML = html;
-    }
+async function abrirModalCriarEvento() {
+  limparFormulario();
+  await carregarPrestadores();
+  document.getElementById('tituloModalEvento').innerText = "Novo Evento";
+  const modal = new bootstrap.Modal(document.getElementById('modalEvento'));
+  modal.show();
+}
 
-    async function logout() {
-      sessionStorage.clear();
-      window.location.href = "/login/login.html";
-    }
+async function carregarPrestadores() {
+  const res = await fetch(`${API_BASE}/users/prestadores?empresaId=${empresaId}`);
+  const prestadores = await res.json();
+  const select = document.getElementById('prestadores');
+  select.innerHTML = prestadores.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+}
 
-    window.onload = () => {
-      mostrarSecao('inicio'); // Começa na tela inicial
-    };
-  </script>
+function editarEvento(id) {
+  const evento = eventos.find(e => e.id === id);
+  if (!evento) return;
+  document.getElementById('tituloModalEvento').innerText = "Editar Evento";
+  document.getElementById('eventoId').value = evento.id;
+  document.getElementById('nome').value = evento.nome;
+  document.getElementById('descricao').value = evento.descricao;
+  document.getElementById('local').value = evento.local;
+  document.getElementById('dataInicio').value = evento.dataInicio.split('T')[0];
+  document.getElementById('dataFim').value = evento.dataFim.split('T')[0];
 
+  carregarPrestadores().then(() => {
+    const select = document.getElementById('prestadores');
+    const prestadoresIds = evento.prestadores.map(p => p.prestadorId);
+    [...select.options].forEach(opt => {
+      if (prestadoresIds.includes(opt.value)) opt.selected = true;
+    });
+  });
+
+  const modal = new bootstrap.Modal(document.getElementById('modalEvento'));
+  modal.show();
+}
+
+async function salvarEvento(event) {
+  event.preventDefault();
+  const id = document.getElementById('eventoId').value;
+  const body = {
+    nome: document.getElementById('nome').value,
+    descricao: document.getElementById('descricao').value,
+    local: document.getElementById('local').value,
+    dataInicio: document.getElementById('dataInicio').value,
+    dataFim: document.getElementById('dataFim').value,
+    empresaId: empresaId,
+    prestadores: Array.from(document.getElementById('prestadores').selectedOptions).map(o => o.value)
+  };
+
+  const url = id ? `${API_BASE}/eventos/${id}` : `${API_BASE}/eventos`;
+  const method = id ? 'PUT' : 'POST';
+
+  const res = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+
+  if (res.ok) {
+    alert('Evento salvo com sucesso!');
+    carregarEventos();
+    bootstrap.Modal.getInstance(document.getElementById('modalEvento')).hide();
+  } else {
+    alert('Erro ao salvar evento.');
+  }
+}
+
+async function deletarEvento(id) {
+  const confirmar = confirm('Deseja realmente excluir este evento?');
+  if (!confirmar) return;
+
+  const res = await fetch(`${API_BASE}/eventos/${id}`, { method: 'DELETE' });
+  if (res.ok) {
+    alert('Evento excluído com sucesso!');
+    carregarEventos();
+  } else {
+    alert('Erro ao excluir evento.');
+  }
+}
+
+function limparFormulario() {
+  document.getElementById('eventoId').value = '';
+  document.getElementById('nome').value = '';
+  document.getElementById('descricao').value = '';
+  document.getElementById('local').value = '';
+  document.getElementById('dataInicio').value = '';
+  document.getElementById('dataFim').value = '';
+  document.getElementById('prestadores').innerHTML = '';
+}
+
+// ----------------- OnLoad --------------------
+window.onload = async () => {
+  await configureAuth0();
+  await validarAcesso();
+  mostrarSecao('inicio');
+};
+</script>
 </body>
 </html>
