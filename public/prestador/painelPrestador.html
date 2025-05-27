@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel do Prestador - QReader</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<div class="d-flex">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <h4>Painel Prestador</h4>
+    <a href="#" onclick="mostrarSecao('eventos')">Eventos</a>
+    <a href="#" onclick="mostrarSecao('entrada')">Entrada</a>
+    <a href="#" onclick="mostrarSecao('saida')">Saída</a>
+    <hr class="text-secondary">
+    <a href="#" onclick="logout()" class="text-danger">Sair</a>
+  </nav>
+
+  <!-- Conteúdo -->
+  <main class="main-content container-fluid">
+    <section id="eventos" class="hidden">
+      <h2>Eventos Vinculados</h2>
+      <div id="listaEventos">Carregando eventos...</div>
+    </section>
+
+    <section id="entrada" class="hidden">
+      <h2>Entrada de Participantes</h2>
+      <div class="mb-3">
+        <label class="form-label">Selecione o Evento</label>
+        <select id="eventoEntrada" class="form-select"></select>
+      </div>
+      <button class="btn btn-success" onclick="simularLeitura('entrada')">Simular Leitura QRCode (Check-in)</button>
+      <div id="entradaStatus" class="mt-3"></div>
+    </section>
+
+    <section id="saida" class="hidden">
+      <h2>Saída de Participantes</h2>
+      <div class="mb-3">
+        <label class="form-label">Selecione o Evento</label>
+        <select id="eventoSaida" class="form-select"></select>
+      </div>
+      <button class="btn btn-warning" onclick="simularLeitura('saida')">Simular Leitura QRCode (Check-out)</button>
+      <div id="saidaStatus" class="mt-3"></div>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const API_BASE = "https://app-qreader.onrender.com/api";
+const prestadorId = sessionStorage.getItem('prestadorId');
+let eventos = [];
+
+window.onload = () => {
+  carregarEventos();
+  mostrarSecao('eventos');
+};
+
+function mostrarSecao(secao) {
+  document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+  document.getElementById(secao).classList.remove('hidden');
+}
+
+async function carregarEventos() {
+  const res = await fetch(`${API_BASE}/eventos/prestador?prestadorId=${prestadorId}`);
+  eventos = await res.json();
+
+  if (!eventos.length) {
+    document.getElementById('listaEventos').innerHTML = '<p>Nenhum evento encontrado.</p>';
+  } else {
+    const html = `<ul class="list-group">${eventos.map(ev => `<li class="list-group-item bg-dark text-white">${ev.evento.nome} - ${ev.evento.local}</li>`).join('')}</ul>`;
+    document.getElementById('listaEventos').innerHTML = html;
+  }
+
+  const options = eventos.map(e => `<option value="${e.evento.id}">${e.evento.nome}</option>`).join('');
+  document.getElementById('eventoEntrada').innerHTML = '<option value="">Selecione...</option>' + options;
+  document.getElementById('eventoSaida').innerHTML = '<option value="">Selecione...</option>' + options;
+}
+
+function simularLeitura(tipo) {
+  const eventoId = tipo === 'entrada' ? document.getElementById('eventoEntrada').value : document.getElementById('eventoSaida').value;
+  if (!eventoId) {
+    alert('Selecione um evento');
+    return;
+  }
+
+  const participanteId = prompt('Simulação: Insira o ID do participante (leitura de QRCode)');
+  if (!participanteId) return;
+
+  const rota = tipo === 'entrada' ? 'entrada' : 'saida';
+
+  fetch(`${API_BASE}/checkin/${rota}`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ participanteId, eventoId })
+  }).then(res => {
+    if (res.ok) {
+      alert(`Check-${tipo === 'entrada' ? 'in' : 'out'} realizado com sucesso`);
+      document.getElementById(tipo + 'Status').innerHTML = `<div class="alert alert-success">Check-${tipo} realizado com sucesso</div>`;
+    } else {
+      alert(`Erro ao realizar check-${tipo}`);
+      document.getElementById(tipo + 'Status').innerHTML = `<div class="alert alert-danger">Erro no check-${tipo}</div>`;
+    }
+  });
+}
+
+function logout() {
+  sessionStorage.clear();
+  window.location.href = "/login/login.html";
+}
+</script>
+
+</body>
+</html>

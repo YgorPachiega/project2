@@ -1,16 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-/* ====== Reset ====== */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+/* ====== Reset e Layout Global ====== */
 body {
   font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
   background-color: #121212;
-  color: #f8f9fa;
+  color: #f1f1f1;
+}
+
+h1, h2, h3, h4, h5 {
+  color: #ffffff;
+}
+
+a {
+  text-decoration: none;
 }
 
 /* ====== Sidebar ====== */
@@ -18,26 +22,22 @@ body {
   width: 250px;
   height: 100vh;
   position: fixed;
-  left: 0;
-  top: 0;
   background-color: #1f1f1f;
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid #333;
+  top: 0;
+  left: 0;
 }
 
 .sidebar h4 {
-  color: #fff;
   margin-bottom: 30px;
+  color: #fff;
 }
 
 .sidebar a {
-  color: #fff;
-  padding: 10px 15px;
-  margin-bottom: 8px;
-  text-decoration: none;
-  border-radius: 8px;
+  color: white;
+  padding: 12px 15px;
+  display: block;
+  border-radius: 5px;
   transition: background-color 0.2s;
 }
 
@@ -45,18 +45,14 @@ body {
   background-color: #343a40;
 }
 
-.sidebar a.text-danger {
-  color: #dc3545;
-}
-
 .sidebar a.text-danger:hover {
-  background-color: #58151c;
+  background-color: #ff4d4d;
 }
 
-/* ====== Main Content ====== */
+/* ====== Conteúdo Principal ====== */
 .main-content {
   margin-left: 250px;
-  padding: 30px;
+  padding: 20px;
 }
 
 @media (max-width: 768px) {
@@ -64,41 +60,28 @@ body {
     position: relative;
     width: 100%;
     height: auto;
-    border-right: none;
-    border-bottom: 1px solid #333;
   }
-
   .main-content {
     margin-left: 0;
   }
 }
 
-/* ====== Títulos e Seções ====== */
-h1, h2, h3, h4 {
-  color: #f8f9fa;
-}
-
+/* ====== Seções Ocultáveis ====== */
 .hidden {
   display: none !important;
 }
 
-/* ====== Tabelas ====== */
-.table {
-  color: #f8f9fa;
-  background-color: #1c1c1c;
+/* ====== Estilo de Tabelas ====== */
+table {
+  color: white;
 }
 
-.table th {
-  background-color: #2c2c2c;
-  color: #f8f9fa;
+.table thead {
+  background-color: #343a40;
 }
 
-.table td {
-  background-color: #1c1c1c;
-}
-
-.table th, .table td {
-  border: 1px solid #444;
+.table tbody tr {
+  background-color: #1f1f1f;
 }
 
 .table tbody tr:hover {
@@ -108,15 +91,6 @@ h1, h2, h3, h4 {
 /* ====== Botões ====== */
 button, .btn {
   font-family: 'Roboto', sans-serif;
-}
-
-.btn-primary {
-  background-color: #0d6efd;
-  border: none;
-}
-
-.btn-primary:hover {
-  background-color: #0b5ed7;
 }
 
 .btn-success {
@@ -130,8 +104,8 @@ button, .btn {
 
 .btn-warning {
   background-color: #ffc107;
-  color: #000;
   border: none;
+  color: black;
 }
 
 .btn-warning:hover {
@@ -147,64 +121,77 @@ button, .btn {
   background-color: #bb2d3b;
 }
 
-/* ====== Cards ====== */
-.card {
+/* ====== Modal ====== */
+.modal-content {
   background-color: #1f1f1f;
-  border: 1px solid #333;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-  color: #f8f9fa;
+  color: white;
 }
 
-/* ====== Formulários ====== */
-form {
-  background-color: #1f1f1f;
-  border-radius: 10px;
-  padding: 20px;
-  border: 1px solid #333;
+.modal-header, .modal-footer {
+  border-color: #343a40;
 }
 
+/* ====== Inputs e Forms ====== */
 input[type="text"],
-input[type="date"],
 input[type="password"],
-textarea,
-select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  margin-bottom: 15px;
-  background-color: #2c2c2c;
-  border: 1px solid #444;
-  color: #f8f9fa;
-  border-radius: 5px;
+input[type="date"],
+select,
+textarea {
+  background-color: #121212;
+  color: white;
+  border: 1px solid #343a40;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: #0d6efd;
-  background-color: #333;
+input:focus, select:focus, textarea:focus {
+  background-color: #1f1f1f;
+  color: white;
+  border-color: #495057;
 }
 
-/* ====== Mensagens ====== */
-.loading-message,
-.error-message {
-  text-align: center;
-  font-size: 18px;
-  margin-top: 20px;
+label {
+  margin-bottom: 5px;
+  display: block;
 }
 
-.error-message {
-  color: #ff4d4d;
+/* ====== Alerts ====== */
+.alert-success {
+  background-color: #198754;
+  color: white;
 }
 
-/* ====== Layout Geral ====== */
-hr {
-  border-color: #333;
+.alert-danger {
+  background-color: #dc3545;
+  color: white;
 }
 
-a {
-  cursor: pointer;
+/* ====== Títulos ====== */
+section h2 {
+  border-bottom: 1px solid #343a40;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+/* ====== Listas ====== */
+.list-group-item {
+  background-color: #1f1f1f;
+  color: white;
+  border: 1px solid #343a40;
+}
+
+/* ====== Scroll ====== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #121212;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #343a40;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
