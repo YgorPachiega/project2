@@ -83,7 +83,7 @@
     }
 
     async function carregarEventos() {
-      const res = await fetch(`${API_BASE}/eventos/by-prestador/${prestadorId}`);
+      const res = await fetch(`${API_BASE}/eventos/by-prestadorIds/${prestadorId}`);
       eventos = await res.json();
 
       const selectEntrada = document.getElementById('eventoEntradaSelect');
