@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Painel do Prestador - IDFlow</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../styles.css" />
 </head>
 
 <body>
@@ -17,18 +17,19 @@
         <a href="#" onclick="mostrarSecao('eventos')" class="d-block mb-2 text-decoration-none text-light">Eventos</a>
         <a href="#" onclick="mostrarSecao('entrada')" class="d-block mb-2 text-decoration-none text-light">Entrada</a>
         <a href="#" onclick="mostrarSecao('saida')" class="d-block mb-2 text-decoration-none text-light">Saída</a>
-        <hr class="text-secondary">
+        <hr class="text-secondary" />
         <a href="#" onclick="logout()" class="d-block text-decoration-none text-danger">Sair</a>
       </nav>
 
-      <!-- Main Content -->
+      <!-- Conteúdo principal -->
       <main class="col-md-9 ms-sm-auto col-lg-10 main-content p-4">
-
+        <!-- Seção Eventos -->
         <section id="eventos">
           <h2>Eventos Vinculados</h2>
           <div id="listaEventos"><p>Carregando eventos...</p></div>
         </section>
 
+        <!-- Seção Entrada -->
         <section id="entrada" class="d-none">
           <h2>Entrada de Participantes</h2>
           <div class="mb-3">
@@ -40,6 +41,7 @@
           <div id="listaEntrada">Selecione um evento para visualizar.</div>
         </section>
 
+        <!-- Seção Saída -->
         <section id="saida" class="d-none">
           <h2>Saída de Participantes</h2>
           <div class="mb-3">
@@ -50,7 +52,6 @@
           </div>
           <div id="listaSaida">Selecione um evento para visualizar.</div>
         </section>
-
       </main>
     </div>
   </div>
@@ -66,7 +67,14 @@
 
     window.onload = async () => {
       await configurarAuth0();
-      carregarEventos();
+
+      if (!prestadorId) {
+        alert("Sessão expirada. Faça login novamente.");
+        return window.location.href = "/login/login.html";
+      }
+
+      mostrarSecao("eventos");
+      await carregarEventos();
     };
 
     async function configurarAuth0() {
@@ -78,81 +86,91 @@
     }
 
     function mostrarSecao(secao) {
-      document.querySelectorAll('main section').forEach(s => s.classList.add('d-none'));
-      document.getElementById(secao).classList.remove('d-none');
+      document.querySelectorAll("main section").forEach((s) => s.classList.add("d-none"));
+      document.getElementById(secao).classList.remove("d-none");
     }
 
     async function carregarEventos() {
-      const res = await fetch(`${API_BASE}/eventos/by-prestadorIds/${prestadorId}`);
-      eventos = await res.json();
+      try {
+        const res = await fetch(`${API_BASE}/eventos/by-prestador?prestadorId=${prestadorId}`);
+        eventos = await res.json();
 
-      const selectEntrada = document.getElementById('eventoEntradaSelect');
-      const selectSaida = document.getElementById('eventoSaidaSelect');
+        const selectEntrada = document.getElementById('eventoEntradaSelect');
+        const selectSaida = document.getElementById('eventoSaidaSelect');
 
-      const options = '<option value="">Selecione...</option>' +
-        eventos.map(e => `<option value="${e.id}">${e.nome}</option>`).join('');
+        const options = '<option value="">Selecione...</option>' +
+          eventos.map(e => `<option value="${e.id}">${e.nome}</option>`).join('');
 
-      selectEntrada.innerHTML = options;
-      selectSaida.innerHTML = options;
+        selectEntrada.innerHTML = options;
+        selectSaida.innerHTML = options;
 
-      let html = '';
-      if (eventos.length === 0) {
-        html = '<p>Nenhum evento vinculado.</p>';
-      } else {
-        html = `<table class="table table-dark table-bordered">
-          <thead><tr><th>Nome</th><th>Período</th><th>Local</th></tr></thead><tbody>`;
-        eventos.forEach(ev => {
-          html += `<tr>
-            <td>${ev.nome}</td>
-            <td>${new Date(ev.dataInicio).toLocaleDateString()} - ${new Date(ev.dataFim).toLocaleDateString()}</td>
-            <td>${ev.local || '-'}</td>
-          </tr>`;
-        });
-        html += '</tbody></table>';
+        let html = '';
+        if (eventos.length === 0) {
+          html = '<p>Nenhum evento vinculado.</p>';
+        } else {
+          html = `<table class="table table-dark table-bordered">
+            <thead><tr><th>Nome</th><th>Período</th><th>Local</th></tr></thead><tbody>`;
+          eventos.forEach(ev => {
+            html += `<tr>
+              <td>${ev.nome}</td>
+              <td>${new Date(ev.dataInicio).toLocaleDateString()} - ${new Date(ev.dataFim).toLocaleDateString()}</td>
+              <td>${ev.local || '-'}</td>
+            </tr>`;
+          });
+          html += '</tbody></table>';
+        }
+
+        document.getElementById("listaEventos").innerHTML = html;
+      } catch (error) {
+        console.error("Erro ao carregar eventos:", error);
+        document.getElementById("listaEventos").innerHTML = "<p>Erro ao carregar eventos.</p>";
       }
-
-      document.getElementById('listaEventos').innerHTML = html;
     }
 
     async function carregarParticipantes(tipo) {
-      const eventoId = tipo === 'entrada'
-        ? document.getElementById('eventoEntradaSelect').value
-        : document.getElementById('eventoSaidaSelect').value;
+      const eventoId = tipo === "entrada"
+        ? document.getElementById("eventoEntradaSelect").value
+        : document.getElementById("eventoSaidaSelect").value;
 
-      const listaDiv = tipo === 'entrada' ? 'listaEntrada' : 'listaSaida';
+      const listaDiv = tipo === "entrada" ? "listaEntrada" : "listaSaida";
 
       if (!eventoId) {
-        document.getElementById(listaDiv).innerHTML = '<p>Selecione um evento para visualizar.</p>';
+        document.getElementById(listaDiv).innerHTML = "<p>Selecione um evento para visualizar.</p>";
         return;
       }
 
-      const res = await fetch(`${API_BASE}/participantes/by-evento/${eventoId}`);
-      const participantes = await res.json();
+      try {
+        const res = await fetch(`${API_BASE}/participantes/by-evento/${eventoId}`);
+        const participantes = await res.json();
 
-      if (!participantes.length) {
-        document.getElementById(listaDiv).innerHTML = '<p>Nenhum participante cadastrado.</p>';
-        return;
+        if (!participantes.length) {
+          document.getElementById(listaDiv).innerHTML = "<p>Nenhum participante cadastrado.</p>";
+          return;
+        }
+
+        let html = `<table class="table table-dark table-bordered">
+          <thead><tr><th>Nome</th><th>CPF</th><th>Empresa</th><th>Ações</th></tr></thead><tbody>`;
+
+        participantes.forEach(p => {
+          html += `<tr>
+            <td>${p.nome}</td>
+            <td>${p.cpf}</td>
+            <td>${p.empresa}</td>
+            <td>
+              <button class="btn btn-sm btn-${tipo === 'entrada' ? 'success' : 'warning'}"
+                onclick="registrar${tipo === 'entrada' ? 'Checkin' : 'Checkout'}('${p.id}', '${eventoId}')">
+                ${tipo === 'entrada' ? 'Check-in' : 'Check-out'}
+              </button>
+            </td>
+          </tr>`;
+        });
+
+        html += "</tbody></table>";
+        document.getElementById(listaDiv).innerHTML = html;
+      } catch (error) {
+        console.error("Erro ao carregar participantes:", error);
+        document.getElementById(listaDiv).innerHTML = "<p>Erro ao carregar participantes.</p>";
       }
-
-      let html = `<table class="table table-dark table-bordered">
-        <thead><tr><th>Nome</th><th>CPF</th><th>Empresa</th><th>Ações</th></tr></thead><tbody>`;
-
-      participantes.forEach(p => {
-        html += `<tr>
-          <td>${p.nome}</td>
-          <td>${p.cpf}</td>
-          <td>${p.empresa}</td>
-          <td>
-            <button class="btn btn-sm btn-${tipo === 'entrada' ? 'success' : 'warning'}"
-              onclick="registrar${tipo === 'entrada' ? 'Checkin' : 'Checkout'}('${p.id}', '${eventoId}')">
-              ${tipo === 'entrada' ? 'Check-in' : 'Check-out'}
-            </button>
-          </td>
-        </tr>`;
-      });
-
-      html += '</tbody></table>';
-      document.getElementById(listaDiv).innerHTML = html;
     }
 
     async function registrarCheckin(participanteId, eventoId) {
@@ -179,7 +197,9 @@
       sessionStorage.clear();
       if (auth0) {
         await auth0.logout({
-          returnTo: window.location.origin + '/login/login.html'
+          logoutParams: {
+            returnTo: window.location.origin + "/login/login.html"
+          }
         });
       } else {
         window.location.href = "/login/login.html";
