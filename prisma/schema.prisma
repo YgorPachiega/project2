@@ -46,6 +46,7 @@ model Eventos {
   empresa     Empresas  @relation(fields: [empresaId], references: [id])
   prestadores EventoPrestadores[]
   checkins    Checkin[]
+  participantes Participantes[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -57,6 +58,8 @@ model Participantes {
   empresa       String
   solicitanteId String
   solicitante   Users     @relation(fields: [solicitanteId], references: [id])
+  eventoId      String
+  evento        Eventos   @relation(fields: [eventoId], references: [id])
   checkins      Checkin[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

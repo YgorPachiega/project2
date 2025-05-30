@@ -15,20 +15,40 @@
       <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-white p-3">
         <h4 class="text-white">Menu</h4>
         <a href="#" onclick="mostrarSecao('eventos')" class="d-block mb-2 text-decoration-none text-light">Eventos</a>
+        <a href="#" onclick="mostrarSecao('participantes')" class="d-block mb-2 text-decoration-none text-light">Participantes</a>
         <a href="#" onclick="mostrarSecao('entrada')" class="d-block mb-2 text-decoration-none text-light">Entrada</a>
         <a href="#" onclick="mostrarSecao('saida')" class="d-block mb-2 text-decoration-none text-light">Saída</a>
         <hr class="text-secondary">
         <a href="#" onclick="logout()" class="d-block text-decoration-none text-danger">Sair</a>
       </nav>
 
-      <!-- Main Content -->
       <main class="col-md-9 ms-sm-auto col-lg-10 main-content p-4">
 
+        <!-- Seção Eventos -->
         <section id="eventos">
           <h2>Eventos Vinculados</h2>
           <div id="listaEventos"><p>Carregando eventos...</p></div>
         </section>
 
+        <!-- Seção Participantes (Nova) -->
+        <section id="participantes" class="d-none">
+          <h2>Cadastro de Participantes</h2>
+
+          <div class="mb-3">
+            <label class="form-label">Selecione o Evento</label>
+            <select id="eventoParticipantesSelect" class="form-select" onchange="carregarListaParticipantes()">
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+
+          <div class="mb-3 d-grid">
+            <button class="btn btn-success" onclick="abrirModalNovoParticipante()">+ Adicionar Participante</button>
+          </div>
+
+          <div id="listaParticipantes">Selecione um evento para visualizar.</div>
+        </section>
+
+        <!-- Seção Entrada -->
         <section id="entrada" class="d-none">
           <h2>Entrada de Participantes</h2>
           <div class="mb-3">
@@ -40,6 +60,7 @@
           <div id="listaEntrada">Selecione um evento para visualizar.</div>
         </section>
 
+        <!-- Seção Saída -->
         <section id="saida" class="d-none">
           <h2>Saída de Participantes</h2>
           <div class="mb-3">
@@ -52,6 +73,40 @@
         </section>
 
       </main>
+    </div>
+  </div>
+
+  <!-- Modal para cadastro de novo participante -->
+  <div class="modal fade" id="modalParticipante" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title">Novo Participante</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label>Nome</label>
+            <input type="text" id="nomeParticipante" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label>CPF</label>
+            <input type="text" id="cpfParticipante" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label>Empresa</label>
+            <input type="text" id="empresaParticipante" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label>Telefone</label>
+            <input type="text" id="telefoneParticipante" class="form-control">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" onclick="salvarParticipante()">Salvar</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -84,52 +139,28 @@
     }
 
     async function carregarEventos() {
-      try {
-        const res = await fetch(`${API_BASE}/eventos/prestador?prestadorId=${prestadorId}`);
-        const data = await res.json();
-        eventos = data;
+      const res = await fetch(`${API_BASE}/eventos/prestador?prestadorId=${prestadorId}`);
+      const data = await res.json();
+      eventos = data;
 
-        const selectEntrada = document.getElementById('eventoEntradaSelect');
-        const selectSaida = document.getElementById('eventoSaidaSelect');
-
-        const options = '<option value="">Selecione...</option>' +
-          eventos.map(e => `<option value="${e.evento.id}">${e.evento.nome}</option>`).join('');
-
-        selectEntrada.innerHTML = options;
-        selectSaida.innerHTML = options;
-
-        let html = '';
-        if (eventos.length === 0) {
-          html = '<p>Nenhum evento vinculado.</p>';
-        } else {
-          html = `<table class="table table-dark table-bordered">
-            <thead><tr><th>Nome</th><th>Período</th><th>Local</th></tr></thead><tbody>`;
-          eventos.forEach(ev => {
-            html += `<tr>
-              <td>${ev.evento.nome}</td>
-              <td>${new Date(ev.evento.dataInicio).toLocaleDateString()} - ${new Date(ev.evento.dataFim).toLocaleDateString()}</td>
-              <td>${ev.evento.local || '-'}</td>
-            </tr>`;
-          });
-          html += '</tbody></table>';
-        }
-
-        document.getElementById('listaEventos').innerHTML = html;
-      } catch (err) {
-        console.error("Erro ao carregar eventos:", err);
-        document.getElementById('listaEventos').innerHTML = '<p>Erro ao carregar eventos.</p>';
-      }
+      preencherSelectsDeEventos();
     }
 
-    async function carregarParticipantes(tipo) {
-      const eventoId = tipo === 'entrada'
-        ? document.getElementById('eventoEntradaSelect').value
-        : document.getElementById('eventoSaidaSelect').value;
+    function preencherSelectsDeEventos() {
+      const options = '<option value="">Selecione...</option>' +
+        eventos.map(e => `<option value="${e.evento.id}">${e.evento.nome}</option>`).join('');
 
-      const listaDiv = tipo === 'entrada' ? 'listaEntrada' : 'listaSaida';
+      document.getElementById('eventoEntradaSelect').innerHTML = options;
+      document.getElementById('eventoSaidaSelect').innerHTML = options;
+      document.getElementById('eventoParticipantesSelect').innerHTML = options;
+    }
 
+    // Participantes --------------------------------------------
+
+    async function carregarListaParticipantes() {
+      const eventoId = document.getElementById('eventoParticipantesSelect').value;
       if (!eventoId) {
-        document.getElementById(listaDiv).innerHTML = '<p>Selecione um evento para visualizar.</p>';
+        document.getElementById('listaParticipantes').innerHTML = '<p>Selecione um evento para visualizar participantes.</p>';
         return;
       }
 
@@ -137,57 +168,71 @@
       const participantes = await res.json();
 
       if (!participantes.length) {
-        document.getElementById(listaDiv).innerHTML = '<p>Nenhum participante cadastrado.</p>';
+        document.getElementById('listaParticipantes').innerHTML = '<p>Nenhum participante cadastrado.</p>';
         return;
       }
 
       let html = `<table class="table table-dark table-bordered">
-        <thead><tr><th>Nome</th><th>CPF</th><th>Empresa</th><th>Ações</th></tr></thead><tbody>`;
+        <thead><tr><th>Nome</th><th>CPF</th><th>Empresa</th><th>Telefone</th></tr></thead><tbody>`;
 
       participantes.forEach(p => {
         html += `<tr>
           <td>${p.nome}</td>
           <td>${p.cpf}</td>
           <td>${p.empresa}</td>
-          <td>
-            <button class="btn btn-sm btn-${tipo === 'entrada' ? 'success' : 'warning'}"
-              onclick="registrar${tipo === 'entrada' ? 'Checkin' : 'Checkout'}('${p.id}', '${eventoId}')">
-              ${tipo === 'entrada' ? 'Check-in' : 'Check-out'}
-            </button>
-          </td>
+          <td>${p.telefone}</td>
         </tr>`;
       });
 
       html += '</tbody></table>';
-      document.getElementById(listaDiv).innerHTML = html;
+      document.getElementById('listaParticipantes').innerHTML = html;
     }
 
-    async function registrarCheckin(participanteId, eventoId) {
-      const res = await fetch(`${API_BASE}/checkin/entrada`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ participanteId, eventoId })
-      });
+    function abrirModalNovoParticipante() {
+      document.getElementById('nomeParticipante').value = "";
+      document.getElementById('cpfParticipante').value = "";
+      document.getElementById('empresaParticipante').value = "";
+      document.getElementById('telefoneParticipante').value = "";
 
-      alert(res.ok ? 'Check-in realizado com sucesso!' : 'Erro ao realizar check-in.');
+      const modal = new bootstrap.Modal(document.getElementById('modalParticipante'));
+      modal.show();
     }
 
-    async function registrarCheckout(participanteId, eventoId) {
-      const res = await fetch(`${API_BASE}/checkin/saida`, {
+    async function salvarParticipante() {
+      const eventoId = document.getElementById('eventoParticipantesSelect').value;
+      if (!eventoId) {
+        alert("Selecione o evento antes de adicionar participante.");
+        return;
+      }
+
+      const body = {
+        nome: document.getElementById('nomeParticipante').value,
+        cpf: document.getElementById('cpfParticipante').value,
+        empresa: document.getElementById('empresaParticipante').value,
+        telefone: document.getElementById('telefoneParticipante').value,
+        eventoId: eventoSelecionado,
+        solicitanteId: prestadorId
+      };
+
+      const res = await fetch(`${API_BASE}/participantes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ participanteId, eventoId })
+        body: JSON.stringify(body)
       });
 
-      alert(res.ok ? 'Check-out realizado com sucesso!' : 'Erro ao realizar check-out.');
+      if (res.ok) {
+        alert("Participante cadastrado com sucesso!");
+        bootstrap.Modal.getInstance(document.getElementById('modalParticipante')).hide();
+        carregarListaParticipantes();
+      } else {
+        alert("Erro ao cadastrar participante.");
+      }
     }
 
     async function logout() {
       sessionStorage.clear();
       if (auth0) {
-        await auth0.logout({
-          returnTo: window.location.origin + '/login/login.html'
-        });
+        await auth0.logout({ logoutParams: { returnTo: window.location.origin + '/login/login.html' } });
       } else {
         window.location.href = "/login/login.html";
       }
