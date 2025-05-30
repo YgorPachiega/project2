@@ -16,16 +16,19 @@
   <a href="#" onclick="mostrarSecao('eventos')">Eventos</a>
   <a href="#" onclick="mostrarSecao('entrada')">Entrada</a>
   <a href="#" onclick="mostrarSecao('saida')">Saída</a>
+  <a href="#" onclick="mostrarSecao('participantes')">Participantes</a>
   <hr>
   <a href="#" onclick="logout()" class="text-danger">Sair</a>
 </div>
 
 <main class="main-content">
+  <!-- Eventos -->
   <section id="eventos">
     <h2>Eventos Vinculados</h2>
     <div id="listaEventos"><p>Carregando eventos...</p></div>
   </section>
 
+  <!-- Entrada -->
   <section id="entrada" class="hidden">
     <h2>Entrada de Participantes</h2>
     <div class="mb-3">
@@ -37,6 +40,7 @@
     <div id="listaEntrada">Selecione um evento para visualizar.</div>
   </section>
 
+  <!-- Saída -->
   <section id="saida" class="hidden">
     <h2>Saída de Participantes</h2>
     <div class="mb-3">
@@ -46,6 +50,35 @@
       </select>
     </div>
     <div id="listaSaida">Selecione um evento para visualizar.</div>
+  </section>
+
+  <!-- Participantes -->
+  <section id="participantes" class="hidden">
+    <h2>Cadastro de Participantes</h2>
+
+    <div class="mb-3">
+      <label for="eventoSelect" class="form-label">Selecione o Evento:</label>
+      <select id="eventoSelect" class="form-select">
+        <option value="">Selecione o evento</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Nome</label>
+      <input type="text" id="nomeParticipante" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">CPF</label>
+      <input type="text" id="cpfParticipante" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Empresa</label>
+      <input type="text" id="empresaParticipante" class="form-control">
+    </div>
+
+    <button class="btn btn-primary" onclick="salvarParticipante()">Salvar Participante</button>
   </section>
 </main>
 
@@ -57,8 +90,13 @@ let auth0 = null;
 let eventos = [];
 const prestadorId = sessionStorage.getItem('prestadorId');
 
-// --------------------- Auth0 e Validação ----------------------
-async function configureAuth0() {
+window.onload = async () => {
+  await configurarAuth0();
+  await carregarEventos();
+  mostrarSecao('eventos');
+};
+
+async function configurarAuth0() {
   auth0 = await createAuth0Client({
     domain: "dev-agq6qfbtj4yee13n.us.auth0.com",
     client_id: "zH6qQUwI5LMYtM4zOfw7N1DokYo9ruMV",
@@ -66,18 +104,15 @@ async function configureAuth0() {
   });
 }
 
-window.onload = async () => {
-  await configureAuth0();
-  await carregarEventos();
-  mostrarSecao('eventos');
-};
-
 function mostrarSecao(secao) {
   document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
   document.getElementById(secao).classList.remove('hidden');
+
+  if (secao === 'participantes') {
+    carregarEventosParticipantes();
+  }
 }
 
-// ----------------- Carregar eventos --------------------
 async function carregarEventos() {
   try {
     const res = await fetch(`${API_BASE}/eventos/prestador?prestadorId=${prestadorId}`);
@@ -115,7 +150,6 @@ async function carregarEventos() {
   }
 }
 
-// ----------------- Carregar Participantes --------------------
 async function carregarParticipantes(tipo) {
   const eventoId = tipo === 'entrada'
     ? document.getElementById('eventoEntradaSelect').value
@@ -162,14 +196,12 @@ async function carregarParticipantes(tipo) {
   }
 }
 
-// ----------------- Checkin / Checkout --------------------
 async function registrarCheckin(participanteId, eventoId) {
   const res = await fetch(`${API_BASE}/checkin/entrada`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ participanteId, eventoId })
   });
-
   alert(res.ok ? 'Check-in realizado com sucesso!' : 'Erro ao realizar check-in.');
 }
 
@@ -179,11 +211,55 @@ async function registrarCheckout(participanteId, eventoId) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ participanteId, eventoId })
   });
-
   alert(res.ok ? 'Check-out realizado com sucesso!' : 'Erro ao realizar check-out.');
 }
 
-// ----------------- Logout --------------------
+async function carregarEventosParticipantes() {
+  try {
+    const res = await fetch(`${API_BASE}/eventos/prestador?prestadorId=${prestadorId}`);
+    const eventos = await res.json();
+    const eventoSelect = document.getElementById("eventoSelect");
+    eventoSelect.innerHTML = `<option value="">Selecione o evento</option>`;
+    eventos.forEach(ev => {
+      eventoSelect.innerHTML += `<option value="${ev.id}">${ev.nome}</option>`;
+    });
+  } catch (error) {
+    console.error("Erro ao carregar eventos para participantes:", error);
+  }
+}
+
+async function salvarParticipante() {
+  const eventoId = document.getElementById("eventoSelect").value;
+  const nome = document.getElementById("nomeParticipante").value;
+  const cpf = document.getElementById("cpfParticipante").value;
+  const empresa = document.getElementById("empresaParticipante").value;
+
+  if (!eventoId || !nome || !cpf || !empresa) {
+    alert("Preencha todos os campos.");
+    return;
+  }
+
+  const payload = {
+    nome, cpf, empresa, eventoId, solicitanteId: prestadorId
+  };
+
+  const res = await fetch(`${API_BASE}/participantes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  if (res.ok) {
+    alert("Participante cadastrado com sucesso.");
+    document.getElementById("nomeParticipante").value = "";
+    document.getElementById("cpfParticipante").value = "";
+    document.getElementById("empresaParticipante").value = "";
+  } else {
+    const erro = await res.json();
+    alert(erro.error || "Erro ao cadastrar participante.");
+  }
+}
+
 async function logout() {
   sessionStorage.clear();
   if (auth0) {
