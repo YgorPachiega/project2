@@ -10,213 +10,204 @@
 </head>
 
 <body>
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Sidebar -->
-      <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-white p-3">
-        <h4 class="text-white">Menu</h4>
-        <a href="#" onclick="mostrarSecao('eventos')" class="d-block mb-2 text-decoration-none text-light">Eventos</a>
-        <a href="#" onclick="mostrarSecao('participantes')" class="d-block mb-2 text-decoration-none text-light">Participantes</a>
-        <a href="#" onclick="mostrarSecao('entrada')" class="d-block mb-2 text-decoration-none text-light">Entrada</a>
-        <a href="#" onclick="mostrarSecao('saida')" class="d-block mb-2 text-decoration-none text-light">Saída</a>
-        <hr class="text-secondary">
-        <a href="#" onclick="logout()" class="d-block text-decoration-none text-danger">Sair</a>
-      </nav>
 
-      <!-- Main Content -->
-      <main class="col-md-9 ms-sm-auto col-lg-10 main-content p-4">
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-white p-3">
+      <h4 class="text-white">Menu</h4>
+      <a href="#" onclick="mostrarSecao('eventos')" class="d-block mb-2 text-decoration-none text-light">Eventos</a>
+      <a href="#" onclick="mostrarSecao('participantes')" class="d-block mb-2 text-decoration-none text-light">Participantes</a>
+      <hr class="text-secondary">
+      <a href="#" onclick="logout()" class="d-block text-decoration-none text-danger">Sair</a>
+    </nav>
 
-        <!-- Eventos -->
-        <section id="eventos">
-          <h2>Eventos Vinculados</h2>
-          <div id="listaEventos"><p>Carregando eventos...</p></div>
-        </section>
+    <main class="col-md-9 ms-sm-auto col-lg-10 main-content p-4">
+      <section id="eventos">
+        <h2>Eventos Vinculados</h2>
+        <div id="listaEventos"><p>Carregando eventos...</p></div>
+      </section>
 
-        <!-- Participantes -->
-        <section id="participantes" class="d-none">
-          <h2>Participantes do Evento</h2>
-          <div class="mb-3">
-            <label>Evento:</label>
-            <select id="eventoParticipantesSelect" class="form-select" onchange="carregarListaParticipantes()">
-              <option value="">Selecione o Evento</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <button class="btn btn-success" onclick="abrirModalParticipante()">+ Novo Participante</button>
-          </div>
-          <div id="listaParticipantes">Selecione um evento para listar participantes.</div>
-        </section>
-
-        <!-- Entrada -->
-        <section id="entrada" class="d-none">
-          <h2>Entrada de Participantes</h2>
-          <!-- (manteremos igual até a etapa de QRCode) -->
-        </section>
-
-        <!-- Saída -->
-        <section id="saida" class="d-none">
-          <h2>Saída de Participantes</h2>
-          <!-- (manteremos igual até a etapa de QRCode) -->
-        </section>
-
-      </main>
-    </div>
+      <section id="participantes" class="d-none">
+        <h2>Participantes do Evento</h2>
+        <div class="mb-3">
+          <label>Evento:</label>
+          <select id="eventoParticipantesSelect" class="form-select" onchange="carregarListaParticipantes()">
+            <option value="">Selecione o Evento</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <button class="btn btn-success" onclick="abrirModalParticipante()">+ Novo Participante</button>
+        </div>
+        <div id="listaParticipantes">Selecione um evento para listar participantes.</div>
+      </section>
+    </main>
   </div>
+</div>
 
-  <!-- Modal de Cadastro de Participante -->
-  <div class="modal fade" id="modalParticipante" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content bg-dark text-white">
-        <div class="modal-header">
-          <h5 class="modal-title">Novo Participante</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label>Nome</label>
-            <input type="text" id="nomeParticipante" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label>CPF</label>
-            <input type="text" id="cpfParticipante" class="form-control" />
-          </div>
-          <div class="mb-3">
-            <label>Empresa</label>
-            <input type="text" id="empresaParticipante" class="form-control" />
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-primary" onclick="salvarParticipante()">Salvar</button>
-        </div>
+<!-- Modal Participante -->
+<div class="modal fade" id="modalParticipante" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title">Novo Participante</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3"><label>Nome</label><input type="text" id="nomeParticipante" class="form-control" /></div>
+        <div class="mb-3"><label>CPF</label><input type="text" id="cpfParticipante" class="form-control" /></div>
+        <div class="mb-3"><label>Empresa</label><input type="text" id="empresaParticipante" class="form-control" /></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvarParticipante()">Salvar</button>
       </div>
     </div>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-    const API_BASE = "https://app-qreader.onrender.com/api";
-    let auth0 = null;
-    let prestadorId = sessionStorage.getItem('prestadorId');
-    let eventos = [];
+<script>
+  const API_BASE = "https://app-qreader.onrender.com/api";
+  let auth0 = null;
+  let prestadorId = null;
+  let eventos = [];
 
-    window.onload = async () => {
-      await configurarAuth0();
-      await carregarEventos();
-    };
+  window.onload = async () => {
+    await configurarAuth0();
+    await validarAcesso();
+    await carregarEventos();
+  };
 
-    async function configurarAuth0() {
-      auth0 = await createAuth0Client({
-        domain: "dev-agq6qfbtj4yee13n.us.auth0.com",
-        client_id: "zH6qQUwI5LMYtM4zOfw7N1DokYo9ruMV",
-        cacheLocation: "localstorage"
-      });
+  async function configurarAuth0() {
+    auth0 = await createAuth0Client({
+      domain: "dev-agq6qfbtj4yee13n.us.auth0.com",
+      client_id: "zH6qQUwI5LMYtM4zOfw7N1DokYo9ruMV",
+      cacheLocation: "localstorage"
+    });
+  }
+
+  async function validarAcesso() {
+    const email = sessionStorage.getItem("solicitante");
+    if (!email) {
+      alert("Acesso negado. Faça login novamente.");
+      window.location.href = "/login/login.html";
+      return;
     }
 
-    function mostrarSecao(secao) {
-      document.querySelectorAll('main section').forEach(s => s.classList.add('d-none'));
-      document.getElementById(secao).classList.remove('d-none');
+    const response = await fetch(`${API_BASE}/users/${email}`);
+    const perfil = await response.json();
+
+    if (!perfil || perfil.tipoUsuario !== "prestador") {
+      alert("Acesso restrito.");
+      sessionStorage.clear();
+      window.location.href = "/login/login.html";
+      return;
     }
 
-    async function carregarEventos() {
+    prestadorId = perfil.id;
+    sessionStorage.setItem("prestadorId", prestadorId);
+  }
+
+  function mostrarSecao(secao) {
+    document.querySelectorAll('main section').forEach(s => s.classList.add('d-none'));
+    document.getElementById(secao).classList.remove('d-none');
+  }
+
+  async function carregarEventos() {
+    try {
       const res = await fetch(`${API_BASE}/eventos/prestador?prestadorId=${prestadorId}`);
       eventos = await res.json();
 
-      // Monta tabela de eventos
-      let html = '';
-      if (eventos.length === 0) {
-        html = '<p>Nenhum evento vinculado.</p>';
-      } else {
-        html = `<table class="table table-dark table-bordered">
-          <thead><tr><th>Nome</th><th>Período</th><th>Local</th></tr></thead><tbody>`;
-        eventos.forEach(ev => {
-          html += `<tr>
-            <td>${ev.nome}</td>
-            <td>${new Date(ev.dataInicio).toLocaleDateString()} - ${new Date(ev.dataFim).toLocaleDateString()}</td>
-            <td>${ev.local || '-'}</td>
-          </tr>`;
-        });
-        html += '</tbody></table>';
+      if (!Array.isArray(eventos)) {
+        document.getElementById('listaEventos').innerHTML = '<p>Erro ao carregar eventos.</p>';
+        return;
       }
+
+      let html = eventos.length === 0
+        ? '<p>Nenhum evento vinculado.</p>'
+        : `<table class="table table-dark table-bordered">
+              <thead><tr><th>Nome</th><th>Período</th><th>Local</th></tr></thead><tbody>` +
+            eventos.map(ev => `<tr><td>${ev.nome}</td><td>${new Date(ev.dataInicio).toLocaleDateString()} - ${new Date(ev.dataFim).toLocaleDateString()}</td><td>${ev.local || '-'}</td></tr>`).join('') +
+            '</tbody></table>';
+
       document.getElementById('listaEventos').innerHTML = html;
 
-      // Preenche também o select de participantes
       const select = document.getElementById('eventoParticipantesSelect');
       select.innerHTML = `<option value="">Selecione o Evento</option>`;
       eventos.forEach(ev => {
         select.innerHTML += `<option value="${ev.id}">${ev.nome}</option>`;
       });
+
+    } catch (error) {
+      console.error("Erro no carregamento de eventos:", error);
+      document.getElementById('listaEventos').innerHTML = '<p>Falha ao carregar eventos.</p>';
+    }
+  }
+
+  async function carregarListaParticipantes() {
+    const eventoId = document.getElementById('eventoParticipantesSelect').value;
+    if (!eventoId) {
+      document.getElementById('listaParticipantes').innerHTML = '<p>Selecione um evento.</p>';
+      return;
     }
 
-    async function carregarListaParticipantes() {
-      const eventoId = document.getElementById('eventoParticipantesSelect').value;
-      if (!eventoId) {
-        document.getElementById('listaParticipantes').innerHTML = '<p>Selecione um evento.</p>';
-        return;
-      }
+    const res = await fetch(`${API_BASE}/participantes/by-evento/${eventoId}`);
+    const participantes = await res.json();
 
-      const res = await fetch(`${API_BASE}/participantes/by-evento/${eventoId}`);
-      const participantes = await res.json();
+    let html = participantes.length === 0
+      ? '<p>Nenhum participante cadastrado.</p>'
+      : `<table class="table table-dark table-bordered">
+              <thead><tr><th>Nome</th><th>CPF</th><th>Empresa</th></tr></thead><tbody>` +
+            participantes.map(p => `<tr><td>${p.nome}</td><td>${p.cpf}</td><td>${p.empresa}</td></tr>`).join('') +
+            '</tbody></table>';
 
-      let html = '';
-      if (participantes.length === 0) {
-        html = '<p>Nenhum participante cadastrado.</p>';
-      } else {
-        html = `<table class="table table-dark table-bordered">
-          <thead><tr><th>Nome</th><th>CPF</th><th>Empresa</th></tr></thead><tbody>`;
-        participantes.forEach(p => {
-          html += `<tr><td>${p.nome}</td><td>${p.cpf}</td><td>${p.empresa}</td></tr>`;
-        });
-        html += '</tbody></table>';
-      }
-      document.getElementById('listaParticipantes').innerHTML = html;
+    document.getElementById('listaParticipantes').innerHTML = html;
+  }
+
+  function abrirModalParticipante() {
+    document.getElementById('nomeParticipante').value = '';
+    document.getElementById('cpfParticipante').value = '';
+    document.getElementById('empresaParticipante').value = '';
+    new bootstrap.Modal(document.getElementById('modalParticipante')).show();
+  }
+
+  async function salvarParticipante() {
+    const eventoId = document.getElementById('eventoParticipantesSelect').value;
+
+    const body = {
+      nome: document.getElementById('nomeParticipante').value,
+      cpf: document.getElementById('cpfParticipante').value,
+      empresa: document.getElementById('empresaParticipante').value,
+      eventoId: eventoId,
+      solicitanteId: prestadorId
+    };
+
+    const res = await fetch(`${API_BASE}/participantes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (res.ok) {
+      alert('Participante cadastrado com sucesso!');
+      bootstrap.Modal.getInstance(document.getElementById('modalParticipante')).hide();
+      carregarListaParticipantes();
+    } else {
+      alert('Erro ao cadastrar participante.');
     }
+  }
 
-    function abrirModalParticipante() {
-      document.getElementById('nomeParticipante').value = '';
-      document.getElementById('cpfParticipante').value = '';
-      document.getElementById('empresaParticipante').value = '';
-      const modal = new bootstrap.Modal(document.getElementById('modalParticipante'));
-      modal.show();
+  async function logout() {
+    sessionStorage.clear();
+    if (auth0) {
+      await auth0.logout({ returnTo: window.location.origin + '/login/login.html' });
+    } else {
+      window.location.href = "/login/login.html";
     }
+  }
+</script>
 
-    async function salvarParticipante() {
-      const eventoId = document.getElementById('eventoParticipantesSelect').value;
-
-      const body = {
-        nome: document.getElementById('nomeParticipante').value,
-        cpf: document.getElementById('cpfParticipante').value,
-        empresa: document.getElementById('empresaParticipante').value,
-        eventoId: eventoId,
-        solicitanteId: prestadorId
-      };
-
-      const res = await fetch(`${API_BASE}/participantes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-
-      if (res.ok) {
-        alert('Participante cadastrado com sucesso!');
-        bootstrap.Modal.getInstance(document.getElementById('modalParticipante')).hide();
-        carregarListaParticipantes();
-      } else {
-        alert('Erro ao cadastrar participante.');
-      }
-    }
-
-    async function logout() {
-      sessionStorage.clear();
-      if (auth0) {
-        await auth0.logout({
-          returnTo: window.location.origin + '/login/login.html'
-        });
-      } else {
-        window.location.href = "/login/login.html";
-      }
-    }
-  </script>
 </body>
 </html>
