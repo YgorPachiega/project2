@@ -64,12 +64,12 @@ export const listarEventosPorEmpresa = async (request: FastifyRequest, reply: Fa
 
     return reply.status(200).send(eventos);
   } catch (error) {
-    console.error('Erro ao listar eventos:', error);
+    console.error('Erro ao listar eventos por empresa:', error);
     return reply.status(500).send({ error: 'Erro interno ao listar eventos.' });
   }
 };
 
-// Listar eventos por prestador
+// Listar eventos por prestador (forma elegante, padronizada)
 export const listarEventosPorPrestador = async (request: FastifyRequest, reply: FastifyReply) => {
   const { prestadorId } = request.query as { prestadorId: string };
 
@@ -78,12 +78,12 @@ export const listarEventosPorPrestador = async (request: FastifyRequest, reply: 
   }
 
   try {
-    const eventos = await prisma.eventoPrestadores.findMany({
+    const eventosVinculados = await prisma.eventoPrestadores.findMany({
       where: { prestadorId },
-      include: {
-        evento: true,
-      },
+      include: { evento: true }
     });
+
+    const eventos = eventosVinculados.map(vinculo => vinculo.evento);
 
     return reply.status(200).send(eventos);
   } catch (error) {
@@ -128,7 +128,7 @@ export const atualizarEvento = async (request: FastifyRequest, reply: FastifyRep
     dataInicio?: string;
     dataFim?: string;
     local?: string;
-    prestadoresIds?: string[]; // Lista de IDs de prestadores vinculados
+    prestadoresIds?: string[];
   };
 
   try {
@@ -140,7 +140,6 @@ export const atualizarEvento = async (request: FastifyRequest, reply: FastifyRep
       return reply.status(404).send({ error: 'Evento não encontrado.' });
     }
 
-    // Atualiza os dados principais do evento
     const eventoAtualizado = await prisma.eventos.update({
       where: { id },
       data: {
@@ -152,22 +151,15 @@ export const atualizarEvento = async (request: FastifyRequest, reply: FastifyRep
       },
     });
 
-    // Atualiza os prestadores vinculados, se enviados
     if (prestadoresIds && prestadoresIds.length > 0) {
-      // Remove todos os vínculos atuais
-      await prisma.eventoPrestadores.deleteMany({
-        where: { eventoId: id },
-      });
+      await prisma.eventoPrestadores.deleteMany({ where: { eventoId: id } });
 
-      // Cria novos vínculos
       const vinculacoes = prestadoresIds.map((prestadorId) => ({
         eventoId: id,
         prestadorId: prestadorId,
       }));
 
-      await prisma.eventoPrestadores.createMany({
-        data: vinculacoes,
-      });
+      await prisma.eventoPrestadores.createMany({ data: vinculacoes });
     }
 
     return reply.status(200).send({ message: 'Evento atualizado com sucesso.', evento: eventoAtualizado });
