@@ -5,7 +5,7 @@ import fastifyStatic from '@fastify/static';
 import cors from '@fastify/cors';
 
 // Rotas
-import clientsRoutes from './routes/participantesRoutes';
+import participantesRoutes from './routes/participantesRoutes';
 import perfilRoutes from './routes/perfilRoutes';
 import usersRoutes from './routes/usersRoutes';
 import empresasRoutes from './routes/empresasRoutes';
@@ -33,7 +33,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Rotas
-app.register(clientsRoutes, { prefix: '/api' });
+app.register(participantesRoutes, { prefix: '/api' });
 app.register(perfilRoutes, { prefix: '/api' });
 app.register(checkinRoutes, { prefix: '/api' });
 app.register(usersRoutes, { prefix: '/api' });
