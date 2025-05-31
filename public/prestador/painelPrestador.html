@@ -117,7 +117,10 @@
       eventos = data;
 
       const options = '<option value="">Selecione...</option>' +
-        eventos.map(e => `<option value="${e.evento.id}">${e.evento.nome}</option>`).join('');
+        eventos.map(e => {
+          const eventoObj = e.evento ? e.evento : e;
+          return `<option value = "${eventoObj.id}">${eventoOBj.nome}</option>`;
+        }).join('');
 
       document.getElementById('eventoEntradaSelect').innerHTML = options;
       document.getElementById('eventoSaidaSelect').innerHTML = options;
