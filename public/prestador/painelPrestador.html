@@ -11,6 +11,7 @@
 <body>
   <div class="container-fluid">
     <div class="row">
+      <!-- Sidebar -->
       <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-white p-3">
         <h4 class="text-white">Menu</h4>
         <a href="#" onclick="mostrarSecao('eventos')" class="d-block mb-2 text-decoration-none text-light">Eventos</a>
@@ -21,12 +22,16 @@
         <a href="#" onclick="logout()" class="d-block text-decoration-none text-danger">Sair</a>
       </nav>
 
+      <!-- Main Content -->
       <main class="col-md-9 ms-sm-auto col-lg-10 main-content p-4">
+
+        <!-- Eventos -->
         <section id="eventos">
           <h2>Eventos Vinculados</h2>
           <div id="listaEventos"><p>Carregando eventos...</p></div>
         </section>
 
+        <!-- Entrada -->
         <section id="entrada" class="d-none">
           <h2>Entrada de Participantes</h2>
           <div class="mb-3">
@@ -38,6 +43,7 @@
           <div id="listaEntrada">Selecione um evento para visualizar.</div>
         </section>
 
+        <!-- Saída -->
         <section id="saida" class="d-none">
           <h2>Saída de Participantes</h2>
           <div class="mb-3">
@@ -49,6 +55,7 @@
           <div id="listaSaida">Selecione um evento para visualizar.</div>
         </section>
 
+        <!-- Participantes -->
         <section id="participantes" class="d-none">
           <h2>Participantes</h2>
           <div class="mb-3">
@@ -60,7 +67,7 @@
 
           <div class="mb-3">
             <button class="btn btn-primary" onclick="mostrarFormularioParticipante()">➕ Adicionar Participante Manualmente</button>
-            <input type="file" id="arquivoImportacao" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="form-control mt-2" onchange="importarParticipantes()" />
+            <input type="file" id="arquivoImportacao" accept=".csv" class="form-control mt-2" onchange="importarParticipantes()" />
           </div>
 
           <div id="formularioParticipante" class="d-none mb-3">
@@ -73,6 +80,7 @@
 
           <div id="listaParticipantes">Selecione um evento para visualizar participantes.</div>
         </section>
+
       </main>
     </div>
   </div>
@@ -89,11 +97,6 @@
     let auth0 = null;
 
     window.onload = async () => {
-      if (!prestadorId) {
-        alert("Prestador não encontrado. Realize o login novamente.");
-        window.location.href = "/login/login.html";
-        return;
-      }
       await configurarAuth0();
       await carregarEventos();
     };
@@ -113,14 +116,10 @@
 
     async function carregarEventos() {
       const res = await fetch(`${API_BASE}/eventos/prestador?prestadorId=${prestadorId}`);
-      const data = await res.json();
-      eventos = data;
+      eventos = await res.json();
 
       const options = '<option value="">Selecione...</option>' +
-        eventos.map(e => {
-          const eventoObj = e.evento ? e.evento : e;
-          return `<option value = "${eventoObj.id}">${eventoOBj.nome}</option>`;
-        }).join('');
+        eventos.map(e => `<option value="${e.id}">${e.nome}</option>`).join('');
 
       document.getElementById('eventoEntradaSelect').innerHTML = options;
       document.getElementById('eventoSaidaSelect').innerHTML = options;
@@ -139,12 +138,13 @@
         <thead><tr><th>Nome</th><th>Período</th><th>Local</th></tr></thead><tbody>`;
       eventos.forEach(ev => {
         html += `<tr>
-          <td>${ev.evento.nome}</td>
-          <td>${new Date(ev.evento.dataInicio).toLocaleDateString()} - ${new Date(ev.evento.dataFim).toLocaleDateString()}</td>
-          <td>${ev.evento.local || '-'}</td>
+          <td>${ev.nome}</td>
+          <td>${new Date(ev.dataInicio).toLocaleDateString()} - ${new Date(ev.dataFim).toLocaleDateString()}</td>
+          <td>${ev.local || '-'}</td>
         </tr>`;
       });
       html += '</tbody></table>';
+
       document.getElementById('listaEventos').innerHTML = html;
     }
 
@@ -169,28 +169,18 @@
       }
 
       let html = `<table class="table table-dark table-bordered">
-        <thead><tr><th>Nome</th><th>CPF</th><th>Empresa</th><th>Ações</th></tr></thead><tbody>`;
+        <thead><tr><th>Nome</th><th>CPF</th><th>Empresa</th></tr></thead><tbody>`;
 
       participantes.forEach(p => {
         html += `<tr>
           <td>${p.nome}</td>
           <td>${p.cpf}</td>
           <td>${p.empresa}</td>
-          <td>
-            <button class="btn btn-sm btn-${tipo === 'entrada' ? 'success' : 'warning'}"
-              onclick="registrar${tipo === 'entrada' ? 'Checkin' : 'Checkout'}('${p.id}', '${eventoId}')">
-              ${tipo === 'entrada' ? 'Check-in' : 'Check-out'}
-            </button>
-          </td>
         </tr>`;
       });
 
       html += '</tbody></table>';
       document.getElementById(listaDiv).innerHTML = html;
-    }
-
-    function mostrarFormularioParticipante() {
-      document.getElementById('formularioParticipante').classList.toggle('d-none');
     }
 
     async function carregarListaParticipantes() {
@@ -217,14 +207,16 @@
           <td>${p.nome}</td>
           <td>${p.cpf}</td>
           <td>${p.empresa}</td>
-          <td>
-            <button class="btn btn-danger btn-sm" onclick="deletarParticipante('${p.id}')">Excluir</button>
-          </td>
+          <td><button class="btn btn-danger btn-sm" onclick="deletarParticipante('${p.id}')">Excluir</button></td>
         </tr>`;
       });
 
       html += '</tbody></table>';
       document.getElementById('listaParticipantes').innerHTML = html;
+    }
+
+    function mostrarFormularioParticipante() {
+      document.getElementById('formularioParticipante').classList.toggle('d-none');
     }
 
     async function salvarParticipante() {
@@ -238,11 +230,7 @@
       }
 
       const participante = {
-        nome,
-        cpf,
-        empresa,
-        solicitanteId: prestadorId,
-        EventoId: eventoSelecionado
+        nome, cpf, empresa, solicitanteId: prestadorId, EventoId: eventoSelecionado
       };
 
       const res = await fetch(`${API_BASE}/participantes`, {
@@ -310,9 +298,7 @@
     async function logout() {
       sessionStorage.clear();
       if (auth0) {
-        await auth0.logout({
-          logoutParams: { returnTo: window.location.origin + '/login/login.html' }
-        });
+        await auth0.logout({ logoutParams: { returnTo: window.location.origin + '/login/login.html' } });
       } else {
         window.location.href = "/login/login.html";
       }
