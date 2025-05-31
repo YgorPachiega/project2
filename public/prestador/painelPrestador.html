@@ -11,7 +11,6 @@
 <body>
   <div class="container-fluid">
     <div class="row">
-      <!-- Sidebar -->
       <nav class="col-md-3 col-lg-2 d-md-block sidebar bg-dark text-white p-3">
         <h4 class="text-white">Menu</h4>
         <a href="#" onclick="mostrarSecao('eventos')" class="d-block mb-2 text-decoration-none text-light">Eventos</a>
@@ -22,16 +21,12 @@
         <a href="#" onclick="logout()" class="d-block text-decoration-none text-danger">Sair</a>
       </nav>
 
-      <!-- Main Content -->
       <main class="col-md-9 ms-sm-auto col-lg-10 main-content p-4">
-
-        <!-- Eventos -->
         <section id="eventos">
           <h2>Eventos Vinculados</h2>
           <div id="listaEventos"><p>Carregando eventos...</p></div>
         </section>
 
-        <!-- Entrada -->
         <section id="entrada" class="d-none">
           <h2>Entrada de Participantes</h2>
           <div class="mb-3">
@@ -43,7 +38,6 @@
           <div id="listaEntrada">Selecione um evento para visualizar.</div>
         </section>
 
-        <!-- Saída -->
         <section id="saida" class="d-none">
           <h2>Saída de Participantes</h2>
           <div class="mb-3">
@@ -55,7 +49,6 @@
           <div id="listaSaida">Selecione um evento para visualizar.</div>
         </section>
 
-        <!-- Participantes -->
         <section id="participantes" class="d-none">
           <h2>Participantes</h2>
           <div class="mb-3">
@@ -80,7 +73,6 @@
 
           <div id="listaParticipantes">Selecione um evento para visualizar participantes.</div>
         </section>
-
       </main>
     </div>
   </div>
@@ -97,6 +89,11 @@
     let auth0 = null;
 
     window.onload = async () => {
+      if (!prestadorId) {
+        alert("Prestador não encontrado. Realize o login novamente.");
+        window.location.href = "/login/login.html";
+        return;
+      }
       await configurarAuth0();
       await carregarEventos();
     };
@@ -145,7 +142,6 @@
         </tr>`;
       });
       html += '</tbody></table>';
-
       document.getElementById('listaEventos').innerHTML = html;
     }
 
@@ -190,6 +186,10 @@
       document.getElementById(listaDiv).innerHTML = html;
     }
 
+    function mostrarFormularioParticipante() {
+      document.getElementById('formularioParticipante').classList.toggle('d-none');
+    }
+
     async function carregarListaParticipantes() {
       eventoSelecionado = document.getElementById('eventoParticipanteSelect').value;
 
@@ -224,10 +224,6 @@
       document.getElementById('listaParticipantes').innerHTML = html;
     }
 
-    function mostrarFormularioParticipante() {
-      document.getElementById('formularioParticipante').classList.toggle('d-none');
-    }
-
     async function salvarParticipante() {
       const nome = document.getElementById('nomeParticipante').value;
       const cpf = document.getElementById('cpfParticipante').value;
@@ -238,7 +234,13 @@
         return;
       }
 
-      const participante = { nome, cpf, empresa, solicitanteId: prestadorId, EventoId: eventoSelecionado };
+      const participante = {
+        nome,
+        cpf,
+        empresa,
+        solicitanteId: prestadorId,
+        EventoId: eventoSelecionado
+      };
 
       const res = await fetch(`${API_BASE}/participantes`, {
         method: 'POST',
@@ -306,9 +308,7 @@
       sessionStorage.clear();
       if (auth0) {
         await auth0.logout({
-          logoutParams: {
-            returnTo: window.location.origin + '/login/login.html'
-          }
+          logoutParams: { returnTo: window.location.origin + '/login/login.html' }
         });
       } else {
         window.location.href = "/login/login.html";
