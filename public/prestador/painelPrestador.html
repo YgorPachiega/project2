@@ -230,7 +230,7 @@
       }
 
       const participante = {
-        nome, cpf, empresa, solicitanteId: prestadorId, EventoId: eventoSelecionado
+        nome, cpf, empresa, solicitanteId: prestadorId, eventoId: eventoSelecionado
       };
 
       const res = await fetch(`${API_BASE}/participantes`, {
@@ -276,7 +276,7 @@
             cpf: row.cpf,
             empresa: row.empresa,
             solicitanteId: prestadorId,
-            EventoId: eventoSelecionado
+            eventoId: eventoSelecionado
           }));
 
           const res = await fetch(`${API_BASE}/participantes/importar-lote`, {

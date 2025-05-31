@@ -13,6 +13,6 @@ export default async function clientsRoutes(fastify: FastifyInstance) {
   fastify.get('/participantes/by-evento/:eventoId', listarParticipantesPorEvento);
   fastify.get('/participantes/:id', buscarParticipantePorId);
   fastify.delete('/participantes/id:', deletarParticipante);
-  fastify.post('/participantes/importacao', importarParticipantesEmLote)
+  fastify.post('/participantes/importar-lote', importarParticipantesEmLote)
 
 }
