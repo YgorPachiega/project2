@@ -119,16 +119,12 @@
       const data = await res.json();
       eventos = data;
 
-      const selectEntrada = document.getElementById('eventoEntradaSelect');
-      const selectSaida = document.getElementById('eventoSaidaSelect');
-      const selectParticipante = document.getElementById('eventoParticipanteSelect');
-
       const options = '<option value="">Selecione...</option>' +
         eventos.map(e => `<option value="${e.evento.id}">${e.evento.nome}</option>`).join('');
 
-      selectEntrada.innerHTML = options;
-      selectSaida.innerHTML = options;
-      selectParticipante.innerHTML = options;
+      document.getElementById('eventoEntradaSelect').innerHTML = options;
+      document.getElementById('eventoSaidaSelect').innerHTML = options;
+      document.getElementById('eventoParticipanteSelect').innerHTML = options;
 
       carregarListaEventos();
     }
@@ -194,10 +190,6 @@
       document.getElementById(listaDiv).innerHTML = html;
     }
 
-    function mostrarFormularioParticipante() {
-      document.getElementById('formularioParticipante').classList.toggle('d-none');
-    }
-
     async function carregarListaParticipantes() {
       eventoSelecionado = document.getElementById('eventoParticipanteSelect').value;
 
@@ -232,6 +224,10 @@
       document.getElementById('listaParticipantes').innerHTML = html;
     }
 
+    function mostrarFormularioParticipante() {
+      document.getElementById('formularioParticipante').classList.toggle('d-none');
+    }
+
     async function salvarParticipante() {
       const nome = document.getElementById('nomeParticipante').value;
       const cpf = document.getElementById('cpfParticipante').value;
@@ -242,13 +238,7 @@
         return;
       }
 
-      const participante = {
-        nome,
-        cpf,
-        empresa,
-        solicitanteId: prestadorId,
-        EventoId: eventoSelecionado
-      };
+      const participante = { nome, cpf, empresa, solicitanteId: prestadorId, EventoId: eventoSelecionado };
 
       const res = await fetch(`${API_BASE}/participantes`, {
         method: 'POST',
